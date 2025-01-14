@@ -41,570 +41,6 @@ var init_define_process_env = __esm({
   }
 });
 
-// node_modules/scheduler/cjs/scheduler.production.js
-var require_scheduler_production = __commonJS({
-  "node_modules/scheduler/cjs/scheduler.production.js"(exports2) {
-    "use strict";
-    init_define_process_env();
-    function push(heap, node2) {
-      var index = heap.length;
-      heap.push(node2);
-      a: for (; 0 < index; ) {
-        var parentIndex = index - 1 >>> 1, parent = heap[parentIndex];
-        if (0 < compare(parent, node2))
-          heap[parentIndex] = node2, heap[index] = parent, index = parentIndex;
-        else break a;
-      }
-    }
-    function peek2(heap) {
-      return 0 === heap.length ? null : heap[0];
-    }
-    function pop(heap) {
-      if (0 === heap.length) return null;
-      var first = heap[0], last = heap.pop();
-      if (last !== first) {
-        heap[0] = last;
-        a: for (var index = 0, length2 = heap.length, halfLength = length2 >>> 1; index < halfLength; ) {
-          var leftIndex = 2 * (index + 1) - 1, left = heap[leftIndex], rightIndex = leftIndex + 1, right = heap[rightIndex];
-          if (0 > compare(left, last))
-            rightIndex < length2 && 0 > compare(right, left) ? (heap[index] = right, heap[rightIndex] = last, index = rightIndex) : (heap[index] = left, heap[leftIndex] = last, index = leftIndex);
-          else if (rightIndex < length2 && 0 > compare(right, last))
-            heap[index] = right, heap[rightIndex] = last, index = rightIndex;
-          else break a;
-        }
-      }
-      return first;
-    }
-    function compare(a, b) {
-      var diff = a.sortIndex - b.sortIndex;
-      return 0 !== diff ? diff : a.id - b.id;
-    }
-    exports2.unstable_now = void 0;
-    if ("object" === typeof performance && "function" === typeof performance.now) {
-      localPerformance = performance;
-      exports2.unstable_now = function() {
-        return localPerformance.now();
-      };
-    } else {
-      localDate = Date, initialTime = localDate.now();
-      exports2.unstable_now = function() {
-        return localDate.now() - initialTime;
-      };
-    }
-    var localPerformance;
-    var localDate;
-    var initialTime;
-    var taskQueue = [];
-    var timerQueue = [];
-    var taskIdCounter = 1;
-    var currentTask = null;
-    var currentPriorityLevel = 3;
-    var isPerformingWork = false;
-    var isHostCallbackScheduled = false;
-    var isHostTimeoutScheduled = false;
-    var localSetTimeout = "function" === typeof setTimeout ? setTimeout : null;
-    var localClearTimeout = "function" === typeof clearTimeout ? clearTimeout : null;
-    var localSetImmediate = "undefined" !== typeof setImmediate ? setImmediate : null;
-    function advanceTimers(currentTime) {
-      for (var timer = peek2(timerQueue); null !== timer; ) {
-        if (null === timer.callback) pop(timerQueue);
-        else if (timer.startTime <= currentTime)
-          pop(timerQueue), timer.sortIndex = timer.expirationTime, push(taskQueue, timer);
-        else break;
-        timer = peek2(timerQueue);
-      }
-    }
-    function handleTimeout(currentTime) {
-      isHostTimeoutScheduled = false;
-      advanceTimers(currentTime);
-      if (!isHostCallbackScheduled)
-        if (null !== peek2(taskQueue))
-          isHostCallbackScheduled = true, requestHostCallback();
-        else {
-          var firstTimer = peek2(timerQueue);
-          null !== firstTimer && requestHostTimeout(handleTimeout, firstTimer.startTime - currentTime);
-        }
-    }
-    var isMessageLoopRunning = false;
-    var taskTimeoutID = -1;
-    var frameInterval = 5;
-    var startTime = -1;
-    function shouldYieldToHost() {
-      return exports2.unstable_now() - startTime < frameInterval ? false : true;
-    }
-    function performWorkUntilDeadline() {
-      if (isMessageLoopRunning) {
-        var currentTime = exports2.unstable_now();
-        startTime = currentTime;
-        var hasMoreWork = true;
-        try {
-          a: {
-            isHostCallbackScheduled = false;
-            isHostTimeoutScheduled && (isHostTimeoutScheduled = false, localClearTimeout(taskTimeoutID), taskTimeoutID = -1);
-            isPerformingWork = true;
-            var previousPriorityLevel = currentPriorityLevel;
-            try {
-              b: {
-                advanceTimers(currentTime);
-                for (currentTask = peek2(taskQueue); null !== currentTask && !(currentTask.expirationTime > currentTime && shouldYieldToHost()); ) {
-                  var callback = currentTask.callback;
-                  if ("function" === typeof callback) {
-                    currentTask.callback = null;
-                    currentPriorityLevel = currentTask.priorityLevel;
-                    var continuationCallback = callback(
-                      currentTask.expirationTime <= currentTime
-                    );
-                    currentTime = exports2.unstable_now();
-                    if ("function" === typeof continuationCallback) {
-                      currentTask.callback = continuationCallback;
-                      advanceTimers(currentTime);
-                      hasMoreWork = true;
-                      break b;
-                    }
-                    currentTask === peek2(taskQueue) && pop(taskQueue);
-                    advanceTimers(currentTime);
-                  } else pop(taskQueue);
-                  currentTask = peek2(taskQueue);
-                }
-                if (null !== currentTask) hasMoreWork = true;
-                else {
-                  var firstTimer = peek2(timerQueue);
-                  null !== firstTimer && requestHostTimeout(
-                    handleTimeout,
-                    firstTimer.startTime - currentTime
-                  );
-                  hasMoreWork = false;
-                }
-              }
-              break a;
-            } finally {
-              currentTask = null, currentPriorityLevel = previousPriorityLevel, isPerformingWork = false;
-            }
-            hasMoreWork = void 0;
-          }
-        } finally {
-          hasMoreWork ? schedulePerformWorkUntilDeadline() : isMessageLoopRunning = false;
-        }
-      }
-    }
-    var schedulePerformWorkUntilDeadline;
-    if ("function" === typeof localSetImmediate)
-      schedulePerformWorkUntilDeadline = function() {
-        localSetImmediate(performWorkUntilDeadline);
-      };
-    else if ("undefined" !== typeof MessageChannel) {
-      channel = new MessageChannel(), port = channel.port2;
-      channel.port1.onmessage = performWorkUntilDeadline;
-      schedulePerformWorkUntilDeadline = function() {
-        port.postMessage(null);
-      };
-    } else
-      schedulePerformWorkUntilDeadline = function() {
-        localSetTimeout(performWorkUntilDeadline, 0);
-      };
-    var channel;
-    var port;
-    function requestHostCallback() {
-      isMessageLoopRunning || (isMessageLoopRunning = true, schedulePerformWorkUntilDeadline());
-    }
-    function requestHostTimeout(callback, ms) {
-      taskTimeoutID = localSetTimeout(function() {
-        callback(exports2.unstable_now());
-      }, ms);
-    }
-    exports2.unstable_IdlePriority = 5;
-    exports2.unstable_ImmediatePriority = 1;
-    exports2.unstable_LowPriority = 4;
-    exports2.unstable_NormalPriority = 3;
-    exports2.unstable_Profiling = null;
-    exports2.unstable_UserBlockingPriority = 2;
-    exports2.unstable_cancelCallback = function(task) {
-      task.callback = null;
-    };
-    exports2.unstable_continueExecution = function() {
-      isHostCallbackScheduled || isPerformingWork || (isHostCallbackScheduled = true, requestHostCallback());
-    };
-    exports2.unstable_forceFrameRate = function(fps) {
-      0 > fps || 125 < fps ? console.error(
-        "forceFrameRate takes a positive int between 0 and 125, forcing frame rates higher than 125 fps is not supported"
-      ) : frameInterval = 0 < fps ? Math.floor(1e3 / fps) : 5;
-    };
-    exports2.unstable_getCurrentPriorityLevel = function() {
-      return currentPriorityLevel;
-    };
-    exports2.unstable_getFirstCallbackNode = function() {
-      return peek2(taskQueue);
-    };
-    exports2.unstable_next = function(eventHandler) {
-      switch (currentPriorityLevel) {
-        case 1:
-        case 2:
-        case 3:
-          var priorityLevel = 3;
-          break;
-        default:
-          priorityLevel = currentPriorityLevel;
-      }
-      var previousPriorityLevel = currentPriorityLevel;
-      currentPriorityLevel = priorityLevel;
-      try {
-        return eventHandler();
-      } finally {
-        currentPriorityLevel = previousPriorityLevel;
-      }
-    };
-    exports2.unstable_pauseExecution = function() {
-    };
-    exports2.unstable_requestPaint = function() {
-    };
-    exports2.unstable_runWithPriority = function(priorityLevel, eventHandler) {
-      switch (priorityLevel) {
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-          break;
-        default:
-          priorityLevel = 3;
-      }
-      var previousPriorityLevel = currentPriorityLevel;
-      currentPriorityLevel = priorityLevel;
-      try {
-        return eventHandler();
-      } finally {
-        currentPriorityLevel = previousPriorityLevel;
-      }
-    };
-    exports2.unstable_scheduleCallback = function(priorityLevel, callback, options) {
-      var currentTime = exports2.unstable_now();
-      "object" === typeof options && null !== options ? (options = options.delay, options = "number" === typeof options && 0 < options ? currentTime + options : currentTime) : options = currentTime;
-      switch (priorityLevel) {
-        case 1:
-          var timeout = -1;
-          break;
-        case 2:
-          timeout = 250;
-          break;
-        case 5:
-          timeout = 1073741823;
-          break;
-        case 4:
-          timeout = 1e4;
-          break;
-        default:
-          timeout = 5e3;
-      }
-      timeout = options + timeout;
-      priorityLevel = {
-        id: taskIdCounter++,
-        callback,
-        priorityLevel,
-        startTime: options,
-        expirationTime: timeout,
-        sortIndex: -1
-      };
-      options > currentTime ? (priorityLevel.sortIndex = options, push(timerQueue, priorityLevel), null === peek2(taskQueue) && priorityLevel === peek2(timerQueue) && (isHostTimeoutScheduled ? (localClearTimeout(taskTimeoutID), taskTimeoutID = -1) : isHostTimeoutScheduled = true, requestHostTimeout(handleTimeout, options - currentTime))) : (priorityLevel.sortIndex = timeout, push(taskQueue, priorityLevel), isHostCallbackScheduled || isPerformingWork || (isHostCallbackScheduled = true, requestHostCallback()));
-      return priorityLevel;
-    };
-    exports2.unstable_shouldYield = shouldYieldToHost;
-    exports2.unstable_wrapCallback = function(callback) {
-      var parentPriorityLevel = currentPriorityLevel;
-      return function() {
-        var previousPriorityLevel = currentPriorityLevel;
-        currentPriorityLevel = parentPriorityLevel;
-        try {
-          return callback.apply(this, arguments);
-        } finally {
-          currentPriorityLevel = previousPriorityLevel;
-        }
-      };
-    };
-  }
-});
-
-// node_modules/scheduler/cjs/scheduler.development.js
-var require_scheduler_development = __commonJS({
-  "node_modules/scheduler/cjs/scheduler.development.js"(exports2) {
-    "use strict";
-    init_define_process_env();
-    "production" !== define_process_env_default.NODE_ENV && function() {
-      function performWorkUntilDeadline() {
-        if (isMessageLoopRunning) {
-          var currentTime = exports2.unstable_now();
-          startTime = currentTime;
-          var hasMoreWork = true;
-          try {
-            a: {
-              isHostCallbackScheduled = false;
-              isHostTimeoutScheduled && (isHostTimeoutScheduled = false, localClearTimeout(taskTimeoutID), taskTimeoutID = -1);
-              isPerformingWork = true;
-              var previousPriorityLevel = currentPriorityLevel;
-              try {
-                b: {
-                  advanceTimers(currentTime);
-                  for (currentTask = peek2(taskQueue); null !== currentTask && !(currentTask.expirationTime > currentTime && shouldYieldToHost()); ) {
-                    var callback = currentTask.callback;
-                    if ("function" === typeof callback) {
-                      currentTask.callback = null;
-                      currentPriorityLevel = currentTask.priorityLevel;
-                      var continuationCallback = callback(
-                        currentTask.expirationTime <= currentTime
-                      );
-                      currentTime = exports2.unstable_now();
-                      if ("function" === typeof continuationCallback) {
-                        currentTask.callback = continuationCallback;
-                        advanceTimers(currentTime);
-                        hasMoreWork = true;
-                        break b;
-                      }
-                      currentTask === peek2(taskQueue) && pop(taskQueue);
-                      advanceTimers(currentTime);
-                    } else pop(taskQueue);
-                    currentTask = peek2(taskQueue);
-                  }
-                  if (null !== currentTask) hasMoreWork = true;
-                  else {
-                    var firstTimer = peek2(timerQueue);
-                    null !== firstTimer && requestHostTimeout(
-                      handleTimeout,
-                      firstTimer.startTime - currentTime
-                    );
-                    hasMoreWork = false;
-                  }
-                }
-                break a;
-              } finally {
-                currentTask = null, currentPriorityLevel = previousPriorityLevel, isPerformingWork = false;
-              }
-              hasMoreWork = void 0;
-            }
-          } finally {
-            hasMoreWork ? schedulePerformWorkUntilDeadline() : isMessageLoopRunning = false;
-          }
-        }
-      }
-      function push(heap, node2) {
-        var index = heap.length;
-        heap.push(node2);
-        a: for (; 0 < index; ) {
-          var parentIndex = index - 1 >>> 1, parent = heap[parentIndex];
-          if (0 < compare(parent, node2))
-            heap[parentIndex] = node2, heap[index] = parent, index = parentIndex;
-          else break a;
-        }
-      }
-      function peek2(heap) {
-        return 0 === heap.length ? null : heap[0];
-      }
-      function pop(heap) {
-        if (0 === heap.length) return null;
-        var first = heap[0], last = heap.pop();
-        if (last !== first) {
-          heap[0] = last;
-          a: for (var index = 0, length2 = heap.length, halfLength = length2 >>> 1; index < halfLength; ) {
-            var leftIndex = 2 * (index + 1) - 1, left = heap[leftIndex], rightIndex = leftIndex + 1, right = heap[rightIndex];
-            if (0 > compare(left, last))
-              rightIndex < length2 && 0 > compare(right, left) ? (heap[index] = right, heap[rightIndex] = last, index = rightIndex) : (heap[index] = left, heap[leftIndex] = last, index = leftIndex);
-            else if (rightIndex < length2 && 0 > compare(right, last))
-              heap[index] = right, heap[rightIndex] = last, index = rightIndex;
-            else break a;
-          }
-        }
-        return first;
-      }
-      function compare(a, b) {
-        var diff = a.sortIndex - b.sortIndex;
-        return 0 !== diff ? diff : a.id - b.id;
-      }
-      function advanceTimers(currentTime) {
-        for (var timer = peek2(timerQueue); null !== timer; ) {
-          if (null === timer.callback) pop(timerQueue);
-          else if (timer.startTime <= currentTime)
-            pop(timerQueue), timer.sortIndex = timer.expirationTime, push(taskQueue, timer);
-          else break;
-          timer = peek2(timerQueue);
-        }
-      }
-      function handleTimeout(currentTime) {
-        isHostTimeoutScheduled = false;
-        advanceTimers(currentTime);
-        if (!isHostCallbackScheduled)
-          if (null !== peek2(taskQueue))
-            isHostCallbackScheduled = true, requestHostCallback();
-          else {
-            var firstTimer = peek2(timerQueue);
-            null !== firstTimer && requestHostTimeout(
-              handleTimeout,
-              firstTimer.startTime - currentTime
-            );
-          }
-      }
-      function shouldYieldToHost() {
-        return exports2.unstable_now() - startTime < frameInterval ? false : true;
-      }
-      function requestHostCallback() {
-        isMessageLoopRunning || (isMessageLoopRunning = true, schedulePerformWorkUntilDeadline());
-      }
-      function requestHostTimeout(callback, ms) {
-        taskTimeoutID = localSetTimeout(function() {
-          callback(exports2.unstable_now());
-        }, ms);
-      }
-      "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-      exports2.unstable_now = void 0;
-      if ("object" === typeof performance && "function" === typeof performance.now) {
-        var localPerformance = performance;
-        exports2.unstable_now = function() {
-          return localPerformance.now();
-        };
-      } else {
-        var localDate = Date, initialTime = localDate.now();
-        exports2.unstable_now = function() {
-          return localDate.now() - initialTime;
-        };
-      }
-      var taskQueue = [], timerQueue = [], taskIdCounter = 1, currentTask = null, currentPriorityLevel = 3, isPerformingWork = false, isHostCallbackScheduled = false, isHostTimeoutScheduled = false, localSetTimeout = "function" === typeof setTimeout ? setTimeout : null, localClearTimeout = "function" === typeof clearTimeout ? clearTimeout : null, localSetImmediate = "undefined" !== typeof setImmediate ? setImmediate : null, isMessageLoopRunning = false, taskTimeoutID = -1, frameInterval = 5, startTime = -1;
-      if ("function" === typeof localSetImmediate)
-        var schedulePerformWorkUntilDeadline = function() {
-          localSetImmediate(performWorkUntilDeadline);
-        };
-      else if ("undefined" !== typeof MessageChannel) {
-        var channel = new MessageChannel(), port = channel.port2;
-        channel.port1.onmessage = performWorkUntilDeadline;
-        schedulePerformWorkUntilDeadline = function() {
-          port.postMessage(null);
-        };
-      } else
-        schedulePerformWorkUntilDeadline = function() {
-          localSetTimeout(performWorkUntilDeadline, 0);
-        };
-      exports2.unstable_IdlePriority = 5;
-      exports2.unstable_ImmediatePriority = 1;
-      exports2.unstable_LowPriority = 4;
-      exports2.unstable_NormalPriority = 3;
-      exports2.unstable_Profiling = null;
-      exports2.unstable_UserBlockingPriority = 2;
-      exports2.unstable_cancelCallback = function(task) {
-        task.callback = null;
-      };
-      exports2.unstable_continueExecution = function() {
-        isHostCallbackScheduled || isPerformingWork || (isHostCallbackScheduled = true, requestHostCallback());
-      };
-      exports2.unstable_forceFrameRate = function(fps) {
-        0 > fps || 125 < fps ? console.error(
-          "forceFrameRate takes a positive int between 0 and 125, forcing frame rates higher than 125 fps is not supported"
-        ) : frameInterval = 0 < fps ? Math.floor(1e3 / fps) : 5;
-      };
-      exports2.unstable_getCurrentPriorityLevel = function() {
-        return currentPriorityLevel;
-      };
-      exports2.unstable_getFirstCallbackNode = function() {
-        return peek2(taskQueue);
-      };
-      exports2.unstable_next = function(eventHandler) {
-        switch (currentPriorityLevel) {
-          case 1:
-          case 2:
-          case 3:
-            var priorityLevel = 3;
-            break;
-          default:
-            priorityLevel = currentPriorityLevel;
-        }
-        var previousPriorityLevel = currentPriorityLevel;
-        currentPriorityLevel = priorityLevel;
-        try {
-          return eventHandler();
-        } finally {
-          currentPriorityLevel = previousPriorityLevel;
-        }
-      };
-      exports2.unstable_pauseExecution = function() {
-      };
-      exports2.unstable_requestPaint = function() {
-      };
-      exports2.unstable_runWithPriority = function(priorityLevel, eventHandler) {
-        switch (priorityLevel) {
-          case 1:
-          case 2:
-          case 3:
-          case 4:
-          case 5:
-            break;
-          default:
-            priorityLevel = 3;
-        }
-        var previousPriorityLevel = currentPriorityLevel;
-        currentPriorityLevel = priorityLevel;
-        try {
-          return eventHandler();
-        } finally {
-          currentPriorityLevel = previousPriorityLevel;
-        }
-      };
-      exports2.unstable_scheduleCallback = function(priorityLevel, callback, options) {
-        var currentTime = exports2.unstable_now();
-        "object" === typeof options && null !== options ? (options = options.delay, options = "number" === typeof options && 0 < options ? currentTime + options : currentTime) : options = currentTime;
-        switch (priorityLevel) {
-          case 1:
-            var timeout = -1;
-            break;
-          case 2:
-            timeout = 250;
-            break;
-          case 5:
-            timeout = 1073741823;
-            break;
-          case 4:
-            timeout = 1e4;
-            break;
-          default:
-            timeout = 5e3;
-        }
-        timeout = options + timeout;
-        priorityLevel = {
-          id: taskIdCounter++,
-          callback,
-          priorityLevel,
-          startTime: options,
-          expirationTime: timeout,
-          sortIndex: -1
-        };
-        options > currentTime ? (priorityLevel.sortIndex = options, push(timerQueue, priorityLevel), null === peek2(taskQueue) && priorityLevel === peek2(timerQueue) && (isHostTimeoutScheduled ? (localClearTimeout(taskTimeoutID), taskTimeoutID = -1) : isHostTimeoutScheduled = true, requestHostTimeout(handleTimeout, options - currentTime))) : (priorityLevel.sortIndex = timeout, push(taskQueue, priorityLevel), isHostCallbackScheduled || isPerformingWork || (isHostCallbackScheduled = true, requestHostCallback()));
-        return priorityLevel;
-      };
-      exports2.unstable_shouldYield = shouldYieldToHost;
-      exports2.unstable_wrapCallback = function(callback) {
-        var parentPriorityLevel = currentPriorityLevel;
-        return function() {
-          var previousPriorityLevel = currentPriorityLevel;
-          currentPriorityLevel = parentPriorityLevel;
-          try {
-            return callback.apply(this, arguments);
-          } finally {
-            currentPriorityLevel = previousPriorityLevel;
-          }
-        };
-      };
-      "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
-    }();
-  }
-});
-
-// node_modules/scheduler/index.js
-var require_scheduler = __commonJS({
-  "node_modules/scheduler/index.js"(exports2, module2) {
-    "use strict";
-    init_define_process_env();
-    if (define_process_env_default.NODE_ENV === "production") {
-      module2.exports = require_scheduler_production();
-    } else {
-      module2.exports = require_scheduler_development();
-    }
-  }
-});
-
 // node_modules/react/cjs/react.production.js
 var require_react_production = __commonJS({
   "node_modules/react/cjs/react.production.js"(exports2) {
@@ -2165,12 +1601,576 @@ var require_react = __commonJS({
   }
 });
 
+// node_modules/scheduler/cjs/scheduler.production.js
+var require_scheduler_production = __commonJS({
+  "node_modules/scheduler/cjs/scheduler.production.js"(exports2) {
+    "use strict";
+    init_define_process_env();
+    function push(heap, node2) {
+      var index = heap.length;
+      heap.push(node2);
+      a: for (; 0 < index; ) {
+        var parentIndex = index - 1 >>> 1, parent = heap[parentIndex];
+        if (0 < compare(parent, node2))
+          heap[parentIndex] = node2, heap[index] = parent, index = parentIndex;
+        else break a;
+      }
+    }
+    function peek2(heap) {
+      return 0 === heap.length ? null : heap[0];
+    }
+    function pop(heap) {
+      if (0 === heap.length) return null;
+      var first = heap[0], last = heap.pop();
+      if (last !== first) {
+        heap[0] = last;
+        a: for (var index = 0, length2 = heap.length, halfLength = length2 >>> 1; index < halfLength; ) {
+          var leftIndex = 2 * (index + 1) - 1, left = heap[leftIndex], rightIndex = leftIndex + 1, right = heap[rightIndex];
+          if (0 > compare(left, last))
+            rightIndex < length2 && 0 > compare(right, left) ? (heap[index] = right, heap[rightIndex] = last, index = rightIndex) : (heap[index] = left, heap[leftIndex] = last, index = leftIndex);
+          else if (rightIndex < length2 && 0 > compare(right, last))
+            heap[index] = right, heap[rightIndex] = last, index = rightIndex;
+          else break a;
+        }
+      }
+      return first;
+    }
+    function compare(a, b) {
+      var diff = a.sortIndex - b.sortIndex;
+      return 0 !== diff ? diff : a.id - b.id;
+    }
+    exports2.unstable_now = void 0;
+    if ("object" === typeof performance && "function" === typeof performance.now) {
+      localPerformance = performance;
+      exports2.unstable_now = function() {
+        return localPerformance.now();
+      };
+    } else {
+      localDate = Date, initialTime = localDate.now();
+      exports2.unstable_now = function() {
+        return localDate.now() - initialTime;
+      };
+    }
+    var localPerformance;
+    var localDate;
+    var initialTime;
+    var taskQueue = [];
+    var timerQueue = [];
+    var taskIdCounter = 1;
+    var currentTask = null;
+    var currentPriorityLevel = 3;
+    var isPerformingWork = false;
+    var isHostCallbackScheduled = false;
+    var isHostTimeoutScheduled = false;
+    var localSetTimeout = "function" === typeof setTimeout ? setTimeout : null;
+    var localClearTimeout = "function" === typeof clearTimeout ? clearTimeout : null;
+    var localSetImmediate = "undefined" !== typeof setImmediate ? setImmediate : null;
+    function advanceTimers(currentTime) {
+      for (var timer = peek2(timerQueue); null !== timer; ) {
+        if (null === timer.callback) pop(timerQueue);
+        else if (timer.startTime <= currentTime)
+          pop(timerQueue), timer.sortIndex = timer.expirationTime, push(taskQueue, timer);
+        else break;
+        timer = peek2(timerQueue);
+      }
+    }
+    function handleTimeout(currentTime) {
+      isHostTimeoutScheduled = false;
+      advanceTimers(currentTime);
+      if (!isHostCallbackScheduled)
+        if (null !== peek2(taskQueue))
+          isHostCallbackScheduled = true, requestHostCallback();
+        else {
+          var firstTimer = peek2(timerQueue);
+          null !== firstTimer && requestHostTimeout(handleTimeout, firstTimer.startTime - currentTime);
+        }
+    }
+    var isMessageLoopRunning = false;
+    var taskTimeoutID = -1;
+    var frameInterval = 5;
+    var startTime = -1;
+    function shouldYieldToHost() {
+      return exports2.unstable_now() - startTime < frameInterval ? false : true;
+    }
+    function performWorkUntilDeadline() {
+      if (isMessageLoopRunning) {
+        var currentTime = exports2.unstable_now();
+        startTime = currentTime;
+        var hasMoreWork = true;
+        try {
+          a: {
+            isHostCallbackScheduled = false;
+            isHostTimeoutScheduled && (isHostTimeoutScheduled = false, localClearTimeout(taskTimeoutID), taskTimeoutID = -1);
+            isPerformingWork = true;
+            var previousPriorityLevel = currentPriorityLevel;
+            try {
+              b: {
+                advanceTimers(currentTime);
+                for (currentTask = peek2(taskQueue); null !== currentTask && !(currentTask.expirationTime > currentTime && shouldYieldToHost()); ) {
+                  var callback = currentTask.callback;
+                  if ("function" === typeof callback) {
+                    currentTask.callback = null;
+                    currentPriorityLevel = currentTask.priorityLevel;
+                    var continuationCallback = callback(
+                      currentTask.expirationTime <= currentTime
+                    );
+                    currentTime = exports2.unstable_now();
+                    if ("function" === typeof continuationCallback) {
+                      currentTask.callback = continuationCallback;
+                      advanceTimers(currentTime);
+                      hasMoreWork = true;
+                      break b;
+                    }
+                    currentTask === peek2(taskQueue) && pop(taskQueue);
+                    advanceTimers(currentTime);
+                  } else pop(taskQueue);
+                  currentTask = peek2(taskQueue);
+                }
+                if (null !== currentTask) hasMoreWork = true;
+                else {
+                  var firstTimer = peek2(timerQueue);
+                  null !== firstTimer && requestHostTimeout(
+                    handleTimeout,
+                    firstTimer.startTime - currentTime
+                  );
+                  hasMoreWork = false;
+                }
+              }
+              break a;
+            } finally {
+              currentTask = null, currentPriorityLevel = previousPriorityLevel, isPerformingWork = false;
+            }
+            hasMoreWork = void 0;
+          }
+        } finally {
+          hasMoreWork ? schedulePerformWorkUntilDeadline() : isMessageLoopRunning = false;
+        }
+      }
+    }
+    var schedulePerformWorkUntilDeadline;
+    if ("function" === typeof localSetImmediate)
+      schedulePerformWorkUntilDeadline = function() {
+        localSetImmediate(performWorkUntilDeadline);
+      };
+    else if ("undefined" !== typeof MessageChannel) {
+      channel = new MessageChannel(), port = channel.port2;
+      channel.port1.onmessage = performWorkUntilDeadline;
+      schedulePerformWorkUntilDeadline = function() {
+        port.postMessage(null);
+      };
+    } else
+      schedulePerformWorkUntilDeadline = function() {
+        localSetTimeout(performWorkUntilDeadline, 0);
+      };
+    var channel;
+    var port;
+    function requestHostCallback() {
+      isMessageLoopRunning || (isMessageLoopRunning = true, schedulePerformWorkUntilDeadline());
+    }
+    function requestHostTimeout(callback, ms) {
+      taskTimeoutID = localSetTimeout(function() {
+        callback(exports2.unstable_now());
+      }, ms);
+    }
+    exports2.unstable_IdlePriority = 5;
+    exports2.unstable_ImmediatePriority = 1;
+    exports2.unstable_LowPriority = 4;
+    exports2.unstable_NormalPriority = 3;
+    exports2.unstable_Profiling = null;
+    exports2.unstable_UserBlockingPriority = 2;
+    exports2.unstable_cancelCallback = function(task) {
+      task.callback = null;
+    };
+    exports2.unstable_continueExecution = function() {
+      isHostCallbackScheduled || isPerformingWork || (isHostCallbackScheduled = true, requestHostCallback());
+    };
+    exports2.unstable_forceFrameRate = function(fps) {
+      0 > fps || 125 < fps ? console.error(
+        "forceFrameRate takes a positive int between 0 and 125, forcing frame rates higher than 125 fps is not supported"
+      ) : frameInterval = 0 < fps ? Math.floor(1e3 / fps) : 5;
+    };
+    exports2.unstable_getCurrentPriorityLevel = function() {
+      return currentPriorityLevel;
+    };
+    exports2.unstable_getFirstCallbackNode = function() {
+      return peek2(taskQueue);
+    };
+    exports2.unstable_next = function(eventHandler) {
+      switch (currentPriorityLevel) {
+        case 1:
+        case 2:
+        case 3:
+          var priorityLevel = 3;
+          break;
+        default:
+          priorityLevel = currentPriorityLevel;
+      }
+      var previousPriorityLevel = currentPriorityLevel;
+      currentPriorityLevel = priorityLevel;
+      try {
+        return eventHandler();
+      } finally {
+        currentPriorityLevel = previousPriorityLevel;
+      }
+    };
+    exports2.unstable_pauseExecution = function() {
+    };
+    exports2.unstable_requestPaint = function() {
+    };
+    exports2.unstable_runWithPriority = function(priorityLevel, eventHandler) {
+      switch (priorityLevel) {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+          break;
+        default:
+          priorityLevel = 3;
+      }
+      var previousPriorityLevel = currentPriorityLevel;
+      currentPriorityLevel = priorityLevel;
+      try {
+        return eventHandler();
+      } finally {
+        currentPriorityLevel = previousPriorityLevel;
+      }
+    };
+    exports2.unstable_scheduleCallback = function(priorityLevel, callback, options) {
+      var currentTime = exports2.unstable_now();
+      "object" === typeof options && null !== options ? (options = options.delay, options = "number" === typeof options && 0 < options ? currentTime + options : currentTime) : options = currentTime;
+      switch (priorityLevel) {
+        case 1:
+          var timeout = -1;
+          break;
+        case 2:
+          timeout = 250;
+          break;
+        case 5:
+          timeout = 1073741823;
+          break;
+        case 4:
+          timeout = 1e4;
+          break;
+        default:
+          timeout = 5e3;
+      }
+      timeout = options + timeout;
+      priorityLevel = {
+        id: taskIdCounter++,
+        callback,
+        priorityLevel,
+        startTime: options,
+        expirationTime: timeout,
+        sortIndex: -1
+      };
+      options > currentTime ? (priorityLevel.sortIndex = options, push(timerQueue, priorityLevel), null === peek2(taskQueue) && priorityLevel === peek2(timerQueue) && (isHostTimeoutScheduled ? (localClearTimeout(taskTimeoutID), taskTimeoutID = -1) : isHostTimeoutScheduled = true, requestHostTimeout(handleTimeout, options - currentTime))) : (priorityLevel.sortIndex = timeout, push(taskQueue, priorityLevel), isHostCallbackScheduled || isPerformingWork || (isHostCallbackScheduled = true, requestHostCallback()));
+      return priorityLevel;
+    };
+    exports2.unstable_shouldYield = shouldYieldToHost;
+    exports2.unstable_wrapCallback = function(callback) {
+      var parentPriorityLevel = currentPriorityLevel;
+      return function() {
+        var previousPriorityLevel = currentPriorityLevel;
+        currentPriorityLevel = parentPriorityLevel;
+        try {
+          return callback.apply(this, arguments);
+        } finally {
+          currentPriorityLevel = previousPriorityLevel;
+        }
+      };
+    };
+  }
+});
+
+// node_modules/scheduler/cjs/scheduler.development.js
+var require_scheduler_development = __commonJS({
+  "node_modules/scheduler/cjs/scheduler.development.js"(exports2) {
+    "use strict";
+    init_define_process_env();
+    "production" !== define_process_env_default.NODE_ENV && function() {
+      function performWorkUntilDeadline() {
+        if (isMessageLoopRunning) {
+          var currentTime = exports2.unstable_now();
+          startTime = currentTime;
+          var hasMoreWork = true;
+          try {
+            a: {
+              isHostCallbackScheduled = false;
+              isHostTimeoutScheduled && (isHostTimeoutScheduled = false, localClearTimeout(taskTimeoutID), taskTimeoutID = -1);
+              isPerformingWork = true;
+              var previousPriorityLevel = currentPriorityLevel;
+              try {
+                b: {
+                  advanceTimers(currentTime);
+                  for (currentTask = peek2(taskQueue); null !== currentTask && !(currentTask.expirationTime > currentTime && shouldYieldToHost()); ) {
+                    var callback = currentTask.callback;
+                    if ("function" === typeof callback) {
+                      currentTask.callback = null;
+                      currentPriorityLevel = currentTask.priorityLevel;
+                      var continuationCallback = callback(
+                        currentTask.expirationTime <= currentTime
+                      );
+                      currentTime = exports2.unstable_now();
+                      if ("function" === typeof continuationCallback) {
+                        currentTask.callback = continuationCallback;
+                        advanceTimers(currentTime);
+                        hasMoreWork = true;
+                        break b;
+                      }
+                      currentTask === peek2(taskQueue) && pop(taskQueue);
+                      advanceTimers(currentTime);
+                    } else pop(taskQueue);
+                    currentTask = peek2(taskQueue);
+                  }
+                  if (null !== currentTask) hasMoreWork = true;
+                  else {
+                    var firstTimer = peek2(timerQueue);
+                    null !== firstTimer && requestHostTimeout(
+                      handleTimeout,
+                      firstTimer.startTime - currentTime
+                    );
+                    hasMoreWork = false;
+                  }
+                }
+                break a;
+              } finally {
+                currentTask = null, currentPriorityLevel = previousPriorityLevel, isPerformingWork = false;
+              }
+              hasMoreWork = void 0;
+            }
+          } finally {
+            hasMoreWork ? schedulePerformWorkUntilDeadline() : isMessageLoopRunning = false;
+          }
+        }
+      }
+      function push(heap, node2) {
+        var index = heap.length;
+        heap.push(node2);
+        a: for (; 0 < index; ) {
+          var parentIndex = index - 1 >>> 1, parent = heap[parentIndex];
+          if (0 < compare(parent, node2))
+            heap[parentIndex] = node2, heap[index] = parent, index = parentIndex;
+          else break a;
+        }
+      }
+      function peek2(heap) {
+        return 0 === heap.length ? null : heap[0];
+      }
+      function pop(heap) {
+        if (0 === heap.length) return null;
+        var first = heap[0], last = heap.pop();
+        if (last !== first) {
+          heap[0] = last;
+          a: for (var index = 0, length2 = heap.length, halfLength = length2 >>> 1; index < halfLength; ) {
+            var leftIndex = 2 * (index + 1) - 1, left = heap[leftIndex], rightIndex = leftIndex + 1, right = heap[rightIndex];
+            if (0 > compare(left, last))
+              rightIndex < length2 && 0 > compare(right, left) ? (heap[index] = right, heap[rightIndex] = last, index = rightIndex) : (heap[index] = left, heap[leftIndex] = last, index = leftIndex);
+            else if (rightIndex < length2 && 0 > compare(right, last))
+              heap[index] = right, heap[rightIndex] = last, index = rightIndex;
+            else break a;
+          }
+        }
+        return first;
+      }
+      function compare(a, b) {
+        var diff = a.sortIndex - b.sortIndex;
+        return 0 !== diff ? diff : a.id - b.id;
+      }
+      function advanceTimers(currentTime) {
+        for (var timer = peek2(timerQueue); null !== timer; ) {
+          if (null === timer.callback) pop(timerQueue);
+          else if (timer.startTime <= currentTime)
+            pop(timerQueue), timer.sortIndex = timer.expirationTime, push(taskQueue, timer);
+          else break;
+          timer = peek2(timerQueue);
+        }
+      }
+      function handleTimeout(currentTime) {
+        isHostTimeoutScheduled = false;
+        advanceTimers(currentTime);
+        if (!isHostCallbackScheduled)
+          if (null !== peek2(taskQueue))
+            isHostCallbackScheduled = true, requestHostCallback();
+          else {
+            var firstTimer = peek2(timerQueue);
+            null !== firstTimer && requestHostTimeout(
+              handleTimeout,
+              firstTimer.startTime - currentTime
+            );
+          }
+      }
+      function shouldYieldToHost() {
+        return exports2.unstable_now() - startTime < frameInterval ? false : true;
+      }
+      function requestHostCallback() {
+        isMessageLoopRunning || (isMessageLoopRunning = true, schedulePerformWorkUntilDeadline());
+      }
+      function requestHostTimeout(callback, ms) {
+        taskTimeoutID = localSetTimeout(function() {
+          callback(exports2.unstable_now());
+        }, ms);
+      }
+      "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
+      exports2.unstable_now = void 0;
+      if ("object" === typeof performance && "function" === typeof performance.now) {
+        var localPerformance = performance;
+        exports2.unstable_now = function() {
+          return localPerformance.now();
+        };
+      } else {
+        var localDate = Date, initialTime = localDate.now();
+        exports2.unstable_now = function() {
+          return localDate.now() - initialTime;
+        };
+      }
+      var taskQueue = [], timerQueue = [], taskIdCounter = 1, currentTask = null, currentPriorityLevel = 3, isPerformingWork = false, isHostCallbackScheduled = false, isHostTimeoutScheduled = false, localSetTimeout = "function" === typeof setTimeout ? setTimeout : null, localClearTimeout = "function" === typeof clearTimeout ? clearTimeout : null, localSetImmediate = "undefined" !== typeof setImmediate ? setImmediate : null, isMessageLoopRunning = false, taskTimeoutID = -1, frameInterval = 5, startTime = -1;
+      if ("function" === typeof localSetImmediate)
+        var schedulePerformWorkUntilDeadline = function() {
+          localSetImmediate(performWorkUntilDeadline);
+        };
+      else if ("undefined" !== typeof MessageChannel) {
+        var channel = new MessageChannel(), port = channel.port2;
+        channel.port1.onmessage = performWorkUntilDeadline;
+        schedulePerformWorkUntilDeadline = function() {
+          port.postMessage(null);
+        };
+      } else
+        schedulePerformWorkUntilDeadline = function() {
+          localSetTimeout(performWorkUntilDeadline, 0);
+        };
+      exports2.unstable_IdlePriority = 5;
+      exports2.unstable_ImmediatePriority = 1;
+      exports2.unstable_LowPriority = 4;
+      exports2.unstable_NormalPriority = 3;
+      exports2.unstable_Profiling = null;
+      exports2.unstable_UserBlockingPriority = 2;
+      exports2.unstable_cancelCallback = function(task) {
+        task.callback = null;
+      };
+      exports2.unstable_continueExecution = function() {
+        isHostCallbackScheduled || isPerformingWork || (isHostCallbackScheduled = true, requestHostCallback());
+      };
+      exports2.unstable_forceFrameRate = function(fps) {
+        0 > fps || 125 < fps ? console.error(
+          "forceFrameRate takes a positive int between 0 and 125, forcing frame rates higher than 125 fps is not supported"
+        ) : frameInterval = 0 < fps ? Math.floor(1e3 / fps) : 5;
+      };
+      exports2.unstable_getCurrentPriorityLevel = function() {
+        return currentPriorityLevel;
+      };
+      exports2.unstable_getFirstCallbackNode = function() {
+        return peek2(taskQueue);
+      };
+      exports2.unstable_next = function(eventHandler) {
+        switch (currentPriorityLevel) {
+          case 1:
+          case 2:
+          case 3:
+            var priorityLevel = 3;
+            break;
+          default:
+            priorityLevel = currentPriorityLevel;
+        }
+        var previousPriorityLevel = currentPriorityLevel;
+        currentPriorityLevel = priorityLevel;
+        try {
+          return eventHandler();
+        } finally {
+          currentPriorityLevel = previousPriorityLevel;
+        }
+      };
+      exports2.unstable_pauseExecution = function() {
+      };
+      exports2.unstable_requestPaint = function() {
+      };
+      exports2.unstable_runWithPriority = function(priorityLevel, eventHandler) {
+        switch (priorityLevel) {
+          case 1:
+          case 2:
+          case 3:
+          case 4:
+          case 5:
+            break;
+          default:
+            priorityLevel = 3;
+        }
+        var previousPriorityLevel = currentPriorityLevel;
+        currentPriorityLevel = priorityLevel;
+        try {
+          return eventHandler();
+        } finally {
+          currentPriorityLevel = previousPriorityLevel;
+        }
+      };
+      exports2.unstable_scheduleCallback = function(priorityLevel, callback, options) {
+        var currentTime = exports2.unstable_now();
+        "object" === typeof options && null !== options ? (options = options.delay, options = "number" === typeof options && 0 < options ? currentTime + options : currentTime) : options = currentTime;
+        switch (priorityLevel) {
+          case 1:
+            var timeout = -1;
+            break;
+          case 2:
+            timeout = 250;
+            break;
+          case 5:
+            timeout = 1073741823;
+            break;
+          case 4:
+            timeout = 1e4;
+            break;
+          default:
+            timeout = 5e3;
+        }
+        timeout = options + timeout;
+        priorityLevel = {
+          id: taskIdCounter++,
+          callback,
+          priorityLevel,
+          startTime: options,
+          expirationTime: timeout,
+          sortIndex: -1
+        };
+        options > currentTime ? (priorityLevel.sortIndex = options, push(timerQueue, priorityLevel), null === peek2(taskQueue) && priorityLevel === peek2(timerQueue) && (isHostTimeoutScheduled ? (localClearTimeout(taskTimeoutID), taskTimeoutID = -1) : isHostTimeoutScheduled = true, requestHostTimeout(handleTimeout, options - currentTime))) : (priorityLevel.sortIndex = timeout, push(taskQueue, priorityLevel), isHostCallbackScheduled || isPerformingWork || (isHostCallbackScheduled = true, requestHostCallback()));
+        return priorityLevel;
+      };
+      exports2.unstable_shouldYield = shouldYieldToHost;
+      exports2.unstable_wrapCallback = function(callback) {
+        var parentPriorityLevel = currentPriorityLevel;
+        return function() {
+          var previousPriorityLevel = currentPriorityLevel;
+          currentPriorityLevel = parentPriorityLevel;
+          try {
+            return callback.apply(this, arguments);
+          } finally {
+            currentPriorityLevel = previousPriorityLevel;
+          }
+        };
+      };
+      "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
+    }();
+  }
+});
+
+// node_modules/scheduler/index.js
+var require_scheduler = __commonJS({
+  "node_modules/scheduler/index.js"(exports2, module2) {
+    "use strict";
+    init_define_process_env();
+    if (define_process_env_default.NODE_ENV === "production") {
+      module2.exports = require_scheduler_production();
+    } else {
+      module2.exports = require_scheduler_development();
+    }
+  }
+});
+
 // node_modules/react-dom/cjs/react-dom.production.js
 var require_react_dom_production = __commonJS({
   "node_modules/react-dom/cjs/react-dom.production.js"(exports2) {
     "use strict";
     init_define_process_env();
-    var React5 = require_react();
+    var React7 = require_react();
     function formatProdErrorMessage(code) {
       var url = "https://react.dev/errors/" + code;
       if (1 < arguments.length) {
@@ -2210,7 +2210,7 @@ var require_react_dom_production = __commonJS({
         implementation
       };
     }
-    var ReactSharedInternals = React5.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
+    var ReactSharedInternals = React7.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
     function getCrossOriginStringAs(as, input) {
       if ("font" === as) return "";
       if ("string" === typeof input)
@@ -2365,7 +2365,7 @@ var require_react_dom_development = __commonJS({
         return dispatcher;
       }
       "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-      var React5 = require_react(), Internals = {
+      var React7 = require_react(), Internals = {
         d: {
           f: noop,
           r: function() {
@@ -2383,7 +2383,7 @@ var require_react_dom_development = __commonJS({
         },
         p: 0,
         findDOMNode: null
-      }, REACT_PORTAL_TYPE = Symbol.for("react.portal"), ReactSharedInternals = React5.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
+      }, REACT_PORTAL_TYPE = Symbol.for("react.portal"), ReactSharedInternals = React7.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
       "function" === typeof Map && null != Map.prototype && "function" === typeof Map.prototype.forEach && "function" === typeof Set && null != Set.prototype && "function" === typeof Set.prototype.clear && "function" === typeof Set.prototype.forEach || console.error(
         "React depends on Map and Set built-in types. Make sure that you load a polyfill in older browsers. https://reactjs.org/link/react-polyfills"
       );
@@ -2593,7 +2593,7 @@ var require_react_dom_client_production = __commonJS({
     "use strict";
     init_define_process_env();
     var Scheduler = require_scheduler();
-    var React5 = require_react();
+    var React7 = require_react();
     var ReactDOM2 = require_react_dom();
     function formatProdErrorMessage(code) {
       var url = "https://react.dev/errors/" + code;
@@ -2676,7 +2676,7 @@ var require_react_dom_client_production = __commonJS({
         }
       return null;
     }
-    var ReactSharedInternals = React5.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
+    var ReactSharedInternals = React7.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
     var assign2 = Object.assign;
     var prefix2;
     var suffix;
@@ -13624,7 +13624,7 @@ var require_react_dom_client_production = __commonJS({
         0 === i && attemptExplicitHydrationTarget(target);
       }
     };
-    var isomorphicReactPackageVersion$jscomp$inline_1686 = React5.version;
+    var isomorphicReactPackageVersion$jscomp$inline_1686 = React7.version;
     if ("19.0.0" !== isomorphicReactPackageVersion$jscomp$inline_1686)
       throw Error(
         formatProdErrorMessage(
@@ -14991,7 +14991,7 @@ var require_react_dom_client_development = __commonJS({
         "number" === type && getActiveElement(node2.ownerDocument) === node2 || node2.defaultValue === "" + value || (node2.defaultValue = "" + value);
       }
       function validateOptionProps(element, props) {
-        null == props.value && ("object" === typeof props.children && null !== props.children ? React5.Children.forEach(props.children, function(child) {
+        null == props.value && ("object" === typeof props.children && null !== props.children ? React7.Children.forEach(props.children, function(child) {
           null == child || "string" === typeof child || "number" === typeof child || "bigint" === typeof child || didWarnInvalidChild || (didWarnInvalidChild = true, console.error(
             "Cannot infer the option value of complex children. Pass a `value` prop or use a plain string as children to <option>."
           ));
@@ -28461,13 +28461,13 @@ var require_react_dom_client_development = __commonJS({
         ));
       }
       "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-      var Scheduler = require_scheduler(), React5 = require_react(), ReactDOM2 = require_react_dom(), REACT_LEGACY_ELEMENT_TYPE = Symbol.for("react.element"), REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler"), REACT_PROVIDER_TYPE = Symbol.for("react.provider"), REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy");
+      var Scheduler = require_scheduler(), React7 = require_react(), ReactDOM2 = require_react_dom(), REACT_LEGACY_ELEMENT_TYPE = Symbol.for("react.element"), REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler"), REACT_PROVIDER_TYPE = Symbol.for("react.provider"), REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy");
       Symbol.for("react.scope");
       Symbol.for("react.debug_trace_mode");
       var REACT_OFFSCREEN_TYPE = Symbol.for("react.offscreen");
       Symbol.for("react.legacy_hidden");
       Symbol.for("react.tracing_marker");
-      var REACT_MEMO_CACHE_SENTINEL = Symbol.for("react.memo_cache_sentinel"), MAYBE_ITERATOR_SYMBOL = Symbol.iterator, REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference"), ReactSharedInternals = React5.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, assign2 = Object.assign, disabledDepth = 0, prevLog, prevInfo, prevWarn, prevError, prevGroup, prevGroupCollapsed, prevGroupEnd;
+      var REACT_MEMO_CACHE_SENTINEL = Symbol.for("react.memo_cache_sentinel"), MAYBE_ITERATOR_SYMBOL = Symbol.iterator, REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference"), ReactSharedInternals = React7.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, assign2 = Object.assign, disabledDepth = 0, prevLog, prevInfo, prevWarn, prevError, prevGroup, prevGroupCollapsed, prevGroupEnd;
       disabledLog.__reactDisabledLog = true;
       var prefix2, suffix, reentry = false;
       var componentFrameCache = new ("function" === typeof WeakMap ? WeakMap : Map)();
@@ -31187,7 +31187,7 @@ var require_react_dom_client_development = __commonJS({
         }
       };
       (function() {
-        var isomorphicReactPackageVersion = React5.version;
+        var isomorphicReactPackageVersion = React7.version;
         if ("19.0.0" !== isomorphicReactPackageVersion)
           throw Error(
             'Incompatible React versions: The "react" and "react-dom" packages must have the exact same version. Instead got:\n  - react:      ' + (isomorphicReactPackageVersion + "\n  - react-dom:  19.0.0\nLearn more: https://react.dev/warnings/version-mismatch")
@@ -35296,9 +35296,9 @@ var require_react_jsx_runtime_development = __commonJS({
         info || (parentType = getComponentNameFromType(parentType)) && (info = "\n\nCheck the top-level render call using <" + parentType + ">.");
         return info;
       }
-      var React5 = require_react(), REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler");
+      var React7 = require_react(), REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler");
       Symbol.for("react.provider");
-      var REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy"), REACT_OFFSCREEN_TYPE = Symbol.for("react.offscreen"), MAYBE_ITERATOR_SYMBOL = Symbol.iterator, REACT_CLIENT_REFERENCE$2 = Symbol.for("react.client.reference"), ReactSharedInternals = React5.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, hasOwnProperty = Object.prototype.hasOwnProperty, assign2 = Object.assign, REACT_CLIENT_REFERENCE$1 = Symbol.for("react.client.reference"), isArrayImpl = Array.isArray, disabledDepth = 0, prevLog, prevInfo, prevWarn, prevError, prevGroup, prevGroupCollapsed, prevGroupEnd;
+      var REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy"), REACT_OFFSCREEN_TYPE = Symbol.for("react.offscreen"), MAYBE_ITERATOR_SYMBOL = Symbol.iterator, REACT_CLIENT_REFERENCE$2 = Symbol.for("react.client.reference"), ReactSharedInternals = React7.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, hasOwnProperty = Object.prototype.hasOwnProperty, assign2 = Object.assign, REACT_CLIENT_REFERENCE$1 = Symbol.for("react.client.reference"), isArrayImpl = Array.isArray, disabledDepth = 0, prevLog, prevInfo, prevWarn, prevError, prevGroup, prevGroupCollapsed, prevGroupEnd;
       disabledLog.__reactDisabledLog = true;
       var prefix2, suffix, reentry = false;
       var componentFrameCache = new ("function" === typeof WeakMap ? WeakMap : Map)();
@@ -35341,7 +35341,7 @@ var require_StyledEngineProvider = __commonJS({
       value: true
     });
     exports2.default = StyledEngineProvider;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _react2 = (init_emotion_react_esm(), __toCommonJS(emotion_react_esm_exports));
     var _cache = _interopRequireDefault((init_emotion_cache_esm(), __toCommonJS(emotion_cache_esm_exports)));
@@ -35440,7 +35440,7 @@ var require_GlobalStyles = __commonJS({
       value: true
     });
     exports2.default = GlobalStyles;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _react2 = (init_emotion_react_esm(), __toCommonJS(emotion_react_esm_exports));
     var _jsxRuntime = require_jsx_runtime();
@@ -35569,7 +35569,7 @@ var require_deepmerge = __commonJS({
     });
     exports2.default = deepmerge;
     exports2.isPlainObject = isPlainObject;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     function isPlainObject(item) {
       if (typeof item !== "object" || item === null) {
         return false;
@@ -35578,7 +35578,7 @@ var require_deepmerge = __commonJS({
       return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in item) && !(Symbol.iterator in item);
     }
     function deepClone(source) {
-      if (/* @__PURE__ */ React5.isValidElement(source) || !isPlainObject(source)) {
+      if (/* @__PURE__ */ React7.isValidElement(source) || !isPlainObject(source)) {
         return source;
       }
       const output = {};
@@ -35595,7 +35595,7 @@ var require_deepmerge = __commonJS({
       } : target;
       if (isPlainObject(target) && isPlainObject(source)) {
         Object.keys(source).forEach((key) => {
-          if (/* @__PURE__ */ React5.isValidElement(source[key])) {
+          if (/* @__PURE__ */ React7.isValidElement(source[key])) {
             output[key] = source[key];
           } else if (isPlainObject(source[key]) && // Avoid prototype pollution
           Object.prototype.hasOwnProperty.call(target, key) && isPlainObject(target[key])) {
@@ -37600,13 +37600,13 @@ var require_useThemeWithoutDefault = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _styledEngine = require_node();
     function isObjectEmpty(obj) {
       return Object.keys(obj).length === 0;
     }
     function useTheme3(defaultTheme = null) {
-      const contextTheme = React5.useContext(_styledEngine.ThemeContext);
+      const contextTheme = React7.useContext(_styledEngine.ThemeContext);
       return !contextTheme || isObjectEmpty(contextTheme) ? defaultTheme : contextTheme;
     }
     var _default = exports2.default = useTheme3;
@@ -37696,7 +37696,7 @@ var require_GlobalStyles3 = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _styledEngine = require_node();
     var _useTheme = _interopRequireDefault(require_useTheme2());
@@ -38388,7 +38388,7 @@ var require_createBox = __commonJS({
       value: true
     });
     exports2.default = createBox;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _clsx = _interopRequireDefault(require_clsx());
     var _styledEngine = _interopRequireDefault(require_node());
     var _styleFunctionSx = _interopRequireWildcard(require_styleFunctionSx2());
@@ -38404,7 +38404,7 @@ var require_createBox = __commonJS({
       const BoxRoot = (0, _styledEngine.default)("div", {
         shouldForwardProp: (prop) => prop !== "theme" && prop !== "sx" && prop !== "as"
       })(_styleFunctionSx.default);
-      const Box2 = /* @__PURE__ */ React5.forwardRef(function Box3(inProps, ref) {
+      const Box2 = /* @__PURE__ */ React7.forwardRef(function Box3(inProps, ref) {
         const theme = (0, _useTheme.default)(defaultTheme);
         const {
           className,
@@ -39430,8 +39430,8 @@ var require_useEnhancedEffect = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
-    var useEnhancedEffect = typeof window !== "undefined" ? React5.useLayoutEffect : React5.useEffect;
+    var React7 = _interopRequireWildcard(require_react());
+    var useEnhancedEffect = typeof window !== "undefined" ? React7.useLayoutEffect : React7.useEffect;
     var _default = exports2.default = useEnhancedEffect;
   }
 });
@@ -39468,12 +39468,12 @@ var require_useMediaQuery = __commonJS({
     });
     exports2.default = void 0;
     exports2.unstable_createUseMediaQuery = unstable_createUseMediaQuery;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _useEnhancedEffect = _interopRequireDefault(require_useEnhancedEffect2());
     var _useThemeProps = require_useThemeProps2();
     var _useThemeWithoutDefault = _interopRequireDefault(require_useThemeWithoutDefault2());
     function useMediaQueryOld(query, defaultMatches, matchMedia2, ssrMatchMedia, noSsr) {
-      const [match2, setMatch] = React5.useState(() => {
+      const [match2, setMatch] = React7.useState(() => {
         if (noSsr && matchMedia2) {
           return matchMedia2(query).matches;
         }
@@ -39499,12 +39499,12 @@ var require_useMediaQuery = __commonJS({
       return match2;
     }
     var safeReact = {
-      ...React5
+      ...React7
     };
     var maybeReactUseSyncExternalStore = safeReact.useSyncExternalStore;
     function useMediaQueryNew(query, defaultMatches, matchMedia2, ssrMatchMedia, noSsr) {
-      const getDefaultSnapshot = React5.useCallback(() => defaultMatches, [defaultMatches]);
-      const getServerSnapshot = React5.useMemo(() => {
+      const getDefaultSnapshot = React7.useCallback(() => defaultMatches, [defaultMatches]);
+      const getServerSnapshot = React7.useMemo(() => {
         if (noSsr && matchMedia2) {
           return () => matchMedia2(query).matches;
         }
@@ -39516,7 +39516,7 @@ var require_useMediaQuery = __commonJS({
         }
         return getDefaultSnapshot;
       }, [getDefaultSnapshot, query, ssrMatchMedia, noSsr, matchMedia2]);
-      const [getSnapshot, subscribe] = React5.useMemo(() => {
+      const [getSnapshot, subscribe] = React7.useMemo(() => {
         if (matchMedia2 === null) {
           return [getDefaultSnapshot, () => () => {
           }];
@@ -39562,7 +39562,7 @@ var require_useMediaQuery = __commonJS({
         const useMediaQueryImplementation = maybeReactUseSyncExternalStore !== void 0 ? useMediaQueryNew : useMediaQueryOld;
         const match2 = useMediaQueryImplementation(query, defaultMatches, matchMedia2, ssrMatchMedia, noSsr);
         if (define_process_env_default.NODE_ENV !== "production") {
-          React5.useDebugValue({
+          React7.useDebugValue({
             query,
             match: match2
           });
@@ -40410,9 +40410,9 @@ var require_isMuiElement = __commonJS({
       value: true
     });
     exports2.default = isMuiElement;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     function isMuiElement(element, muiNames) {
-      return /* @__PURE__ */ React5.isValidElement(element) && muiNames.indexOf(
+      return /* @__PURE__ */ React7.isValidElement(element) && muiNames.indexOf(
         // For server components `muiName` is avaialble in element.type._payload.value.muiName
         // relevant info - https://github.com/facebook/react/blob/2807d781a08db8e9873687fccc25c0f12b4fb3d4/packages/react/src/ReactLazy.js#L45
         // eslint-disable-next-line no-underscore-dangle
@@ -40615,12 +40615,12 @@ var require_useId = __commonJS({
       value: true
     });
     exports2.default = useId;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var globalId = 0;
     function useGlobalId(idOverride) {
-      const [defaultId, setDefaultId] = React5.useState(idOverride);
+      const [defaultId, setDefaultId] = React7.useState(idOverride);
       const id = idOverride || defaultId;
-      React5.useEffect(() => {
+      React7.useEffect(() => {
         if (defaultId == null) {
           globalId += 1;
           setDefaultId(`mui-${globalId}`);
@@ -40629,7 +40629,7 @@ var require_useId = __commonJS({
       return id;
     }
     var safeReact = {
-      ...React5
+      ...React7
     };
     var maybeReactUseId = safeReact.useId;
     function useId(idOverride) {
@@ -40713,7 +40713,7 @@ var require_useControlled = __commonJS({
       value: true
     });
     exports2.default = useControlled;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     function useControlled({
       controlled,
       default: defaultProp,
@@ -40722,25 +40722,25 @@ var require_useControlled = __commonJS({
     }) {
       const {
         current: isControlled
-      } = React5.useRef(controlled !== void 0);
-      const [valueState, setValue] = React5.useState(defaultProp);
+      } = React7.useRef(controlled !== void 0);
+      const [valueState, setValue] = React7.useState(defaultProp);
       const value = isControlled ? controlled : valueState;
       if (define_process_env_default.NODE_ENV !== "production") {
-        React5.useEffect(() => {
+        React7.useEffect(() => {
           if (isControlled !== (controlled !== void 0)) {
             console.error([`MUI: A component is changing the ${isControlled ? "" : "un"}controlled ${state} state of ${name} to be ${isControlled ? "un" : ""}controlled.`, "Elements should not switch from uncontrolled to controlled (or vice versa).", `Decide between using a controlled or uncontrolled ${name} element for the lifetime of the component.`, "The nature of the state is determined during the first render. It's considered controlled if the value is not `undefined`.", "More info: https://fb.me/react-controlled-components"].join("\n"));
           }
         }, [state, name, controlled]);
         const {
           current: defaultValue
-        } = React5.useRef(defaultProp);
-        React5.useEffect(() => {
+        } = React7.useRef(defaultProp);
+        React7.useEffect(() => {
           if (!isControlled && !Object.is(defaultValue, defaultProp)) {
             console.error([`MUI: A component is changing the default ${state} state of an uncontrolled ${name} after being initialized. To suppress this warning opt to use a controlled ${name}.`].join("\n"));
           }
         }, [JSON.stringify(defaultProp)]);
       }
-      const setValueIfUncontrolled = React5.useCallback((newValue) => {
+      const setValueIfUncontrolled = React7.useCallback((newValue) => {
         if (!isControlled) {
           setValue(newValue);
         }
@@ -40781,14 +40781,14 @@ var require_useEventCallback = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _useEnhancedEffect = _interopRequireDefault(require_useEnhancedEffect2());
     function useEventCallback(fn) {
-      const ref = React5.useRef(fn);
+      const ref = React7.useRef(fn);
       (0, _useEnhancedEffect.default)(() => {
         ref.current = fn;
       });
-      return React5.useRef((...args) => (
+      return React7.useRef((...args) => (
         // @ts-expect-error hide `this`
         (0, ref.current)(...args)
       )).current;
@@ -40828,10 +40828,10 @@ var require_useForkRef = __commonJS({
       value: true
     });
     exports2.default = useForkRef;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _setRef = _interopRequireDefault(require_setRef2());
     function useForkRef(...refs) {
-      return React5.useMemo(() => {
+      return React7.useMemo(() => {
         if (refs.every((ref) => ref == null)) {
           return null;
         }
@@ -40875,10 +40875,10 @@ var require_useLazyRef = __commonJS({
       value: true
     });
     exports2.default = useLazyRef;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var UNINITIALIZED = {};
     function useLazyRef(init, initArg) {
-      const ref = React5.useRef(UNINITIALIZED);
+      const ref = React7.useRef(UNINITIALIZED);
       if (ref.current === UNINITIALIZED) {
         ref.current = init(initArg);
       }
@@ -40917,10 +40917,10 @@ var require_useOnMount = __commonJS({
       value: true
     });
     exports2.default = useOnMount;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var EMPTY = [];
     function useOnMount(fn) {
-      React5.useEffect(fn, EMPTY);
+      React7.useEffect(fn, EMPTY);
     }
   }
 });
@@ -41029,7 +41029,7 @@ var require_useIsFocusVisible = __commonJS({
     });
     exports2.default = useIsFocusVisible;
     exports2.teardown = teardown;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _useTimeout = require_useTimeout();
     var hadKeyboardEvent = true;
     var hadFocusVisibleRecently = false;
@@ -41106,12 +41106,12 @@ var require_useIsFocusVisible = __commonJS({
       return hadKeyboardEvent || focusTriggersKeyboardModality(target);
     }
     function useIsFocusVisible() {
-      const ref = React5.useCallback((node2) => {
+      const ref = React7.useCallback((node2) => {
         if (node2 != null) {
           prepare(node2.ownerDocument);
         }
       }, []);
-      const isFocusVisibleRef = React5.useRef(false);
+      const isFocusVisibleRef = React7.useRef(false);
       function handleBlurVisible() {
         if (isFocusVisibleRef.current) {
           hadFocusVisibleRecently = true;
@@ -41258,10 +41258,10 @@ var require_usePreviousProps = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var usePreviousProps = (value) => {
-      const ref = React5.useRef({});
-      React5.useEffect(() => {
+      const ref = React7.useRef({});
+      React7.useEffect(() => {
         ref.current = value;
       });
       return ref.current;
@@ -41299,9 +41299,9 @@ var require_getValidReactChildren = __commonJS({
       value: true
     });
     exports2.default = getValidReactChildren;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     function getValidReactChildren(children) {
-      return React5.Children.toArray(children).filter((child) => /* @__PURE__ */ React5.isValidElement(child));
+      return React7.Children.toArray(children).filter((child) => /* @__PURE__ */ React7.isValidElement(child));
     }
   }
 });
@@ -41879,9 +41879,9 @@ var require_getReactNodeRef = __commonJS({
       value: true
     });
     exports2.default = getReactNodeRef;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     function getReactNodeRef(element) {
-      if (!element || !/* @__PURE__ */ React5.isValidElement(element)) {
+      if (!element || !/* @__PURE__ */ React7.isValidElement(element)) {
         return null;
       }
       return element.props.propertyIsEnumerable("ref") ? element.props.ref : (
@@ -41923,9 +41923,9 @@ var require_getReactElementRef = __commonJS({
       value: true
     });
     exports2.default = getReactElementRef;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     function getReactElementRef(element) {
-      if (parseInt(React5.version, 10) >= 19) {
+      if (parseInt(React7.version, 10) >= 19) {
         return element?.props?.ref || null;
       }
       return element?.ref || null;
@@ -42400,8 +42400,8 @@ var require_ThemeContext = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
-    var ThemeContext2 = /* @__PURE__ */ React5.createContext(null);
+    var React7 = _interopRequireWildcard(require_react());
+    var ThemeContext2 = /* @__PURE__ */ React7.createContext(null);
     if (define_process_env_default.NODE_ENV !== "production") {
       ThemeContext2.displayName = "ThemeContext";
     }
@@ -42420,12 +42420,12 @@ var require_useTheme3 = __commonJS({
       value: true
     });
     exports2.default = useTheme3;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _ThemeContext = _interopRequireDefault(require_ThemeContext());
     function useTheme3() {
-      const theme = React5.useContext(_ThemeContext.default);
+      const theme = React7.useContext(_ThemeContext.default);
       if (define_process_env_default.NODE_ENV !== "production") {
-        React5.useDebugValue(theme);
+        React7.useDebugValue(theme);
       }
       return theme;
     }
@@ -42476,7 +42476,7 @@ var require_ThemeProvider = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _utils = require_utils();
     var _ThemeContext = _interopRequireDefault(require_ThemeContext());
@@ -42509,7 +42509,7 @@ var require_ThemeProvider = __commonJS({
           console.error(["MUI: You are providing a theme function prop to the ThemeProvider component:", "<ThemeProvider theme={outerTheme => outerTheme} />", "", "However, no outer theme is present.", "Make sure a theme is already injected higher in the React tree or provide a theme object."].join("\n"));
         }
       }
-      const theme = React5.useMemo(() => {
+      const theme = React7.useMemo(() => {
         const output = outerTheme === null ? {
           ...localTheme
         } : mergeOuterLocalTheme(outerTheme, localTheme);
@@ -42619,10 +42619,10 @@ var require_RtlProvider = __commonJS({
       value: true
     });
     exports2.useRtl = exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _jsxRuntime = require_jsx_runtime();
-    var RtlContext = /* @__PURE__ */ React5.createContext();
+    var RtlContext = /* @__PURE__ */ React7.createContext();
     function RtlProvider({
       value,
       ...props
@@ -42637,7 +42637,7 @@ var require_RtlProvider = __commonJS({
       value: _propTypes.default.bool
     } : void 0;
     var useRtl = () => {
-      const value = React5.useContext(RtlContext);
+      const value = React7.useContext(RtlContext);
       return value ?? false;
     };
     exports2.useRtl = useRtl;
@@ -42658,11 +42658,11 @@ var require_DefaultPropsProvider = __commonJS({
     });
     exports2.default = void 0;
     exports2.useDefaultProps = useDefaultProps;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _resolveProps = _interopRequireDefault(require_resolveProps2());
     var _jsxRuntime = require_jsx_runtime();
-    var PropsContext = /* @__PURE__ */ React5.createContext(void 0);
+    var PropsContext = /* @__PURE__ */ React7.createContext(void 0);
     function DefaultPropsProvider({
       value,
       children
@@ -42708,7 +42708,7 @@ var require_DefaultPropsProvider = __commonJS({
       props,
       name
     }) {
-      const ctx = React5.useContext(PropsContext);
+      const ctx = React7.useContext(PropsContext);
       return getThemeProps({
         props,
         name,
@@ -42758,7 +42758,7 @@ var require_ThemeProvider3 = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _privateTheming = require_node2();
     var _exactProp = _interopRequireDefault(require_exactProp2());
@@ -42769,7 +42769,7 @@ var require_ThemeProvider3 = __commonJS({
     var _jsxRuntime = require_jsx_runtime();
     var EMPTY_THEME = {};
     function useThemeScoping(themeId, upperTheme, localTheme, isPrivate = false) {
-      return React5.useMemo(() => {
+      return React7.useMemo(() => {
         const resolvedTheme = themeId ? upperTheme[themeId] || upperTheme : upperTheme;
         if (typeof localTheme === "function") {
           const mergedTheme = localTheme(resolvedTheme);
@@ -42907,7 +42907,7 @@ var require_InitColorSchemeScript = __commonJS({
     });
     exports2.DEFAULT_MODE_STORAGE_KEY = exports2.DEFAULT_COLOR_SCHEME_STORAGE_KEY = exports2.DEFAULT_ATTRIBUTE = void 0;
     exports2.default = InitColorSchemeScript;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _jsxRuntime = require_jsx_runtime();
     var DEFAULT_MODE_STORAGE_KEY = exports2.DEFAULT_MODE_STORAGE_KEY = "mode";
     var DEFAULT_COLOR_SCHEME_STORAGE_KEY = exports2.DEFAULT_COLOR_SCHEME_STORAGE_KEY = "color-scheme";
@@ -42996,7 +42996,7 @@ var require_useCurrentColorScheme = __commonJS({
     exports2.default = useCurrentColorScheme;
     exports2.getColorScheme = getColorScheme;
     exports2.getSystemMode = getSystemMode;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _InitColorSchemeScript = require_InitColorSchemeScript();
     function getSystemMode(mode) {
       if (typeof window !== "undefined" && typeof window.matchMedia === "function" && mode === "system") {
@@ -43055,7 +43055,7 @@ var require_useCurrentColorScheme = __commonJS({
       } = options;
       const joinedColorSchemes = supportedColorSchemes.join(",");
       const isMultiSchemes = supportedColorSchemes.length > 1;
-      const [state, setState] = React5.useState(() => {
+      const [state, setState] = React7.useState(() => {
         const initialMode = initializeValue(modeStorageKey, defaultMode);
         const lightColorScheme = initializeValue(`${colorSchemeStorageKey}-light`, defaultLightColorScheme);
         const darkColorScheme = initializeValue(`${colorSchemeStorageKey}-dark`, defaultDarkColorScheme);
@@ -43066,12 +43066,12 @@ var require_useCurrentColorScheme = __commonJS({
           darkColorScheme
         };
       });
-      const [isClient, setIsClient] = React5.useState(noSsr || !isMultiSchemes);
-      React5.useEffect(() => {
+      const [isClient, setIsClient] = React7.useState(noSsr || !isMultiSchemes);
+      React7.useEffect(() => {
         setIsClient(true);
       }, []);
       const colorScheme = getColorScheme(state);
-      const setMode = React5.useCallback((mode) => {
+      const setMode = React7.useCallback((mode) => {
         setState((currentState) => {
           if (mode === currentState.mode) {
             return currentState;
@@ -43088,7 +43088,7 @@ var require_useCurrentColorScheme = __commonJS({
           };
         });
       }, [modeStorageKey, defaultMode]);
-      const setColorScheme = React5.useCallback((value) => {
+      const setColorScheme = React7.useCallback((value) => {
         if (!value) {
           setState((currentState) => {
             try {
@@ -43158,7 +43158,7 @@ var require_useCurrentColorScheme = __commonJS({
           });
         }
       }, [joinedColorSchemes, colorSchemeStorageKey, defaultLightColorScheme, defaultDarkColorScheme]);
-      const handleMediaQuery = React5.useCallback((event) => {
+      const handleMediaQuery = React7.useCallback((event) => {
         if (state.mode === "system") {
           setState((currentState) => {
             const systemMode = event?.matches ? "dark" : "light";
@@ -43172,9 +43172,9 @@ var require_useCurrentColorScheme = __commonJS({
           });
         }
       }, [state.mode]);
-      const mediaListener = React5.useRef(handleMediaQuery);
+      const mediaListener = React7.useRef(handleMediaQuery);
       mediaListener.current = handleMediaQuery;
-      React5.useEffect(() => {
+      React7.useEffect(() => {
         if (typeof window.matchMedia !== "function" || !isMultiSchemes) {
           return void 0;
         }
@@ -43186,7 +43186,7 @@ var require_useCurrentColorScheme = __commonJS({
           media.removeListener(handler);
         };
       }, [isMultiSchemes]);
-      React5.useEffect(() => {
+      React7.useEffect(() => {
         if (storageWindow && isMultiSchemes) {
           const handleStorage = (event) => {
             const value = event.newValue;
@@ -43237,7 +43237,7 @@ var require_createCssVarsProvider = __commonJS({
     });
     exports2.DISABLE_CSS_TRANSITION = void 0;
     exports2.default = createCssVarsProvider;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _styledEngine = require_node();
     var _privateTheming = require_node2();
@@ -43274,11 +43274,11 @@ var require_createCssVarsProvider = __commonJS({
         },
         systemMode: void 0
       };
-      const ColorSchemeContext = /* @__PURE__ */ React5.createContext(void 0);
+      const ColorSchemeContext = /* @__PURE__ */ React7.createContext(void 0);
       if (define_process_env_default.NODE_ENV !== "production") {
         ColorSchemeContext.displayName = "ColorSchemeContext";
       }
-      const useColorScheme = () => React5.useContext(ColorSchemeContext) || defaultContext;
+      const useColorScheme = () => React7.useContext(ColorSchemeContext) || defaultContext;
       const defaultColorSchemes = {};
       const defaultComponents = {};
       function CssVarsProvider(props) {
@@ -43296,11 +43296,11 @@ var require_createCssVarsProvider = __commonJS({
           defaultMode: initialMode = "system",
           noSsr
         } = props;
-        const hasMounted = React5.useRef(false);
+        const hasMounted = React7.useRef(false);
         const upperTheme = (0, _privateTheming.useTheme)();
-        const ctx = React5.useContext(ColorSchemeContext);
+        const ctx = React7.useContext(ColorSchemeContext);
         const nested = !!ctx && !disableNestedContext;
-        const initialTheme = React5.useMemo(() => {
+        const initialTheme = React7.useMemo(() => {
           if (themeProp) {
             return themeProp;
           }
@@ -43314,7 +43314,7 @@ var require_createCssVarsProvider = __commonJS({
           cssVarPrefix
         } = restThemeProp;
         const joinedColorSchemes = Object.keys(colorSchemes).filter((k) => !!colorSchemes[k]).join(",");
-        const allColorSchemes = React5.useMemo(() => joinedColorSchemes.split(","), [joinedColorSchemes]);
+        const allColorSchemes = React7.useMemo(() => joinedColorSchemes.split(","), [joinedColorSchemes]);
         const defaultLightColorScheme2 = typeof defaultColorScheme === "string" ? defaultColorScheme : defaultColorScheme.light;
         const defaultDarkColorScheme2 = typeof defaultColorScheme === "string" ? defaultColorScheme : defaultColorScheme.dark;
         const defaultMode = colorSchemes[defaultLightColorScheme2] && colorSchemes[defaultDarkColorScheme2] ? initialMode : colorSchemes[restThemeProp.defaultColorScheme]?.palette?.mode || restThemeProp.palette?.mode;
@@ -43342,7 +43342,7 @@ var require_createCssVarsProvider = __commonJS({
           mode = ctx.mode;
           colorScheme = ctx.colorScheme;
         }
-        const memoTheme = React5.useMemo(() => {
+        const memoTheme = React7.useMemo(() => {
           const calculatedColorScheme = colorScheme || restThemeProp.defaultColorScheme;
           const themeVars = restThemeProp.generateThemeVars?.() || restThemeProp.vars;
           const theme = {
@@ -43373,7 +43373,7 @@ var require_createCssVarsProvider = __commonJS({
           return resolveTheme ? resolveTheme(theme) : theme;
         }, [restThemeProp, colorScheme, components, colorSchemes, cssVarPrefix]);
         const colorSchemeSelector = restThemeProp.colorSchemeSelector;
-        React5.useEffect(() => {
+        React7.useEffect(() => {
           if (colorScheme && colorSchemeNode && colorSchemeSelector && colorSchemeSelector !== "media") {
             const selector = colorSchemeSelector;
             let rule = colorSchemeSelector;
@@ -43405,7 +43405,7 @@ var require_createCssVarsProvider = __commonJS({
             }
           }
         }, [colorScheme, colorSchemeSelector, colorSchemeNode, allColorSchemes]);
-        React5.useEffect(() => {
+        React7.useEffect(() => {
           let timer;
           if (disableTransitionOnChange && hasMounted.current && documentNode) {
             const css2 = documentNode.createElement("style");
@@ -43420,13 +43420,13 @@ var require_createCssVarsProvider = __commonJS({
             clearTimeout(timer);
           };
         }, [colorScheme, disableTransitionOnChange, documentNode]);
-        React5.useEffect(() => {
+        React7.useEffect(() => {
           hasMounted.current = true;
           return () => {
             hasMounted.current = false;
           };
         }, []);
-        const contextValue = React5.useMemo(() => ({
+        const contextValue = React7.useMemo(() => ({
           allColorSchemes,
           colorScheme,
           darkColorScheme,
@@ -43445,7 +43445,7 @@ var require_createCssVarsProvider = __commonJS({
         if (disableStyleSheetGeneration || restThemeProp.cssVariables === false || nested && upperTheme?.cssVarPrefix === cssVarPrefix) {
           shouldGenerateStyleSheet = false;
         }
-        const element = /* @__PURE__ */ (0, _jsxRuntime.jsxs)(React5.Fragment, {
+        const element = /* @__PURE__ */ (0, _jsxRuntime.jsxs)(React7.Fragment, {
           children: [/* @__PURE__ */ (0, _jsxRuntime.jsx)(_ThemeProvider.default, {
             themeId: scopedTheme ? themeId : void 0,
             theme: memoTheme,
@@ -43919,7 +43919,7 @@ var require_createContainer = __commonJS({
       value: true
     });
     exports2.default = createContainer;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _generateUtilityClass = _interopRequireDefault(require_generateUtilityClass2());
@@ -44017,7 +44017,7 @@ var require_createContainer = __commonJS({
           }
         }
       }));
-      const Container = /* @__PURE__ */ React5.forwardRef(function Container2(inProps, ref) {
+      const Container = /* @__PURE__ */ React7.forwardRef(function Container2(inProps, ref) {
         const props = useThemeProps(inProps);
         const {
           className,
@@ -44462,7 +44462,7 @@ var require_createGrid = __commonJS({
       value: true
     });
     exports2.default = createGrid;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _isMuiElement = _interopRequireDefault(require_isMuiElement2());
@@ -44533,7 +44533,7 @@ var require_createGrid = __commonJS({
         return parsedProp;
       }
       const GridRoot = createStyledComponent(_gridGenerator.generateGridColumnsStyles, _gridGenerator.generateGridColumnSpacingStyles, _gridGenerator.generateGridRowSpacingStyles, _gridGenerator.generateGridSizeStyles, _gridGenerator.generateGridDirectionStyles, _gridGenerator.generateGridStyles, _gridGenerator.generateGridOffsetStyles);
-      const Grid = /* @__PURE__ */ React5.forwardRef(function Grid2(inProps, ref) {
+      const Grid = /* @__PURE__ */ React7.forwardRef(function Grid2(inProps, ref) {
         const theme = useTheme3();
         const themeProps = useThemeProps(inProps);
         const props = (0, _styleFunctionSx.extendSxProp)(themeProps);
@@ -44579,9 +44579,9 @@ var require_createGrid = __commonJS({
           ownerState,
           className: (0, _clsx.default)(classes.root, className),
           ...other,
-          children: React5.Children.map(children, (child) => {
-            if (/* @__PURE__ */ React5.isValidElement(child) && (0, _isMuiElement.default)(child, ["Grid"]) && container && child.props.container) {
-              return /* @__PURE__ */ React5.cloneElement(child, {
+          children: React7.Children.map(children, (child) => {
+            if (/* @__PURE__ */ React7.isValidElement(child) && (0, _isMuiElement.default)(child, ["Grid"]) && container && child.props.container) {
+              return /* @__PURE__ */ React7.cloneElement(child, {
                 unstable_level: child.props?.unstable_level ?? level + 1
               });
             }
@@ -44872,7 +44872,7 @@ var require_createStack = __commonJS({
     });
     exports2.default = createStack;
     exports2.style = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _deepmerge = _interopRequireDefault(require_deepmerge2());
@@ -44899,11 +44899,11 @@ var require_createStack = __commonJS({
       });
     }
     function joinChildren(children, separator) {
-      const childrenArray = React5.Children.toArray(children).filter(Boolean);
+      const childrenArray = React7.Children.toArray(children).filter(Boolean);
       return childrenArray.reduce((output, child, index) => {
         output.push(child);
         if (index < childrenArray.length - 1) {
-          output.push(/* @__PURE__ */ React5.cloneElement(separator, {
+          output.push(/* @__PURE__ */ React7.cloneElement(separator, {
             key: `separator-${index}`
           }));
         }
@@ -44998,7 +44998,7 @@ var require_createStack = __commonJS({
         return (0, _composeClasses.default)(slots, (slot) => (0, _generateUtilityClass.default)(componentName, slot), {});
       };
       const StackRoot = createStyledComponent(style);
-      const Stack = /* @__PURE__ */ React5.forwardRef(function Grid(inProps, ref) {
+      const Stack = /* @__PURE__ */ React7.forwardRef(function Grid(inProps, ref) {
         const themeProps = useThemeProps(inProps);
         const props = (0, _styleFunctionSx.extendSxProp)(themeProps);
         const {
@@ -47869,14 +47869,14 @@ var require_useTheme5 = __commonJS({
       value: true
     });
     exports2.default = useTheme3;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _system = require_system();
     var _defaultTheme = _interopRequireDefault(require_defaultTheme());
     var _identifier = _interopRequireDefault(require_identifier());
     function useTheme3() {
       const theme = (0, _system.useTheme)(_defaultTheme.default);
       if (define_process_env_default.NODE_ENV !== "production") {
-        React5.useDebugValue(theme);
+        React7.useDebugValue(theme);
       }
       return theme[_identifier.default] || theme;
     }
@@ -47992,7 +47992,7 @@ var require_ThemeProviderNoVars = __commonJS({
       value: true
     });
     exports2.default = ThemeProviderNoVars;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _system = require_system();
     var _identifier = _interopRequireDefault(require_identifier());
     var _jsxRuntime = require_jsx_runtime();
@@ -48040,7 +48040,7 @@ var require_InitColorSchemeScript3 = __commonJS({
       value: true
     });
     exports2.defaultConfig = exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _InitColorSchemeScript = _interopRequireDefault(require_InitColorSchemeScript2());
     var _jsxRuntime = require_jsx_runtime();
     var defaultConfig = exports2.defaultConfig = {
@@ -48073,7 +48073,7 @@ var require_ThemeProviderWithVars = __commonJS({
     exports2.CssVarsProvider = void 0;
     exports2.Experimental_CssVarsProvider = Experimental_CssVarsProvider;
     exports2.useColorScheme = exports2.getInitColorSchemeScript = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _styleFunctionSx = _interopRequireDefault(require_styleFunctionSx2());
     var _system = require_system();
     var _createTheme = _interopRequireDefault(require_createTheme3());
@@ -48149,7 +48149,7 @@ var require_ThemeProvider5 = __commonJS({
       value: true
     });
     exports2.default = ThemeProvider3;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _ThemeProviderNoVars = _interopRequireDefault(require_ThemeProviderNoVars());
     var _ThemeProviderWithVars = require_ThemeProviderWithVars();
     var _identifier = _interopRequireDefault(require_identifier());
@@ -48824,10 +48824,10 @@ var require_useTreeViewModels = __commonJS({
     });
     exports2.useTreeViewModels = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var useTreeViewModels = (plugins, props) => {
-      const modelsRef = React5.useRef({});
-      const [modelsState, setModelsState] = React5.useState(() => {
+      const modelsRef = React7.useRef({});
+      const [modelsState, setModelsState] = React7.useState(() => {
         const initialState = {};
         plugins.forEach((plugin) => {
           if (plugin.models) {
@@ -48859,15 +48859,15 @@ var require_useTreeViewModels = __commonJS({
         Object.entries(modelsRef.current).forEach(([modelName, model]) => {
           const controlled = props[modelName];
           const newDefaultValue = model.getDefaultValue(props);
-          React5.useEffect(() => {
+          React7.useEffect(() => {
             if (model.isControlled !== (controlled !== void 0)) {
               console.error([`MUI X: A component is changing the ${model.isControlled ? "" : "un"}controlled ${modelName} state of TreeView to be ${model.isControlled ? "un" : ""}controlled.`, "Elements should not switch from uncontrolled to controlled (or vice versa).", `Decide between using a controlled or uncontrolled ${modelName} element for the lifetime of the component.`, "The nature of the state is determined during the first render. It's considered controlled if the value is not `undefined`.", "More info: https://fb.me/react-controlled-components"].join("\n"));
             }
           }, [controlled]);
           const {
             current: defaultValue
-          } = React5.useRef(newDefaultValue);
-          React5.useEffect(() => {
+          } = React7.useRef(newDefaultValue);
+          React7.useEffect(() => {
             if (!model.isControlled && defaultValue !== newDefaultValue) {
               console.error([`MUI X: A component is changing the default ${modelName} state of an uncontrolled TreeView after being initialized. To suppress this warning opt to use a controlled TreeView.`].join("\n"));
             }
@@ -48986,14 +48986,14 @@ var require_useTreeViewInstanceEvents = __commonJS({
       value: true
     });
     exports2.useTreeViewInstanceEvents = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _EventManager = require_EventManager2();
     var isSyntheticEvent = (event) => {
       return event.isPropagationStopped !== void 0;
     };
     var useTreeViewInstanceEvents = () => {
-      const [eventManager] = React5.useState(() => new _EventManager.EventManager());
-      const publishEvent = React5.useCallback((...args) => {
+      const [eventManager] = React7.useState(() => new _EventManager.EventManager());
+      const publishEvent = React7.useCallback((...args) => {
         const [name, params, event = {}] = args;
         event.defaultMuiPrevented = false;
         if (isSyntheticEvent(event) && event.isPropagationStopped()) {
@@ -49001,7 +49001,7 @@ var require_useTreeViewInstanceEvents = __commonJS({
         }
         eventManager.emit(name, params, event);
       }, [eventManager]);
-      const subscribeEvent = React5.useCallback((event, handler) => {
+      const subscribeEvent = React7.useCallback((event, handler) => {
         eventManager.on(event, handler);
         return () => {
           eventManager.removeListener(event, handler);
@@ -49121,14 +49121,14 @@ var require_useTreeViewId = __commonJS({
     });
     exports2.useTreeViewId = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _useTreeViewId = require_useTreeViewId_utils();
     var useTreeViewId = ({
       params,
       state,
       setState
     }) => {
-      React5.useEffect(() => {
+      React7.useEffect(() => {
         setState((prevState) => {
           if (prevState.id.treeId === params.id && prevState.id.treeId !== void 0) {
             return prevState;
@@ -49409,14 +49409,14 @@ var require_useTreeView = __commonJS({
     exports2.useTreeView = void 0;
     exports2.useTreeViewApiInitialization = useTreeViewApiInitialization;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _useForkRef = _interopRequireDefault(require_useForkRef2());
     var _useTreeViewModels = require_useTreeViewModels();
     var _corePlugins = require_corePlugins2();
     var _extractPluginParamsFromProps = require_extractPluginParamsFromProps();
     var _useTreeViewBuildContext = require_useTreeViewBuildContext();
     function useTreeViewApiInitialization(inputApiRef) {
-      const fallbackPublicApiRef = React5.useRef({});
+      const fallbackPublicApiRef = React7.useRef({});
       if (inputApiRef) {
         if (inputApiRef.current == null) {
           inputApiRef.current = {};
@@ -49443,10 +49443,10 @@ var require_useTreeView = __commonJS({
         props
       });
       const models = (0, _useTreeViewModels.useTreeViewModels)(plugins, pluginParams);
-      const instanceRef = React5.useRef({});
+      const instanceRef = React7.useRef({});
       const instance = instanceRef.current;
       const publicAPI = useTreeViewApiInitialization(apiRef);
-      const innerRootRef = React5.useRef(null);
+      const innerRootRef = React7.useRef(null);
       const handleRootRef = (0, _useForkRef.default)(innerRootRef, rootRef);
       const contextValue = (0, _useTreeViewBuildContext.useTreeViewBuildContext)({
         plugins,
@@ -49454,7 +49454,7 @@ var require_useTreeView = __commonJS({
         publicAPI,
         rootRef: innerRootRef
       });
-      const [state, setState] = React5.useState(() => {
+      const [state, setState] = React7.useState(() => {
         const temp = {};
         plugins.forEach((plugin) => {
           if (plugin.getInitialState) {
@@ -49541,8 +49541,8 @@ var require_TreeViewContext = __commonJS({
       value: true
     });
     exports2.TreeViewContext = void 0;
-    var React5 = _interopRequireWildcard(require_react());
-    var TreeViewContext = exports2.TreeViewContext = /* @__PURE__ */ React5.createContext(null);
+    var React7 = _interopRequireWildcard(require_react());
+    var TreeViewContext = exports2.TreeViewContext = /* @__PURE__ */ React7.createContext(null);
     if (define_process_env_default.NODE_ENV !== "production") {
       TreeViewContext.displayName = "TreeViewContext";
     }
@@ -49559,7 +49559,7 @@ var require_TreeViewProvider = __commonJS({
       value: true
     });
     exports2.TreeViewProvider = TreeViewProvider;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _TreeViewContext = require_TreeViewContext();
     var _jsxRuntime = require_jsx_runtime();
     function TreeViewProvider(props) {
@@ -49588,10 +49588,10 @@ var require_useTreeViewContext = __commonJS({
       value: true
     });
     exports2.useTreeViewContext = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _TreeViewContext = require_TreeViewContext();
     var useTreeViewContext = () => {
-      const context = React5.useContext(_TreeViewContext.TreeViewContext);
+      const context = React7.useContext(_TreeViewContext.TreeViewContext);
       if (context == null) {
         throw new Error(["MUI X: Could not find the Tree View context.", "It looks like you rendered your component outside of a SimpleTreeView or RichTreeView parent component.", "This can also happen if you are bundling multiple versions of the Tree View."].join("\n"));
       }
@@ -49673,8 +49673,8 @@ var require_TreeViewItemDepthContext = __commonJS({
       value: true
     });
     exports2.TreeViewItemDepthContext = void 0;
-    var React5 = _interopRequireWildcard(require_react());
-    var TreeViewItemDepthContext = exports2.TreeViewItemDepthContext = /* @__PURE__ */ React5.createContext(() => -1);
+    var React7 = _interopRequireWildcard(require_react());
+    var TreeViewItemDepthContext = exports2.TreeViewItemDepthContext = /* @__PURE__ */ React7.createContext(() => -1);
     if (define_process_env_default.NODE_ENV !== "production") {
       TreeViewItemDepthContext.displayName = "TreeViewItemDepthContext";
     }
@@ -49712,7 +49712,7 @@ var require_useTreeViewItems = __commonJS({
     exports2.useTreeViewItems = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
     var _objectWithoutPropertiesLoose2 = _interopRequireDefault(require_objectWithoutPropertiesLoose());
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _publishTreeViewEvent = require_publishTreeViewEvent();
     var _useTreeViewItems = require_useTreeViewItems_utils();
     var _TreeViewItemDepthContext = require_TreeViewItemDepthContext2();
@@ -49778,9 +49778,9 @@ var require_useTreeViewItems = __commonJS({
       setState,
       experimentalFeatures
     }) => {
-      const getItemMeta = React5.useCallback((itemId) => state.items.itemMetaMap[itemId], [state.items.itemMetaMap]);
-      const getItem = React5.useCallback((itemId) => state.items.itemMap[itemId], [state.items.itemMap]);
-      const getItemTree = React5.useCallback(() => {
+      const getItemMeta = React7.useCallback((itemId) => state.items.itemMetaMap[itemId], [state.items.itemMetaMap]);
+      const getItem = React7.useCallback((itemId) => state.items.itemMap[itemId], [state.items.itemMap]);
+      const getItemTree = React7.useCallback(() => {
         const getItemFromItemId = (id) => {
           const _state$items$itemMap$ = state.items.itemMap[id], item = (0, _objectWithoutPropertiesLoose2.default)(_state$items$itemMap$, _excluded);
           const newChildren = state.items.itemOrderedChildrenIds[id];
@@ -49791,7 +49791,7 @@ var require_useTreeViewItems = __commonJS({
         };
         return state.items.itemOrderedChildrenIds[_useTreeViewItems.TREE_VIEW_ROOT_PARENT_ID].map(getItemFromItemId);
       }, [state.items.itemMap, state.items.itemOrderedChildrenIds]);
-      const isItemDisabled = React5.useCallback((itemId) => {
+      const isItemDisabled = React7.useCallback((itemId) => {
         if (itemId == null) {
           return false;
         }
@@ -49810,11 +49810,11 @@ var require_useTreeViewItems = __commonJS({
         }
         return false;
       }, [instance]);
-      const getItemIndex = React5.useCallback((itemId) => {
+      const getItemIndex = React7.useCallback((itemId) => {
         const parentId = instance.getItemMeta(itemId).parentId ?? _useTreeViewItems.TREE_VIEW_ROOT_PARENT_ID;
         return state.items.itemChildrenIndexes[parentId][itemId];
       }, [instance, state.items.itemChildrenIndexes]);
-      const getItemOrderedChildrenIds = React5.useCallback((itemId) => state.items.itemOrderedChildrenIds[itemId ?? _useTreeViewItems.TREE_VIEW_ROOT_PARENT_ID] ?? [], [state.items.itemOrderedChildrenIds]);
+      const getItemOrderedChildrenIds = React7.useCallback((itemId) => state.items.itemOrderedChildrenIds[itemId ?? _useTreeViewItems.TREE_VIEW_ROOT_PARENT_ID] ?? [], [state.items.itemOrderedChildrenIds]);
       const getItemDOMElement = (itemId) => {
         const itemMeta = instance.getItemMeta(itemId);
         if (itemMeta == null) {
@@ -49832,12 +49832,12 @@ var require_useTreeViewItems = __commonJS({
         }
         return !instance.isItemDisabled(itemId);
       };
-      const areItemUpdatesPreventedRef = React5.useRef(false);
-      const preventItemUpdates = React5.useCallback(() => {
+      const areItemUpdatesPreventedRef = React7.useRef(false);
+      const preventItemUpdates = React7.useCallback(() => {
         areItemUpdatesPreventedRef.current = true;
       }, []);
-      const areItemUpdatesPrevented = React5.useCallback(() => areItemUpdatesPreventedRef.current, []);
-      React5.useEffect(() => {
+      const areItemUpdatesPrevented = React7.useCallback(() => areItemUpdatesPreventedRef.current, []);
+      React7.useEffect(() => {
         if (instance.areItemUpdatesPrevented()) {
           return;
         }
@@ -49985,14 +49985,14 @@ var require_useTreeViewExpansion = __commonJS({
     });
     exports2.useTreeViewExpansion = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _useEventCallback = _interopRequireDefault(require_useEventCallback2());
     var useTreeViewExpansion = ({
       instance,
       params,
       models
     }) => {
-      const expandedItemsMap = React5.useMemo(() => {
+      const expandedItemsMap = React7.useMemo(() => {
         const temp = /* @__PURE__ */ new Map();
         models.expandedItems.value.forEach((id) => {
           temp.set(id, true);
@@ -50003,8 +50003,8 @@ var require_useTreeViewExpansion = __commonJS({
         params.onExpandedItemsChange?.(event, value);
         models.expandedItems.setControlledValue(value);
       };
-      const isItemExpanded = React5.useCallback((itemId) => expandedItemsMap.has(itemId), [expandedItemsMap]);
-      const isItemExpandable = React5.useCallback((itemId) => !!instance.getItemMeta(itemId)?.expandable, [instance]);
+      const isItemExpanded = React7.useCallback((itemId) => expandedItemsMap.has(itemId), [expandedItemsMap]);
+      const isItemExpandable = React7.useCallback((itemId) => !!instance.getItemMeta(itemId)?.expandable, [instance]);
       const toggleItemExpansion = (0, _useEventCallback.default)((event, itemId) => {
         const isExpandedBefore = instance.isItemExpanded(itemId);
         instance.setItemExpansion(event, itemId, !isExpandedBefore);
@@ -50039,7 +50039,7 @@ var require_useTreeViewExpansion = __commonJS({
           setExpandedItems(event, newExpanded);
         }
       };
-      const expansionTrigger = React5.useMemo(() => {
+      const expansionTrigger = React7.useMemo(() => {
         if (params.expansionTrigger) {
           return params.expansionTrigger;
         }
@@ -50320,7 +50320,7 @@ var require_useTreeViewSelection = __commonJS({
     });
     exports2.useTreeViewSelection = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _tree = require_tree();
     var _useTreeViewSelection = require_useTreeViewSelection_utils();
     var useTreeViewSelection = ({
@@ -50328,9 +50328,9 @@ var require_useTreeViewSelection = __commonJS({
       params,
       models
     }) => {
-      const lastSelectedItem = React5.useRef(null);
-      const lastSelectedRange = React5.useRef({});
-      const selectedItemsMap = React5.useMemo(() => {
+      const lastSelectedItem = React7.useRef(null);
+      const lastSelectedRange = React7.useRef({});
+      const selectedItemsMap = React7.useMemo(() => {
         const temp = /* @__PURE__ */ new Map();
         if (Array.isArray(models.selectedItems.value)) {
           models.selectedItems.value.forEach((id) => {
@@ -50620,7 +50620,7 @@ var require_useInstanceEventHandler = __commonJS({
     });
     exports2.createUseInstanceEventHandler = createUseInstanceEventHandler;
     exports2.useInstanceEventHandler = exports2.unstable_resetCleanupTracking = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _TimerBasedCleanupTracking = require_TimerBasedCleanupTracking();
     var _FinalizationRegistryBasedCleanupTracking = require_FinalizationRegistryBasedCleanupTracking();
     var ObjectToBeRetainedByReact = class {
@@ -50631,11 +50631,11 @@ var require_useInstanceEventHandler = __commonJS({
         if (registryContainer2.registry === null) {
           registryContainer2.registry = typeof FinalizationRegistry !== "undefined" ? new _FinalizationRegistryBasedCleanupTracking.FinalizationRegistryBasedCleanupTracking() : new _TimerBasedCleanupTracking.TimerBasedCleanupTracking();
         }
-        const [objectRetainedByReact] = React5.useState(new ObjectToBeRetainedByReact());
-        const subscription = React5.useRef(null);
-        const handlerRef = React5.useRef(void 0);
+        const [objectRetainedByReact] = React7.useState(new ObjectToBeRetainedByReact());
+        const subscription = React7.useRef(null);
+        const handlerRef = React7.useRef(void 0);
         handlerRef.current = handler;
-        const cleanupTokenRef = React5.useRef(null);
+        const cleanupTokenRef = React7.useRef(null);
         if (!subscription.current && handlerRef.current) {
           const enhancedHandler = (params, event) => {
             if (!event.defaultMuiPrevented) {
@@ -50665,7 +50665,7 @@ var require_useInstanceEventHandler = __commonJS({
             cleanupTokenRef.current = null;
           }
         }
-        React5.useEffect(() => {
+        React7.useEffect(() => {
           if (!subscription.current && handlerRef.current) {
             const enhancedHandler = (params, event) => {
               if (!event.defaultMuiPrevented) {
@@ -50736,7 +50736,7 @@ var require_useTreeViewFocus = __commonJS({
     });
     exports2.useTreeViewFocus = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _useEventCallback = _interopRequireDefault(require_useEventCallback2());
     var _ownerDocument = _interopRequireDefault(require_ownerDocument2());
     var _useInstanceEventHandler = require_useInstanceEventHandler();
@@ -50773,8 +50773,8 @@ var require_useTreeViewFocus = __commonJS({
           }));
         }
       });
-      const isTreeViewFocused = React5.useCallback(() => !!rootRef.current && rootRef.current.contains((0, _utils.getActiveElement)((0, _ownerDocument.default)(rootRef.current))), [rootRef]);
-      const isItemFocused = React5.useCallback((itemId) => state.focusedItemId === itemId && isTreeViewFocused(), [state.focusedItemId, isTreeViewFocused]);
+      const isTreeViewFocused = React7.useCallback(() => !!rootRef.current && rootRef.current.contains((0, _utils.getActiveElement)((0, _ownerDocument.default)(rootRef.current))), [rootRef]);
+      const isItemFocused = React7.useCallback((itemId) => state.focusedItemId === itemId && isTreeViewFocused(), [state.focusedItemId, isTreeViewFocused]);
       const isItemVisible = (itemId) => {
         const itemMeta = instance.getItemMeta(itemId);
         return itemMeta && (itemMeta.parentId == null || instance.isItemExpanded(itemMeta.parentId));
@@ -50894,7 +50894,7 @@ var require_useTreeViewLabel_itemPlugin = __commonJS({
       value: true
     });
     exports2.useTreeViewLabelItemPlugin = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _TreeViewProvider = require_TreeViewProvider2();
     var useTreeViewLabelItemPlugin = ({
       props
@@ -50906,9 +50906,9 @@ var require_useTreeViewLabel_itemPlugin = __commonJS({
         label,
         itemId
       } = props;
-      const [labelInputValue, setLabelInputValue] = React5.useState(label);
+      const [labelInputValue, setLabelInputValue] = React7.useState(label);
       const isItemBeingEdited = instance.isItemBeingEdited(itemId);
-      React5.useEffect(() => {
+      React7.useEffect(() => {
         if (!isItemBeingEdited) {
           setLabelInputValue(label);
         }
@@ -50977,7 +50977,7 @@ var require_useTreeViewLabel = __commonJS({
     });
     exports2.useTreeViewLabel = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _warning = require_warning2();
     var _useTreeViewLabel = require_useTreeViewLabel_itemPlugin();
     var useTreeViewLabel = ({
@@ -50986,7 +50986,7 @@ var require_useTreeViewLabel = __commonJS({
       setState,
       params
     }) => {
-      const editedItemRef = React5.useRef(state.editedItemId);
+      const editedItemRef = React7.useRef(state.editedItemId);
       const isItemBeingEditedRef = (itemId) => editedItemRef.current === itemId;
       const setEditedItemId = (editedItemId) => {
         setState((prevState) => (0, _extends2.default)({}, prevState, {
@@ -51098,7 +51098,7 @@ var require_useTreeViewKeyboardNavigation = __commonJS({
       value: true
     });
     exports2.useTreeViewKeyboardNavigation = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _RtlProvider = require_RtlProvider();
     var _useEventCallback = _interopRequireDefault(require_useEventCallback2());
     var _tree = require_tree();
@@ -51113,11 +51113,11 @@ var require_useTreeViewKeyboardNavigation = __commonJS({
       state
     }) => {
       const isRtl = (0, _RtlProvider.useRtl)();
-      const firstCharMap = React5.useRef({});
+      const firstCharMap = React7.useRef({});
       const updateFirstCharMap = (0, _useEventCallback.default)((callback) => {
         firstCharMap.current = callback(firstCharMap.current);
       });
-      React5.useEffect(() => {
+      React7.useEffect(() => {
         if (instance.areItemUpdatesPrevented()) {
           return;
         }
@@ -52946,7 +52946,7 @@ var require_GlobalStyles5 = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _system = require_system();
     var _defaultTheme = _interopRequireDefault(require_defaultTheme());
@@ -53028,7 +53028,7 @@ var require_zero_styled2 = __commonJS({
         return _useTheme.default;
       }
     });
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _styleFunctionSx = require_styleFunctionSx2();
     var _useTheme = _interopRequireDefault(require_useTheme5());
     var _GlobalStyles = _interopRequireDefault(require_GlobalStyles6());
@@ -53082,7 +53082,7 @@ var require_DefaultPropsProvider3 = __commonJS({
     });
     exports2.default = void 0;
     exports2.useDefaultProps = useDefaultProps;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _DefaultPropsProvider = _interopRequireWildcard(require_DefaultPropsProvider2());
     var _jsxRuntime = require_jsx_runtime();
@@ -53227,7 +53227,7 @@ var require_SvgIcon = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _composeClasses = _interopRequireDefault(require_composeClasses2());
@@ -53344,7 +53344,7 @@ var require_SvgIcon = __commonJS({
         }
       ]
     })));
-    var SvgIcon = /* @__PURE__ */ React5.forwardRef(function SvgIcon2(inProps, ref) {
+    var SvgIcon = /* @__PURE__ */ React7.forwardRef(function SvgIcon2(inProps, ref) {
       const props = (0, _DefaultPropsProvider.useDefaultProps)({
         props: inProps,
         name: "MuiSvgIcon"
@@ -53361,7 +53361,7 @@ var require_SvgIcon = __commonJS({
         viewBox = "0 0 24 24",
         ...other
       } = props;
-      const hasSvgAsChild = /* @__PURE__ */ React5.isValidElement(children) && children.type === "svg";
+      const hasSvgAsChild = /* @__PURE__ */ React7.isValidElement(children) && children.type === "svg";
       const ownerState = {
         ...props,
         color,
@@ -53524,7 +53524,7 @@ var require_createSvgIcon = __commonJS({
       value: true
     });
     exports2.default = createSvgIcon;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _SvgIcon = _interopRequireDefault(require_SvgIcon2());
     var _jsxRuntime = require_jsx_runtime();
     function createSvgIcon(path, displayName) {
@@ -53540,7 +53540,7 @@ var require_createSvgIcon = __commonJS({
         Component.displayName = `${displayName}Icon`;
       }
       Component.muiName = _SvgIcon.default.muiName;
-      return /* @__PURE__ */ React5.memo(/* @__PURE__ */ React5.forwardRef(Component));
+      return /* @__PURE__ */ React7.memo(/* @__PURE__ */ React7.forwardRef(Component));
     }
   }
 });
@@ -53983,7 +53983,7 @@ var require_Collapse = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _clsx = _interopRequireDefault(require_clsx());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _reactTransitionGroup = require_cjs();
@@ -54095,7 +54095,7 @@ var require_Collapse = __commonJS({
         }
       }]
     });
-    var Collapse = /* @__PURE__ */ React5.forwardRef(function Collapse2(inProps, ref) {
+    var Collapse = /* @__PURE__ */ React7.forwardRef(function Collapse2(inProps, ref) {
       const props = (0, _DefaultPropsProvider.useDefaultProps)({
         props: inProps,
         name: "MuiCollapse"
@@ -54129,12 +54129,12 @@ var require_Collapse = __commonJS({
       const classes = useUtilityClasses(ownerState);
       const theme = (0, _zeroStyled.useTheme)();
       const timer = (0, _useTimeout.default)();
-      const wrapperRef = React5.useRef(null);
-      const autoTransitionDuration = React5.useRef();
+      const wrapperRef = React7.useRef(null);
+      const autoTransitionDuration = React7.useRef();
       const collapsedSize = typeof collapsedSizeProp === "number" ? `${collapsedSizeProp}px` : collapsedSizeProp;
       const isHorizontal = orientation === "horizontal";
       const size = isHorizontal ? "width" : "height";
-      const nodeRef = React5.useRef(null);
+      const nodeRef = React7.useRef(null);
       const handleRef = (0, _utils2.useForkRef)(ref, nodeRef);
       const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
         if (callback) {
@@ -54433,8 +54433,8 @@ var require_FormControlContext = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
-    var FormControlContext = /* @__PURE__ */ React5.createContext(void 0);
+    var React7 = _interopRequireWildcard(require_react());
+    var FormControlContext = /* @__PURE__ */ React7.createContext(void 0);
     if (define_process_env_default.NODE_ENV !== "production") {
       FormControlContext.displayName = "FormControlContext";
     }
@@ -54454,10 +54454,10 @@ var require_useFormControl = __commonJS({
       value: true
     });
     exports2.default = useFormControl;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _FormControlContext = _interopRequireDefault(require_FormControlContext());
     function useFormControl() {
-      return React5.useContext(_FormControlContext.default);
+      return React7.useContext(_FormControlContext.default);
     }
   }
 });
@@ -54475,7 +54475,7 @@ var require_useLazyRipple = __commonJS({
     });
     exports2.LazyRipple = void 0;
     exports2.default = useLazyRipple;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _useLazyRef = _interopRequireDefault(require_useLazyRef2());
     var LazyRipple = class _LazyRipple {
       /** React ref to the ripple instance */
@@ -54488,10 +54488,10 @@ var require_useLazyRipple = __commonJS({
       }
       static use() {
         const ripple = (0, _useLazyRef.default)(_LazyRipple.create).current;
-        const [shouldMount, setShouldMount] = React5.useState(false);
+        const [shouldMount, setShouldMount] = React7.useState(false);
         ripple.shouldMount = shouldMount;
         ripple.setShouldMount = setShouldMount;
-        React5.useEffect(ripple.mountEffect, [shouldMount]);
+        React7.useEffect(ripple.mountEffect, [shouldMount]);
         return ripple;
       }
       constructor() {
@@ -54580,7 +54580,7 @@ var require_Ripple = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _jsxRuntime = require_jsx_runtime();
@@ -54596,7 +54596,7 @@ var require_Ripple = __commonJS({
         onExited,
         timeout
       } = props;
-      const [leaving, setLeaving] = React5.useState(false);
+      const [leaving, setLeaving] = React7.useState(false);
       const rippleClassName = (0, _clsx.default)(className, classes.ripple, classes.rippleVisible, pulsate && classes.ripplePulsate);
       const rippleStyles = {
         width: rippleSize,
@@ -54608,7 +54608,7 @@ var require_Ripple = __commonJS({
       if (!inProp && !leaving) {
         setLeaving(true);
       }
-      React5.useEffect(() => {
+      React7.useEffect(() => {
         if (!inProp && onExited != null) {
           const timeoutId = setTimeout(onExited, timeout);
           return () => {
@@ -54697,7 +54697,7 @@ var require_TouchRipple = __commonJS({
       value: true
     });
     exports2.default = exports2.TouchRippleRoot = exports2.TouchRippleRipple = exports2.DELAY_RIPPLE = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _reactTransitionGroup = require_cjs();
     var _clsx = _interopRequireDefault(require_clsx());
@@ -54811,7 +54811,7 @@ var require_TouchRipple = __commonJS({
     animation-delay: 200ms;
   }
 `;
-    var TouchRipple = /* @__PURE__ */ React5.forwardRef(function TouchRipple2(inProps, ref) {
+    var TouchRipple = /* @__PURE__ */ React7.forwardRef(function TouchRipple2(inProps, ref) {
       const props = (0, _DefaultPropsProvider.useDefaultProps)({
         props: inProps,
         name: "MuiTouchRipple"
@@ -54822,20 +54822,20 @@ var require_TouchRipple = __commonJS({
         className,
         ...other
       } = props;
-      const [ripples, setRipples] = React5.useState([]);
-      const nextKey = React5.useRef(0);
-      const rippleCallback = React5.useRef(null);
-      React5.useEffect(() => {
+      const [ripples, setRipples] = React7.useState([]);
+      const nextKey = React7.useRef(0);
+      const rippleCallback = React7.useRef(null);
+      React7.useEffect(() => {
         if (rippleCallback.current) {
           rippleCallback.current();
           rippleCallback.current = null;
         }
       }, [ripples]);
-      const ignoringMouseDown = React5.useRef(false);
+      const ignoringMouseDown = React7.useRef(false);
       const startTimer = (0, _useTimeout.default)();
-      const startTimerCommit = React5.useRef(null);
-      const container = React5.useRef(null);
-      const startCommit = React5.useCallback((params) => {
+      const startTimerCommit = React7.useRef(null);
+      const container = React7.useRef(null);
+      const startCommit = React7.useCallback((params) => {
         const {
           pulsate: pulsate2,
           rippleX,
@@ -54861,7 +54861,7 @@ var require_TouchRipple = __commonJS({
         nextKey.current += 1;
         rippleCallback.current = cb;
       }, [classes]);
-      const start = React5.useCallback((event = {}, options = {}, cb = () => {
+      const start = React7.useCallback((event = {}, options = {}, cb = () => {
       }) => {
         const {
           pulsate: pulsate2 = false,
@@ -54935,12 +54935,12 @@ var require_TouchRipple = __commonJS({
           });
         }
       }, [centerProp, startCommit, startTimer]);
-      const pulsate = React5.useCallback(() => {
+      const pulsate = React7.useCallback(() => {
         start({}, {
           pulsate: true
         });
       }, [start]);
-      const stop = React5.useCallback((event, cb) => {
+      const stop = React7.useCallback((event, cb) => {
         startTimer.clear();
         if (event?.type === "touchend" && startTimerCommit.current) {
           startTimerCommit.current();
@@ -54959,7 +54959,7 @@ var require_TouchRipple = __commonJS({
         });
         rippleCallback.current = cb;
       }, [startTimer]);
-      React5.useImperativeHandle(ref, () => ({
+      React7.useImperativeHandle(ref, () => ({
         pulsate,
         start,
         stop
@@ -55027,7 +55027,7 @@ var require_ButtonBase = __commonJS({
       value: true
     });
     exports2.default = exports2.ButtonBaseRoot = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _refType = _interopRequireDefault(require_refType2());
@@ -55102,7 +55102,7 @@ var require_ButtonBase = __commonJS({
         colorAdjust: "exact"
       }
     });
-    var ButtonBase = /* @__PURE__ */ React5.forwardRef(function ButtonBase2(inProps, ref) {
+    var ButtonBase = /* @__PURE__ */ React7.forwardRef(function ButtonBase2(inProps, ref) {
       const props = (0, _DefaultPropsProvider.useDefaultProps)({
         props: inProps,
         name: "MuiButtonBase"
@@ -55139,21 +55139,21 @@ var require_ButtonBase = __commonJS({
         type,
         ...other
       } = props;
-      const buttonRef = React5.useRef(null);
+      const buttonRef = React7.useRef(null);
       const ripple = (0, _useLazyRipple.default)();
       const handleRippleRef = (0, _useForkRef.default)(ripple.ref, touchRippleRef);
-      const [focusVisible, setFocusVisible] = React5.useState(false);
+      const [focusVisible, setFocusVisible] = React7.useState(false);
       if (disabled && focusVisible) {
         setFocusVisible(false);
       }
-      React5.useImperativeHandle(action, () => ({
+      React7.useImperativeHandle(action, () => ({
         focusVisible: () => {
           setFocusVisible(true);
           buttonRef.current.focus();
         }
       }), []);
       const enableTouchRipple = ripple.shouldMount && !disableRipple && !disabled;
-      React5.useEffect(() => {
+      React7.useEffect(() => {
         if (focusVisible && focusRipple && !disableRipple) {
           ripple.pulsate();
         }
@@ -55555,7 +55555,7 @@ var require_SwitchBase = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _refType = _interopRequireDefault(require_refType2());
@@ -55632,7 +55632,7 @@ var require_SwitchBase = __commonJS({
       padding: 0,
       zIndex: 1
     });
-    var SwitchBase = /* @__PURE__ */ React5.forwardRef(function SwitchBase2(props, ref) {
+    var SwitchBase = /* @__PURE__ */ React7.forwardRef(function SwitchBase2(props, ref) {
       const {
         autoFocus,
         checked: checkedProp,
@@ -55859,7 +55859,7 @@ var require_CheckBoxOutlineBlank = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _createSvgIcon = _interopRequireDefault(require_createSvgIcon());
     var _jsxRuntime = require_jsx_runtime();
     var _default = exports2.default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)("path", {
@@ -55880,7 +55880,7 @@ var require_CheckBox = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _createSvgIcon = _interopRequireDefault(require_createSvgIcon());
     var _jsxRuntime = require_jsx_runtime();
     var _default = exports2.default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)("path", {
@@ -55901,7 +55901,7 @@ var require_IndeterminateCheckBox = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _createSvgIcon = _interopRequireDefault(require_createSvgIcon());
     var _jsxRuntime = require_jsx_runtime();
     var _default = exports2.default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)("path", {
@@ -55972,7 +55972,7 @@ var require_Checkbox = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _refType = _interopRequireDefault(require_refType2());
@@ -56071,7 +56071,7 @@ var require_Checkbox = __commonJS({
     var defaultCheckedIcon = /* @__PURE__ */ (0, _jsxRuntime.jsx)(_CheckBox.default, {});
     var defaultIcon = /* @__PURE__ */ (0, _jsxRuntime.jsx)(_CheckBoxOutlineBlank.default, {});
     var defaultIndeterminateIcon = /* @__PURE__ */ (0, _jsxRuntime.jsx)(_IndeterminateCheckBox.default, {});
-    var Checkbox = /* @__PURE__ */ React5.forwardRef(function Checkbox2(inProps, ref) {
+    var Checkbox = /* @__PURE__ */ React7.forwardRef(function Checkbox2(inProps, ref) {
       const props = (0, _DefaultPropsProvider.useDefaultProps)({
         props: inProps,
         name: "MuiCheckbox"
@@ -56104,10 +56104,10 @@ var require_Checkbox = __commonJS({
           "data-indeterminate": indeterminate,
           ...inputProps
         },
-        icon: /* @__PURE__ */ React5.cloneElement(icon, {
+        icon: /* @__PURE__ */ React7.cloneElement(icon, {
           fontSize: icon.props.fontSize ?? size
         }),
-        checkedIcon: /* @__PURE__ */ React5.cloneElement(indeterminateIcon, {
+        checkedIcon: /* @__PURE__ */ React7.cloneElement(indeterminateIcon, {
           fontSize: indeterminateIcon.props.fontSize ?? size
         }),
         ownerState,
@@ -56422,7 +56422,7 @@ var require_TreeItem2DragAndDropOverlay = __commonJS({
     });
     exports2.TreeItem2DragAndDropOverlay = TreeItem2DragAndDropOverlay;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _styles = require_styles();
     var _system = require_system();
@@ -56576,7 +56576,7 @@ var require_TreeItemContent = __commonJS({
     exports2.TreeItemContent = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
     var _objectWithoutPropertiesLoose2 = _interopRequireDefault(require_objectWithoutPropertiesLoose());
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _Checkbox = _interopRequireDefault(require_Checkbox2());
@@ -56585,7 +56585,7 @@ var require_TreeItemContent = __commonJS({
     var _TreeItem2LabelInput = require_TreeItem2LabelInput2();
     var _jsxRuntime = require_jsx_runtime();
     var _excluded = ["classes", "className", "displayIcon", "expansionIcon", "icon", "label", "itemId", "onClick", "onMouseDown", "dragAndDropOverlayProps", "labelInputProps"];
-    var TreeItemContent = exports2.TreeItemContent = /* @__PURE__ */ React5.forwardRef(function TreeItemContent2(props, ref) {
+    var TreeItemContent = exports2.TreeItemContent = /* @__PURE__ */ React7.forwardRef(function TreeItemContent2(props, ref) {
       const {
         classes,
         className,
@@ -56617,7 +56617,7 @@ var require_TreeItemContent = __commonJS({
         toggleItemEditing
       } = (0, _useTreeItemState.useTreeItemState)(itemId);
       const icon = iconProp || expansionIcon || displayIcon;
-      const checkboxRef = React5.useRef(null);
+      const checkboxRef = React7.useRef(null);
       const handleMouseDown = (event) => {
         preventSelection(event);
         if (onMouseDown) {
@@ -56752,7 +56752,7 @@ var require_icons = __commonJS({
     });
     exports2.TreeViewExpandIcon = exports2.TreeViewCollapseIcon = void 0;
     var _utils = require_utils4();
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _jsxRuntime = require_jsx_runtime();
     var TreeViewExpandIcon = exports2.TreeViewExpandIcon = (0, _utils.createSvgIcon)(/* @__PURE__ */ (0, _jsxRuntime.jsx)("path", {
       d: "M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
@@ -56855,7 +56855,7 @@ var require_TreeItem = __commonJS({
     exports2.TreeItem = void 0;
     var _objectWithoutPropertiesLoose2 = _interopRequireDefault(require_objectWithoutPropertiesLoose());
     var _extends2 = _interopRequireDefault(require_extends());
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _Collapse = _interopRequireDefault(require_Collapse2());
@@ -57015,7 +57015,7 @@ var require_TreeItem = __commonJS({
         }
       }]
     });
-    var TreeItem = exports2.TreeItem = /* @__PURE__ */ React5.forwardRef(function TreeItem2(inProps, inRef) {
+    var TreeItem = exports2.TreeItem = /* @__PURE__ */ React7.forwardRef(function TreeItem2(inProps, inRef) {
       const {
         icons: contextIcons,
         runItemPlugins,
@@ -57032,7 +57032,7 @@ var require_TreeItem = __commonJS({
         treeId,
         instance
       } = (0, _TreeViewProvider.useTreeViewContext)();
-      const depthContext = React5.useContext(_TreeViewItemDepthContext.TreeViewItemDepthContext);
+      const depthContext = React7.useContext(_TreeViewItemDepthContext.TreeViewItemDepthContext);
       const props = useThemeProps({
         props: inProps,
         name: "MuiTreeItem"
@@ -57075,8 +57075,8 @@ var require_TreeItem = __commonJS({
         rootRef,
         propsEnhancers
       } = runItemPlugins(props);
-      const rootRefObject = React5.useRef(null);
-      const contentRefObject = React5.useRef(null);
+      const rootRefObject = React7.useRef(null);
+      const contentRefObject = React7.useRef(null);
       const handleRootRef = (0, _useForkRef.default)(inRef, rootRef, rootRefObject);
       const handleContentRef = (0, _useForkRef.default)(ContentProps?.ref, contentRef, contentRefObject);
       const slots = {
@@ -57399,7 +57399,7 @@ var require_RichTreeViewItems = __commonJS({
     exports2.RichTreeViewItems = RichTreeViewItems;
     var _extends2 = _interopRequireDefault(require_extends());
     var _objectWithoutPropertiesLoose2 = _interopRequireDefault(require_objectWithoutPropertiesLoose());
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _useSlotProps2 = _interopRequireDefault(require_useSlotProps2());
     var _TreeItem = require_TreeItem2();
     var _jsxRuntime = require_jsx_runtime();
@@ -57426,7 +57426,7 @@ var require_RichTreeViewItems = __commonJS({
           label
         }
       }), itemProps = (0, _objectWithoutPropertiesLoose2.default)(_useSlotProps, _excluded);
-      const children = React5.useMemo(() => itemsToRender ? /* @__PURE__ */ (0, _jsxRuntime.jsx)(RichTreeViewItems, {
+      const children = React7.useMemo(() => itemsToRender ? /* @__PURE__ */ (0, _jsxRuntime.jsx)(RichTreeViewItems, {
         itemsToRender,
         slots,
         slotProps
@@ -57441,7 +57441,7 @@ var require_RichTreeViewItems = __commonJS({
         slots,
         slotProps
       } = props;
-      return /* @__PURE__ */ (0, _jsxRuntime.jsx)(React5.Fragment, {
+      return /* @__PURE__ */ (0, _jsxRuntime.jsx)(React7.Fragment, {
         children: itemsToRender.map((item) => /* @__PURE__ */ (0, _jsxRuntime.jsx)(WrappedTreeItem, {
           slots,
           slotProps,
@@ -57468,7 +57468,7 @@ var require_RichTreeView = __commonJS({
     });
     exports2.RichTreeViewRoot = exports2.RichTreeView = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React5 = _interopRequireWildcard(require_react());
+    var React7 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _composeClasses = _interopRequireDefault(require_composeClasses2());
     var _useSlotProps = _interopRequireDefault(require_useSlotProps2());
@@ -57501,7 +57501,7 @@ var require_RichTreeView = __commonJS({
       outline: 0,
       position: "relative"
     });
-    var RichTreeView2 = exports2.RichTreeView = /* @__PURE__ */ React5.forwardRef(function RichTreeView3(inProps, ref) {
+    var RichTreeView2 = exports2.RichTreeView = /* @__PURE__ */ React7.forwardRef(function RichTreeView3(inProps, ref) {
       const props = useThemeProps({
         props: inProps,
         name: "MuiRichTreeView"
@@ -57782,84 +57782,80 @@ var require_RichTreeView2 = __commonJS({
 
 // src/App.tsx
 init_define_process_env();
+var React6 = __toESM(require_react());
 var import_client = __toESM(require_client());
 
 // src/Tree.tsx
 init_define_process_env();
+var React5 = __toESM(require_react());
 var import_Box = __toESM(require_Box4());
 var import_RichTreeView = __toESM(require_RichTreeView2());
 var import_jsx_runtime = __toESM(require_jsx_runtime());
-var MUI_X_PRODUCTS = [
-  {
-    id: "grid",
-    label: "Data Grid",
-    children: [
-      { id: "grid-community", label: "@mui/x-data-grid" },
-      { id: "grid-pro", label: "@mui/x-data-grid-pro" },
-      { id: "grid-premium", label: "@mui/x-data-grid-premium" }
-    ]
-  },
-  {
-    id: "pickers",
-    label: "Date and Time Pickers",
-    children: [
-      { id: "pickers-community", label: "@mui/x-date-pickers" },
-      { id: "pickers-pro", label: "@mui/x-date-pickers-pro" }
-    ]
-  },
-  {
-    id: "charts",
-    label: "Charts",
-    children: [{ id: "charts-community", label: "@mui/x-charts" }]
-  },
-  {
-    id: "tree-view",
-    label: "Tree View",
-    children: [{ id: "tree-view-community", label: "@mui/x-tree-view" }]
-  }
-];
-function BasicRichTreeView() {
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_Box.default, { sx: { minHeight: 352, minWidth: 250 }, children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_RichTreeView.RichTreeView, { items: MUI_X_PRODUCTS }) });
+var convertToTreeViewItems = (json, parentId = "") => {
+  return json.groups.map((group, groupIndex) => {
+    const groupId = `${parentId}group-${groupIndex}`;
+    return {
+      id: groupId,
+      label: group.name,
+      children: group.subgroups.map((subgroup, subgroupIndex) => {
+        const subgroupId = `${groupId}-subgroup-${subgroupIndex}`;
+        return {
+          id: subgroupId,
+          label: subgroup.name,
+          children: subgroup.cells.map((cell) => ({
+            id: `${subgroupId}-cell-${cell}`,
+            label: `Cell ${cell}`
+          }))
+        };
+      })
+    };
+  });
+};
+function BasicRichTreeView({ data }) {
+  const labels = React5.useMemo(() => convertToTreeViewItems(data), [data]);
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_Box.default, { sx: { minHeight: 352, minWidth: 250 }, children: labels.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    import_RichTreeView.RichTreeView,
+    {
+      items: labels,
+      sx: {
+        "& .MuiTreeItem-label": {
+          fontSize: "12px !important",
+          textAlign: "left"
+        }
+      }
+    }
+  ) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Loading notebook data..." }) });
 }
 
 // src/App.tsx
 var import_jsx_runtime2 = __toESM(require_jsx_runtime());
 function App() {
-  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(BasicRichTreeView, {}) });
+  const [treeData, setTreeData] = React6.useState(null);
+  React6.useEffect(() => {
+    const handleMessage = (event) => {
+      const message = event.data;
+      if (message.command === "fetchNotebookData") {
+        console.log("Received data from TreeViewProvider:", message.data);
+        setTreeData(message.data);
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { children: treeData ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(BasicRichTreeView, { data: treeData }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: "Loading notebook data..." }) });
 }
 (function() {
   const rootElement = document.getElementById("app");
   if (rootElement) {
     const root = import_client.default.createRoot(rootElement);
-    console.log("made it");
     root.render(/* @__PURE__ */ (0, import_jsx_runtime2.jsx)(App, {}));
   } else {
     console.error("Root element not found.");
   }
 })();
 /*! Bundled license information:
-
-scheduler/cjs/scheduler.production.js:
-  (**
-   * @license React
-   * scheduler.production.js
-   *
-   * Copyright (c) Meta Platforms, Inc. and affiliates.
-   *
-   * This source code is licensed under the MIT license found in the
-   * LICENSE file in the root directory of this source tree.
-   *)
-
-scheduler/cjs/scheduler.development.js:
-  (**
-   * @license React
-   * scheduler.development.js
-   *
-   * Copyright (c) Meta Platforms, Inc. and affiliates.
-   *
-   * This source code is licensed under the MIT license found in the
-   * LICENSE file in the root directory of this source tree.
-   *)
 
 react/cjs/react.production.js:
   (**
@@ -57876,6 +57872,28 @@ react/cjs/react.development.js:
   (**
    * @license React
    * react.development.js
+   *
+   * Copyright (c) Meta Platforms, Inc. and affiliates.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE file in the root directory of this source tree.
+   *)
+
+scheduler/cjs/scheduler.production.js:
+  (**
+   * @license React
+   * scheduler.production.js
+   *
+   * Copyright (c) Meta Platforms, Inc. and affiliates.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE file in the root directory of this source tree.
+   *)
+
+scheduler/cjs/scheduler.development.js:
+  (**
+   * @license React
+   * scheduler.development.js
    *
    * Copyright (c) Meta Platforms, Inc. and affiliates.
    *
