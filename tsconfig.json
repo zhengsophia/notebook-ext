@@ -5,7 +5,7 @@
 		"lib": [
 			"ES2022", "DOM"
 		],
-		"jsx": "react-jsx",
+		"jsx": "react-jsx", // React 17+ jsx transform
 		"sourceMap": true,
 		"rootDir": "src",
 		"strict": true,   /* enable all strict type-checking options */

@@ -18,6 +18,9 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     ): void {
         this._view = webviewView;
 
+        // Fetch notebook data when the webview is initialized
+        // this.fetchNotebookData();
+
         // Configure the webview options
         webviewView.webview.options = {
             enableScripts: true,
@@ -29,6 +32,32 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         // Set the HTML content for the webview
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
     }
+
+    // private async fetchNotebookData() {
+    //     const editor = vscode.window.activeNotebookEditor;
+
+    //     console.log('editor info', editor);
+
+    //     if (editor) {
+    //         try {
+    //             const notebookUri = editor.notebook.uri;
+    //             const doc = await vscode.workspace.openTextDocument(notebookUri);
+    //             const notebookData = doc.getText();
+    //             console.log('notebookData:', notebookData);
+    //             const notebookJson = JSON.parse(notebookData);
+    //             console.log('notebookJson:', notebookJson);
+    //             // You can send this data to the webview now
+    //             if (this._view) {
+    //                 this._view.webview.postMessage({ notebookData: notebookJson });
+    //             }
+    //         } catch (error) {
+    //             console.error('Error while reading notebook data:', error);
+    //             vscode.window.showErrorMessage('Failed to read notebook.');
+    //         }
+    //     } else {
+    //         vscode.window.showInformationMessage('No notebook currently open.');
+    //     }
+    // }
 
     // Helper method to get HTML content for the webview
     private _getHtmlForWebview(webview: vscode.Webview): string {

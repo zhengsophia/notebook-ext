@@ -1,11 +1,12 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
 import './App.css';
+import BasicRichTreeView from './Tree';
 
 function App() {
     return (
         <div>
-            <h1>Hello from React!</h1>
+            <BasicRichTreeView />
         </div>
     );
 };
