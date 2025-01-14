@@ -34,26 +34,77 @@ __export(extension_exports, {
   deactivate: () => deactivate
 });
 module.exports = __toCommonJS(extension_exports);
+var vscode2 = __toESM(require("vscode"));
+
+// src/webviews/treeViewProvider.tsx
 var vscode = __toESM(require("vscode"));
+var TreeViewProvider = class {
+  constructor(_extensionUri) {
+    this._extensionUri = _extensionUri;
+  }
+  static viewType = "meng-notebook.treeView";
+  _view;
+  // Implementing the required method
+  resolveWebviewView(webviewView, context, _token) {
+    this._view = webviewView;
+    webviewView.webview.options = {
+      enableScripts: true,
+      localResourceRoots: [
+        vscode.Uri.joinPath(this._extensionUri)
+      ]
+    };
+    webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+  }
+  // Helper method to get HTML content for the webview
+  _getHtmlForWebview(webview) {
+    const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "dist/webviews", "App.js"));
+    const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "dist/webviews", "App.css"));
+    console.log("script URI", scriptUri);
+    console.log("style URI", styleUri);
+    return `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="${styleUri}">
+                <title>Tree View</title>
+            </head>
+            <body>
+                <div id="app">Tree View Content</div>
+                <script src="${scriptUri}"></script>
+            </body>
+            </html>
+        `;
+  }
+};
+
+// src/extension.ts
 function activate(context) {
   console.log('Congratulations, your extension "notebook-ext" is now active!');
-  const disposable = vscode.commands.registerCommand("notebook-ext.getNotebookData", async () => {
-    const editor = vscode.window.activeNotebookEditor;
+  context.subscriptions.push(
+    vscode2.window.registerWebviewViewProvider(
+      TreeViewProvider.viewType,
+      new TreeViewProvider(context.extensionUri)
+    )
+  );
+  const disposable = vscode2.commands.registerCommand("notebook-ext.getNotebookData", async () => {
+    const editor = vscode2.window.activeNotebookEditor;
     console.log("editor info", editor);
     if (editor) {
       try {
         const notebookUri = editor.notebook.uri;
-        const doc = await vscode.workspace.openTextDocument(notebookUri);
+        const doc = await vscode2.workspace.openTextDocument(notebookUri);
         const notebookData = doc.getText();
         console.log("notebookData:", notebookData);
         const notebookJson = JSON.parse(notebookData);
         console.log("notebookJson:", notebookJson);
       } catch (error) {
         console.error("Error while reading notebook data:", error);
-        vscode.window.showErrorMessage("Failed to read notebook.");
+        vscode2.window.showErrorMessage("Failed to read notebook.");
       }
     } else {
-      vscode.window.showInformationMessage("No notebook currently open.");
+      vscode2.window.showInformationMessage("No notebook currently open.");
     }
   });
   context.subscriptions.push(disposable);
