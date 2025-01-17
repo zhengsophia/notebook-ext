@@ -17145,6 +17145,7 @@ var TreeViewProvider = class {
     if (activeEditor) {
       this.processNotebookLLM(activeEditor);
     }
+    this.setupMessageListener();
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
   }
   // aggregate method to get the LLM response for the notebook   
@@ -17173,7 +17174,7 @@ var TreeViewProvider = class {
   }
   generatePrompt(codeCells) {
     return `Analyze the following JSON of notebook cells and group them based on their functionality and/or structural patterns of analysis. Group should be the general pattern label, while subgroups label more specifically. Cell should specify the one or more cell numbers described by that subgroup.  
-
+        
         ${codeCells.map((cell, i2) => `Block ${i2 + 1}:
 ${cell.source.join("\n")}`).join("\n\n")}
         `;
@@ -17191,7 +17192,7 @@ ${cell.source.join("\n")}`).join("\n\n")}
       groups: z.array(Group)
     });
     try {
-      const openai = new openai_default({ apiKey: "replace-with-your-key" });
+      const openai = new openai_default({ apiKey: "replace" });
       const response = await openai.beta.chat.completions.parse({
         model: "gpt-4o-2024-08-06",
         messages: [
@@ -17210,6 +17211,53 @@ ${cell.source.join("\n")}`).join("\n\n")}
     } catch (error) {
       console.error("Error fetching OpenAI response:", error);
       throw error;
+    }
+  }
+  async handleCellSelection(event) {
+    if (!this._view) return;
+    const selectedCell = event.notebookEditor.notebook.cellAt(event.selections[0].start);
+    if (selectedCell.kind === vscode.NotebookCellKind.Code && selectedCell.executionSummary?.executionOrder) {
+      const executionCount = selectedCell.executionSummary.executionOrder;
+      await this._view.webview.postMessage({
+        type: "expandNode",
+        executionCount
+      });
+    }
+  }
+  setupMessageListener() {
+    if (this._view) {
+      this._view.webview.onDidReceiveMessage(async (message) => {
+        console.log("message", message.type);
+        switch (message.type) {
+          case "selectCell":
+            const editor = vscode.window.activeNotebookEditor;
+            console.log;
+            if (editor && message.index !== void 0) {
+              const cells = editor.notebook.getCells();
+              let targetCellIndex = -1;
+              for (let i2 = 0; i2 < cells.length; i2++) {
+                const cell = cells[i2];
+                if (cell.kind === vscode.NotebookCellKind.Code && cell.executionSummary?.executionOrder === message.index) {
+                  targetCellIndex = i2;
+                  break;
+                }
+              }
+              if (targetCellIndex !== -1) {
+                editor.revealRange(
+                  new vscode.NotebookRange(targetCellIndex, targetCellIndex + 1),
+                  vscode.NotebookEditorRevealType.InCenter
+                );
+                editor.selection = new vscode.NotebookRange(
+                  targetCellIndex,
+                  targetCellIndex + 1
+                );
+              } else {
+                console.log("Could not find code cell with execution count:", message.index);
+              }
+            }
+            break;
+        }
+      });
     }
   }
   sendDataToWebview(data) {

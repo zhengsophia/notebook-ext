@@ -57791,6 +57791,7 @@ var React5 = __toESM(require_react());
 var import_Box = __toESM(require_Box4());
 var import_RichTreeView = __toESM(require_RichTreeView2());
 var import_jsx_runtime = __toESM(require_jsx_runtime());
+var vscode = acquireVsCodeApi();
 var convertToTreeViewItems = (json, parentId = "") => {
   return json.groups.map((group, groupIndex) => {
     const groupId = `${parentId}group-${groupIndex}`;
@@ -57804,7 +57805,8 @@ var convertToTreeViewItems = (json, parentId = "") => {
           label: subgroup.name,
           children: subgroup.cells.map((cell) => ({
             id: `${subgroupId}-cell-${cell}`,
-            label: `Cell ${cell}`
+            label: `Cell ${cell}`,
+            index: cell
           }))
         };
       })
@@ -57813,10 +57815,21 @@ var convertToTreeViewItems = (json, parentId = "") => {
 };
 function BasicRichTreeView({ data }) {
   const labels = React5.useMemo(() => convertToTreeViewItems(data), [data]);
+  const handleNodeSelect = (event, nodeId) => {
+    if (nodeId.includes("cell")) {
+      const cellIndex = nodeId.split("-cell-").pop();
+      console.log("node id", nodeId);
+      if (cellIndex) {
+        console.log("current cell index", cellIndex);
+        vscode.postMessage({ type: "selectCell", index: parseInt(cellIndex, 10) });
+      }
+    }
+  };
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_Box.default, { sx: { minHeight: 352, minWidth: 250 }, children: labels.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
     import_RichTreeView.RichTreeView,
     {
       items: labels,
+      onItemClick: handleNodeSelect,
       sx: {
         "& .MuiTreeItem-label": {
           fontSize: "12px !important",
