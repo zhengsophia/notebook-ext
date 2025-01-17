@@ -2,9 +2,11 @@ import * as React from 'react';
 import ReactDOM from 'react-dom/client';
 import './App.css';
 import BasicRichTreeView from './Tree';
+import Narrative from './Narrative';
+
 
 function App() {
-    const [treeData, setTreeData] = React.useState<any>(null);
+    const [data, setData] = React.useState<any>(null);
 
     React.useEffect(() => {
         // listening for messages from the extension via TreeViewProvider
@@ -12,7 +14,7 @@ function App() {
             const message = event.data;
             if (message.command === 'fetchNotebookData') {
                 console.log('Received data from TreeViewProvider:', message.data);
-                setTreeData(message.data);
+                setData(message.data);
             }
         };
 
@@ -25,8 +27,10 @@ function App() {
 
     return (
         <div>
-            {treeData ? (
-                <BasicRichTreeView data={treeData} />
+            {data ? (
+                // <BasicRichTreeView data={data} />
+                // <NarrativeView data={data} />
+                <Narrative></Narrative>
             ) : (
                 <p>Loading notebook data...</p>
             )}
