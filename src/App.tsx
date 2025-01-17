@@ -30,7 +30,7 @@ function App() {
             {data ? (
                 // <BasicRichTreeView data={data} />
                 // <NarrativeView data={data} />
-                <Narrative></Narrative>
+                <Narrative data={data} />
             ) : (
                 <p>Loading notebook data...</p>
             )}

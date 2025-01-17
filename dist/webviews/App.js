@@ -31832,9 +31832,8 @@ var import_client = __toESM(require_client());
 init_define_process_env();
 var import_jsx_runtime = __toESM(require_jsx_runtime());
 var vscode = acquireVsCodeApi();
-var DEMO_CONTENT = `TLDR: Logistic regression applied to text classification using an n-gram based TF-IDF pipeline. The dataset undergoes initial analysis with procedures such as identifying unique values in categories, starting with {"unique value counting in 'Cat1', 'Cat2', and 'Cat3'"}[cell 7, 8, 9]. Text data is preprocessed and transformed into numerical format by {"text vectorization with word counting and n-gram feature extraction"}[cell 10, 11, 12]. Subsequently, {"a TF-IDF vectorizer is configured with a logistic regression model"}[cell 13] into a pipeline structure, before being trained and validated on stratified datasets {"training and test split for text features"}[cell 15]. The pipeline undergoes fitting and prediction steps using logistic regression logistics {"pipeline fitting on training data"}[cell 16] and {"predicting on validation data"}[cell 17]. Evaluation metrics such as {"accuracy score of predictions"}[cell 18] are used along with visualization tools like {"plotting confusion matrices"}[cell 21] and {"visualizing model coefficients"}[cell 23, 24]. Further exploration with ELI5 displays model weights and specific predictions in {"model interpretation via ELI5"}[cell 26, 28]. Subsequently, an additional transformation combines multiple categories for joint prediction by {"combining 'Cat2' and 'Cat3' into 'Cat2_Cat3'"}[cell 29, 30] with follow-up classification and accuracy assessment of the combined predictions {"accuracy evaluation of combined category predictions"}[cell 34, 37, 38].`;
 var FormattedText = ({
-  content = DEMO_CONTENT,
+  content,
   onLinkClick = (cellInfo) => console.log("Link clicked:", cellInfo)
 }) => {
   const parseTechDoc = (text = "") => {
@@ -31847,6 +31846,7 @@ var FormattedText = ({
       sections.push(text.slice(lastIndex, match.index));
       references2.push({
         content: match[1].trim(),
+        // reference text without braces
         cells: match[2].trim()
       });
       lastIndex = pattern.lastIndex;
@@ -31866,17 +31866,19 @@ var FormattedText = ({
       index < references2.length && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { onClick: () => {
         console.log("reference", references2[index], "index", index);
         onLinkClick(references2[index].cells);
-      }, className: "text-blue-600", children: references2[index].content })
+      }, style: { color: "blue", cursor: "pointer" }, children: references2[index].content.replace(/^['"]|['"]$/g, "") })
     ] }, index));
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md", children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "space-y-4", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { className: "text-2xl font-bold text-gray-800 mb-4", children: "Technical Documentation" }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "prose prose-lg text-gray-700 leading-relaxed", children: renderContent() }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "mt-8 pt-6 border-t border-gray-200", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { className: "text-lg font-semibold text-gray-700 mb-4", children: "Referenced Cells:" }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4" })
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "content-wrapper", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "narrative-container", children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { marginBottom: "1.5rem" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { style: { fontSize: "1.5rem", fontWeight: "bold", color: "#2D3748", marginBottom: "1rem" }, children: "Notebook Narrative" }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: "14px", color: "#4A5568" }, children: renderContent() })
+    ] }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "cells-container", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { style: { fontSize: "1.125rem", fontWeight: "600", color: "#4A5568", marginBottom: "1rem" }, children: "Referenced Cells:" }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { display: "grid", gridTemplateColumns: "1fr", gap: "1rem" } })
     ] })
-  ] }) });
+  ] });
 };
 function parseFirstCellNumber(cellsString) {
   const match = cellsString.match(/\d+/);
@@ -31892,7 +31894,7 @@ var Narrative = ({ data }) => {
     const payload = { type: "selectCell", index: cellIndex };
     vscode.postMessage(payload);
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "min-h-screen bg-gray-100 py-8", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormattedText, { onLinkClick: handleNodeSelect, content: data?.narrative }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FormattedText, { onLinkClick: handleNodeSelect, content: data?.narrative }) });
 };
 var Narrative_default = Narrative;
 
@@ -31917,7 +31919,7 @@ function App() {
       window.removeEventListener("message", handleMessage);
     };
   }, []);
-  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { children: data ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Narrative_default, {}) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: "Loading notebook data..." }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { children: data ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Narrative_default, { data }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: "Loading notebook data..." }) });
 }
 (function() {
   const rootElement = document.getElementById("app");

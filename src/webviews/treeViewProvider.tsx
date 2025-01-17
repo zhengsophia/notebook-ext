@@ -63,113 +63,113 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
 
             const codeCells = this.filterCodeCells(notebookJson);
             const prompt = this.generatePrompt(codeCells);
-            // const structuredOutput = await this.getStructuredOutput(prompt);
-            const structuredOutput = {
-                "groups": [
-                  {
-                    "name": "Data Preparation",
-                    "subgroups": [
-                      {
-                        "name": "Importing Libraries",
-                        "cells": [2]
-                      },
-                      {
-                        "name": "Loading Data",
-                        "cells": [1, 3]
-                      },
-                      {
-                        "name": "Data Exploration",
-                        "cells": [4, 5, 6, 7, 8, 9]
-                      }
-                    ]
-                  },
-                  {
-                    "name": "Text Vectorization and Feature Engineering",
-                    "subgroups": [
-                      {
-                        "name": "Manual Vectorization",
-                        "cells": [10]
-                      },
-                      {
-                        "name": "Count Vectorizer",
-                        "cells": [11, 12]
-                      },
-                      {
-                        "name": "TF-IDF Vectorizer",
-                        "cells": [13]
-                      }
-                    ]
-                  },
-                  {
-                    "name": "Model Training and Prediction",
-                    "subgroups": [
-                      {
-                        "name": "Train-Test Split",
-                        "cells": [14, 15]
-                      },
-                      {
-                        "name": "Model Training",
-                        "cells": [16]
-                      },
-                      {
-                        "name": "Prediction",
-                        "cells": [17]
-                      },
-                      {
-                        "name": "Evaluation Metrics",
-                        "cells": [18]
-                      }
-                    ]
-                  },
-                  {
-                    "name": "Visualization",
-                    "subgroups": [
-                      {
-                        "name": "Confusion Matrix",
-                        "cells": [19, 20, 21]
-                      },
-                      {
-                        "name": "Coefficient Visualization",
-                        "cells": [22, 23, 24]
-                      }
-                    ]
-                  },
-                  {
-                    "name": "Interpretability",
-                    "subgroups": [
-                      {
-                        "name": "Text Prediction Explanation",
-                        "cells": [25, 26, 27, 28]
-                      }
-                    ]
-                  },
-                  {
-                    "name": "Extended Analysis",
-                    "subgroups": [
-                      {
-                        "name": "Combined Categories Analysis",
-                        "cells": [29, 30, 31]
-                      },
-                      {
-                        "name": "Extended Train-Test Split",
-                        "cells": [32]
-                      },
-                      {
-                        "name": "Extended Model Training",
-                        "cells": [33]
-                      },
-                      {
-                        "name": "Extended Prediction",
-                        "cells": [34]
-                      },
-                      {
-                        "name": "Extended Evaluation Metrics",
-                        "cells": [35, 36, 37, 38]
-                      }
-                    ]
-                  }
-                ]
-              };
+            const structuredOutput = await this.getStructuredOutput(prompt);
+            // const structuredOutput = {
+            //     "groups": [
+            //       {
+            //         "name": "Data Preparation",
+            //         "subgroups": [
+            //           {
+            //             "name": "Importing Libraries",
+            //             "cells": [2]
+            //           },
+            //           {
+            //             "name": "Loading Data",
+            //             "cells": [1, 3]
+            //           },
+            //           {
+            //             "name": "Data Exploration",
+            //             "cells": [4, 5, 6, 7, 8, 9]
+            //           }
+            //         ]
+            //       },
+            //       {
+            //         "name": "Text Vectorization and Feature Engineering",
+            //         "subgroups": [
+            //           {
+            //             "name": "Manual Vectorization",
+            //             "cells": [10]
+            //           },
+            //           {
+            //             "name": "Count Vectorizer",
+            //             "cells": [11, 12]
+            //           },
+            //           {
+            //             "name": "TF-IDF Vectorizer",
+            //             "cells": [13]
+            //           }
+            //         ]
+            //       },
+            //       {
+            //         "name": "Model Training and Prediction",
+            //         "subgroups": [
+            //           {
+            //             "name": "Train-Test Split",
+            //             "cells": [14, 15]
+            //           },
+            //           {
+            //             "name": "Model Training",
+            //             "cells": [16]
+            //           },
+            //           {
+            //             "name": "Prediction",
+            //             "cells": [17]
+            //           },
+            //           {
+            //             "name": "Evaluation Metrics",
+            //             "cells": [18]
+            //           }
+            //         ]
+            //       },
+            //       {
+            //         "name": "Visualization",
+            //         "subgroups": [
+            //           {
+            //             "name": "Confusion Matrix",
+            //             "cells": [19, 20, 21]
+            //           },
+            //           {
+            //             "name": "Coefficient Visualization",
+            //             "cells": [22, 23, 24]
+            //           }
+            //         ]
+            //       },
+            //       {
+            //         "name": "Interpretability",
+            //         "subgroups": [
+            //           {
+            //             "name": "Text Prediction Explanation",
+            //             "cells": [25, 26, 27, 28]
+            //           }
+            //         ]
+            //       },
+            //       {
+            //         "name": "Extended Analysis",
+            //         "subgroups": [
+            //           {
+            //             "name": "Combined Categories Analysis",
+            //             "cells": [29, 30, 31]
+            //           },
+            //           {
+            //             "name": "Extended Train-Test Split",
+            //             "cells": [32]
+            //           },
+            //           {
+            //             "name": "Extended Model Training",
+            //             "cells": [33]
+            //           },
+            //           {
+            //             "name": "Extended Prediction",
+            //             "cells": [34]
+            //           },
+            //           {
+            //             "name": "Extended Evaluation Metrics",
+            //             "cells": [35, 36, 37, 38]
+            //           }
+            //         ]
+            //       }
+            //     ]
+            //   };
 
             console.log('LLM response', structuredOutput)
 
@@ -209,7 +209,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
 
         return `Please provide a technical summary of this notebook that:
 
-            Starts with a one-line summary
+            Starts with a one-sentence overview
             Omits standard data loading/import steps 
             Uses direct, factual language focused on key analytical decisions and data transformations
             References critical steps with cell numbers in this format: {"key phrase"}[cell number(s)] where the cell numbers are comma separated
@@ -217,7 +217,8 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
             Prioritizes describing concrete actions performed on the data
 
             Example format:
-            "TLDR: Analysis of customer churn using gradient boosting.
+            "This notebook is an analysis of customer churn using gradient boosting.
+            
             An {"initial exploratory analysis"}[cell 2,cell 3, cell 4] of the customer's {"spending patterns"}[cell 4] and corresponding segments. The data undergoes {"log transformation of numeric features"}[cell 8] followed by {"one-hot encoding of categorical variables"}[cell 9,10]. A {"random forest classifier"}[cell 15] identifies key predictive features, which inform feature selection for the final {"XGBoost model"}[cell 18]..."
             code: ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}
         `
@@ -247,7 +248,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         });
 
         try {
-            const openai = new OpenAI({ apiKey: "replace-with-your-key" });
+            const openai = new OpenAI({ apiKey: "secret" });
             const response = await openai.beta.chat.completions.parse({
                 model: 'gpt-4o-2024-08-06',
                 messages: [
