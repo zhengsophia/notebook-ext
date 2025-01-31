@@ -37,24 +37,26 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         // if any changes are made in the notebook editor
         vscode.window.onDidChangeActiveNotebookEditor((editor) => {
             if (editor) {
-                this.processNotebookLLM(editor);
+                this.processNotebook(editor);
             }
         });
 
         // initialization : when the extension in first opened
         const activeEditor = vscode.window.activeNotebookEditor;
         if (activeEditor) {
-            this.processNotebookLLM(activeEditor);
+            this.processNotebook(activeEditor);
         }
 
         this.setupMessageListener();
+
+        this.setupVariableListener();
 
         // setting the HTML content for the webview
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
     }
 
-    // aggregate method to get the LLM response for the notebook   
-    private async processNotebookLLM(editor: vscode.NotebookEditor) {
+    // first present the variables   
+    private async processNotebook(editor: vscode.NotebookEditor) {
         try {
             const notebookUri = editor.notebook.uri;
             const doc = await vscode.workspace.openTextDocument(notebookUri);
@@ -62,8 +64,13 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
             const notebookJson = JSON.parse(notebookData);
 
             const codeCells = this.filterCodeCells(notebookJson);
-            const prompt = this.generatePrompt(codeCells);
-            const structuredOutput = await this.getStructuredOutput(prompt);
+            const variables = await this.detectPythonVariables(codeCells);
+
+            // console.log('variables', variables)
+            this.sendVariablesToWebview(variables);
+
+            // const prompt = this.generatePrompt(variables, codeCells);
+            // const structuredOutput = await this.getStructuredOutput(prompt);
             // const structuredOutput = {
             //     "groups": [
             //       {
@@ -171,12 +178,46 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
             //     ]
             //   };
 
-            console.log('LLM response', structuredOutput)
+            // console.log('LLM response', structuredOutput)
 
-            this.sendDataToWebview(structuredOutput);
+            // this.sendTreeToWebview(structuredOutput);
         } catch (error) {
             console.error('Error processing notebook:', error);
             vscode.window.showErrorMessage('Failed to process notebook.');
+        }
+    }
+
+    // aggregate method to get the LLM response for the notebook   
+    private async processVariableTree(editor: any, variable: any) {
+        try {
+            const notebookUri = editor.notebook.uri;
+            const doc = await vscode.workspace.openTextDocument(notebookUri);
+            const notebookData = doc.getText();
+            const notebookJson = JSON.parse(notebookData);
+            const codeCells = this.filterCodeCells(notebookJson);
+
+            const prompt = this.generateVariablePrompt(variable, codeCells);
+            const structuredOutput = await this.getTreeOutput(prompt);
+
+            console.log('LLM response', structuredOutput)
+
+            this.sendTreeToWebview(structuredOutput);
+        } catch (error) {
+            console.error('Error processing notebook:', error);
+            vscode.window.showErrorMessage('Failed to process notebook.');
+        }
+    }
+
+    private setupVariableListener() {
+        if (this._view) {
+            this._view.webview.onDidReceiveMessage(async (message) => {
+                console.log('message', message.type)
+                switch (message.type) {
+                    case 'selectVariable':
+                        const editor = vscode.window.activeNotebookEditor;
+                        this.processVariableTree(editor, message.name);
+                }
+            });
         }
     }
 
@@ -191,13 +232,22 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     }
 
     private generatePrompt(codeCells: any[]) {
-        return `Analyze the following JSON of notebook cells and group them based on their functionality and/or structural patterns of analysis. Group should be the general pattern label, while subgroups label more specifically. Cell should specify the one or more cell numbers described by that subgroup.  
+        return `Analyze the following JSON of notebook cells and group the actions conducted on the given variable in terms of patterns of analysis.  
         
         ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}
         `;
     }
 
-    private async getStructuredOutput(prompt: string) {
+    private generateVariablePrompt(variable: any, codeCells: any[]) {
+        return `Analyze the following JSON of notebook cells and group the actions conducted on the given variable name throughout the analysis.  
+        
+        Variable: ${variable}; 
+
+        ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}
+        `;
+    }
+
+    private async getTreeOutput(prompt: string) {
         const Subgroup = z.object({
             name: z.string(),
             cells: z.array(z.number()),
@@ -213,14 +263,14 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         });
 
         try {
-            const openai = new OpenAI({ apiKey: "replace" });
+            const openai = new OpenAI({ apiKey: "key" });
             const response = await openai.beta.chat.completions.parse({
                 model: 'gpt-4o-2024-08-06',
                 messages: [
                     {
                         role: 'system',
                         content:
-                            'You are an expert in structured data extraction. Convert the provided notebook JSON into structured groups and subgroups.',
+                            'You are an expert in structured data extraction. Convert the provided notebook JSON into structured groups and subgroups for the specified variable name.',
                     },
                     { role: 'user', content: prompt },
                 ],
@@ -255,6 +305,28 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
       }
   }
 
+  private async detectPythonVariables(codeCells: any) {
+    // Regular expression to match variable assignments in Python (e.g., x = 10)
+    const variableRegex = /\b([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*.*$/;
+
+    // Extract variable names from the source code
+    const variables: Set<string> = new Set();
+
+    codeCells.forEach((cell: any) => {
+        cell.source.forEach((line: string) => {
+            const match = line.trim().match(variableRegex);
+            if (match) {
+                variables.add(match[1]);  // Add the variable name to the set
+            }
+        });
+    });
+
+    // console.log('variables', Array.from(variables))
+
+    return Array.from(variables); // Convert Set to Array
+  }
+
+  // takes selected cell from App 
     private setupMessageListener() {
         if (this._view) {
             this._view.webview.onDidReceiveMessage(async (message) => {
@@ -317,10 +389,28 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         }
     }
 
-    private sendDataToWebview(data: any) {
+    private sendVariablesToWebview(data: any) {
         if (this._view) {
             this._view.webview.postMessage({
-                command: 'fetchNotebookData',
+                command: 'fetchVariables',
+                data: data,
+            });
+        }
+    }
+
+    private sendTreeToWebview(data: any) {
+        if (this._view) {
+            this._view.webview.postMessage({
+                command: 'fetchTree',
+                data: data,
+            });
+        }
+    }
+
+    private sendNarrativeToWebview(data: any) {
+        if (this._view) {
+            this._view.webview.postMessage({
+                command: 'fetchTree',
                 data: data,
             });
         }

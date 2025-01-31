@@ -2,14 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-
-declare function acquireVsCodeApi(): {
-  postMessage: (message: any) => void;
-  getState: () => any;
-  setState: (state: any) => void;
-};
-
-const vscode = acquireVsCodeApi();
+import vscode from "./vscodeApi";
 
 const convertToTreeViewItems = (json: any, parentId = ""): TreeViewBaseItem[] => {
   return json.groups.map((group: any, groupIndex: number) => {
@@ -43,7 +36,7 @@ export default function BasicRichTreeView({ data }: { data: any }) {
       if (cellIndex) {
         console.log('current cell index', cellIndex)
         // Post the selected cell index to the VSCode extension
-        vscode.postMessage({ type: "selectCell", index: parseInt(cellIndex, 10) });
+        vscode?.postMessage({ type: "selectCell", index: parseInt(cellIndex, 10) });
       }
     }
   };

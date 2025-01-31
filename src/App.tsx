@@ -2,18 +2,26 @@ import * as React from 'react';
 import ReactDOM from 'react-dom/client';
 import './App.css';
 import BasicRichTreeView from './Tree';
+import List from './Variables';
 
 function App() {
-    const [treeData, setTreeData] = React.useState<any>(null);
+    const [variables, setVariables] = React.useState<any>(null);
+    const [tree, setTree] = React.useState<any>(null);
 
     React.useEffect(() => {
         // listening for messages from the extension via TreeViewProvider
         const handleMessage = (event: MessageEvent) => {
             const message = event.data;
-            if (message.command === 'fetchNotebookData') {
+            if (message.command === 'fetchVariables') {
                 console.log('Received data from TreeViewProvider:', message.data);
-                setTreeData(message.data);
+                setVariables(message.data);
             }
+
+            if (message.command === 'fetchTree') {
+                console.log('Received data from TreeViewProvider:', message.data);
+                setTree(message.data);
+            }
+
         };
 
         window.addEventListener('message', handleMessage);
@@ -25,11 +33,21 @@ function App() {
 
     return (
         <div>
-            {treeData ? (
-                <BasicRichTreeView data={treeData} />
-            ) : (
-                <p>Loading notebook data...</p>
-            )}
+            <div>
+                {variables ? (
+                    <List data={variables} />
+                ) : (
+                    <p>Loading notebook data...</p>
+                )}
+            </div>
+
+            <div>
+                {tree ? (
+                    <BasicRichTreeView data={tree} />
+                ) : (
+                    <p>Loading notebook data...</p>
+                )}
+            </div>
         </div>
     );
 }
