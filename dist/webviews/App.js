@@ -57868,11 +57868,75 @@ function List({ data }) {
   )) }) });
 }
 
-// src/App.tsx
+// src/Narrative.tsx
+init_define_process_env();
 var import_jsx_runtime3 = __toESM(require_jsx_runtime());
+var FormattedText = ({
+  content,
+  onLinkClick = (cellInfo) => console.log("Link clicked:", cellInfo)
+}) => {
+  const parseTechDoc = (text = "") => {
+    const references2 = [];
+    const sections = [];
+    let lastIndex = 0;
+    const pattern = /\{([^}]+)\}\[([^\]]+)\]/g;
+    let match2;
+    while ((match2 = pattern.exec(text)) !== null) {
+      sections.push(text.slice(lastIndex, match2.index));
+      references2.push({
+        content: match2[1].trim(),
+        // reference text without braces
+        cells: match2[2].trim()
+      });
+      lastIndex = pattern.lastIndex;
+    }
+    sections.push(text.slice(lastIndex));
+    console.log("sections", sections);
+    return { parts: sections, references: references2 };
+  };
+  const { parts, references } = parseTechDoc(content);
+  console.log("parts", parts);
+  const renderContent = () => {
+    const { parts: parts2, references: references2 } = parseTechDoc(content);
+    const sections = parts2;
+    console.log("secs", sections, "ref", references2);
+    return sections.map((section, index) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
+      section,
+      index < references2.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { onClick: () => {
+        console.log("reference", references2[index], "index", index);
+        onLinkClick(references2[index].cells);
+      }, style: { color: "blue", cursor: "pointer" }, children: references2[index].content.replace(/^['"]|['"]$/g, "") })
+    ] }, index));
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "content-wrapper", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "narrative-container", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { marginBottom: "1.5rem" }, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { style: { fontSize: "1.5rem", fontWeight: "bold", color: "#2D3748", marginBottom: "1rem" }, children: "Notebook Narrative" }),
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { fontSize: "14px", color: "#4A5568" }, children: renderContent() })
+  ] }) }) });
+};
+function parseFirstCellNumber(cellsString) {
+  const match2 = cellsString.match(/\d+/);
+  if (match2) {
+    return parseInt(match2[0], 10);
+  }
+  return null;
+}
+var Narrative = ({ data }) => {
+  const handleNodeSelect = (cellId) => {
+    const cellIndex = parseFirstCellNumber(cellId);
+    console.log("cellIndex", cellIndex, cellId);
+    const payload = { type: "selectCell", index: cellIndex };
+    vscodeApi_default?.postMessage(payload);
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(FormattedText, { onLinkClick: handleNodeSelect, content: data?.narrative }) });
+};
+var Narrative_default = Narrative;
+
+// src/App.tsx
+var import_jsx_runtime4 = __toESM(require_jsx_runtime());
 function App() {
   const [variables, setVariables] = React6.useState(null);
   const [tree, setTree] = React6.useState(null);
+  const [narrative, setNarrative] = React6.useState(null);
   React6.useEffect(() => {
     const handleMessage = (event) => {
       const message = event.data;
@@ -57884,22 +57948,27 @@ function App() {
         console.log("Received data from TreeViewProvider:", message.data);
         setTree(message.data);
       }
+      if (message.command === "fetchNarrative") {
+        console.log("Received data from TreeViewProvider:", message.data);
+        setNarrative(message.data);
+      }
     };
     window.addEventListener("message", handleMessage);
     return () => {
       window.removeEventListener("message", handleMessage);
     };
   }, []);
-  return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { children: variables ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(List, { data: variables }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "Loading notebook data..." }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { children: tree ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(BasicRichTreeView, { data: tree }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "Loading notebook data..." }) })
+  return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { children: variables ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(List, { data: variables }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { children: tree ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(BasicRichTreeView, { data: tree }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { children: narrative ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Narrative_default, { data: narrative }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." }) })
   ] });
 }
 (function() {
   const rootElement = document.getElementById("app");
   if (rootElement) {
     const root = import_client.default.createRoot(rootElement);
-    root.render(/* @__PURE__ */ (0, import_jsx_runtime3.jsx)(App, {}));
+    root.render(/* @__PURE__ */ (0, import_jsx_runtime4.jsx)(App, {}));
   } else {
     console.error("Root element not found.");
   }
