@@ -17258,8 +17258,8 @@ ${cell.source.join("\n")}`).join("\n\n")}
       narrative: z.string()
     });
     try {
-      const openai2 = new openai_default({ apiKey: "key" });
-      const response = await openai2.beta.chat.completions.parse({
+      const openai = new openai_default({ apiKey: "key" });
+      const response = await openai.beta.chat.completions.parse({
         model: "gpt-4o-2024-08-06",
         messages: [
           {
@@ -17292,6 +17292,7 @@ ${cell.source.join("\n")}`).join("\n\n")}
       groups: z.array(Group)
     });
     try {
+      const openai = new openai_default({ apiKey: "key" });
       const response = await openai.beta.chat.completions.parse({
         model: "gpt-4o-2024-08-06",
         messages: [

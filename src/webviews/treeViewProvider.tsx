@@ -344,6 +344,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         });
 
         try {
+            const openai = new OpenAI({ apiKey: "key" });
             const response = await openai.beta.chat.completions.parse({
                 model: 'gpt-4o-2024-08-06',
                 messages: [
