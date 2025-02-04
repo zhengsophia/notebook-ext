@@ -8,7 +8,10 @@ export default function List({ data }: { data: string[] }) {
   };
 
   return (
-    <div>
+    <div className="variables-container">
+      <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#2D3748', marginBottom: '1rem' }}>
+        Variables
+      </h2>
       <ul>
         {data.map((variable, index) => (
           <li

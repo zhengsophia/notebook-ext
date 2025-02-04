@@ -41,30 +41,28 @@ function App() {
     return (
         <div>
             <div>
-                {variables ? (
-                    <List data={variables} />
-                ) : (
-                    <p>Loading notebook data...</p>
-                )}
-            </div>
-
-            <div>
                 {tree ? (
                     <BasicRichTreeView data={tree} />
                 ) : (
                     <p>Loading notebook data...</p>
                 )}
             </div>
-
-            <div>
-                {narrative ? (
-                    <Narrative data={narrative} />
-                ) : (
-                    <p>Loading notebook data...</p>
-                )}
+    
+            <div className="content-wrapper">
+                    {variables ? (
+                        <List data={variables} />
+                    ) : (
+                        <p>Loading notebook data...</p>
+                    )}
+    
+                    {narrative ? (
+                        <Narrative data={narrative} />
+                    ) : (
+                        <p>Loading notebook data...</p>
+                    )}
             </div>
         </div>
-    );
+    );    
 }
 
 // iife for mounting the app

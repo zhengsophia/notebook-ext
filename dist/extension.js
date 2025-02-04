@@ -17138,19 +17138,23 @@ var TreeViewProvider = class {
     };
     vscode.window.onDidChangeActiveNotebookEditor((editor) => {
       if (editor) {
-        this.processNotebook(editor);
+        this.processVariables(editor);
+        console.log("Calling processTree...");
+        this.processTree(editor);
       }
     });
     const activeEditor = vscode.window.activeNotebookEditor;
     if (activeEditor) {
-      this.processNotebook(activeEditor);
+      this.processVariables(activeEditor);
+      console.log("Calling processTree...");
+      this.processTree(activeEditor);
     }
     this.setupMessageListener();
     this.setupVariableListener();
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
   }
   // first present the variables   
-  async processNotebook(editor) {
+  async processVariables(editor) {
     try {
       const notebookUri = editor.notebook.uri;
       const doc = await vscode.workspace.openTextDocument(notebookUri);
@@ -17165,20 +17169,21 @@ var TreeViewProvider = class {
     }
   }
   // aggregate method to get the LLM response for the notebook   
-  async processVariableTree(editor, variable) {
+  async processTree(editor) {
     try {
+      console.log("beginning tree");
       const notebookUri = editor.notebook.uri;
       const doc = await vscode.workspace.openTextDocument(notebookUri);
       const notebookData = doc.getText();
       const notebookJson = JSON.parse(notebookData);
       const codeCells = this.filterCodeCells(notebookJson);
-      const prompt = this.generateTreePrompt(variable, codeCells);
+      const prompt = this.generateTreePrompt(codeCells);
       const structuredOutput = await this.getTreeOutput(prompt);
       console.log("LLM response", structuredOutput);
       this.sendTreeToWebview(structuredOutput);
     } catch (error) {
       console.error("Error processing notebook:", error);
-      vscode.window.showErrorMessage("Failed to process notebook.");
+      vscode.window.showErrorMessage("Failed to process tree.");
     }
   }
   // process  
@@ -17205,7 +17210,6 @@ var TreeViewProvider = class {
         switch (message.type) {
           case "selectVariable":
             const editor = vscode.window.activeNotebookEditor;
-            this.processVariableTree(editor, message.name);
             this.processVariableNarrative(editor, message.name);
         }
       });
@@ -17218,67 +17222,64 @@ var TreeViewProvider = class {
       source: cell.source
     }));
   }
-  generatePrompt(codeCells) {
-    return `Analyze the following JSON of notebook cells and group the actions conducted on the given variable in terms of patterns of analysis.  
+  // private generatePrompt(codeCells: any[]) {
+  //     return `Analyze the following JSON of notebook cells and group the actions conducted on the given variable in terms of patterns of analysis.  
+  //     ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}
+  //     `;
+  // }
+  generateTreePrompt(codeCells) {
+    return `Analyze the following JSON of notebook cells and group them based on their functionality and/or structural patterns of analysis. Group should be the general pattern label, while subgroups label more specifically. Cell should specify the execution number of the one or more cells described by that subgroup.  
         
-        ${codeCells.map((cell, i2) => `Block ${i2 + 1}:
-${cell.source.join("\n")}`).join("\n\n")}
-        `;
-  }
-  generateTreePrompt(variable, codeCells) {
-    return `Analyze the following JSON of notebook cells and group the actions conducted on the given variable name throughout the analysis.  
-        
-        Variable: ${variable}; 
-
         ${codeCells.map((cell, i2) => `Block ${i2 + 1}:
 ${cell.source.join("\n")}`).join("\n\n")}
         `;
   }
   generateNarrativePrompt(variable, codeCells) {
-    return `Please provide a technical summary of this notebook with respect to the variable name specified that:
+    return `Please provide a technical summary of the given variable that:
 
         Starts with a one-sentence overview of actions performed on the variable 
-        Uses direct, factual language focused on key analytical decisions and data transformations
-        References critical steps with cell numbers in this format: {"key phrase"}[cell number(s)] where the cell numbers are comma separated
+        Uses direct, factual language focused on key analytical decisions
+        References critical steps with cell numbers in this format: {"key phrase"}[cell execution number(s)] where the cell numbers are comma separated
         Maintains an objective tone (avoid phrases like "this notebook explores...")
-        Prioritizes describing concrete actions performed on the data
+        Prioritizes describing concrete actions performed on the variable
+        The answer should be the summary itself, nothing else outputted.
 
-        Example format:
-        "This notebook is an analysis of customer churn using gradient boosting.
+        Here is an example output:
+        
+        "This variable is a dataframe describing customer churn rates.
         
         An {"initial exploratory analysis"}[cell 2,cell 3, cell 4] of the customer's {"spending patterns"}[cell 4] and corresponding segments. The data undergoes {"log transformation of numeric features"}[cell 8] followed by {"one-hot encoding of categorical variables"}[cell 9,10]. A {"random forest classifier"}[cell 15] identifies key predictive features, which inform feature selection for the final {"XGBoost model"}[cell 18]..."
         
-        Do this for variable ${variable}. 
-        code: ${codeCells.map((cell, i2) => `Block ${i2 + 1}:
+        Do this for variable ${variable}.
+
+        Here is the code: ${codeCells.map((cell, i2) => `Block ${i2 + 1}:
 ${cell.source.join("\n")}`).join("\n\n")}
     `;
   }
+  // LLM for narrative
   async getNarrativeOutput(prompt) {
-    const NotebookSummarization = z.object({
-      narrative: z.string()
+    const narrative = z.object({
+      text: z.string()
     });
     try {
       const openai = new openai_default({ apiKey: "key" });
-      const response = await openai.beta.chat.completions.parse({
+      const response = await openai.chat.completions.create({
         model: "gpt-4o-2024-08-06",
         messages: [
           {
             role: "system",
-            content: "You are an expert in structured data extraction. Convert the provided notebook JSON into a narrative for the specified variable name."
+            content: "You are an expert in structured data extraction. Convert the provided notebook JSON into a narrative for the specified variable."
           },
           { role: "user", content: prompt }
-        ],
-        response_format: zodResponseFormat(
-          NotebookSummarization,
-          "notebook_summarization"
-        )
+        ]
       });
-      return response.choices[0].message.parsed;
+      return response.choices[0].message.content;
     } catch (error) {
       console.error("Error fetching OpenAI response:", error);
       throw error;
     }
   }
+  // LLM for tree
   async getTreeOutput(prompt) {
     const Subgroup = z.object({
       name: z.string(),
@@ -17298,7 +17299,8 @@ ${cell.source.join("\n")}`).join("\n\n")}
         messages: [
           {
             role: "system",
-            content: "You are an expert in structured data extraction. Convert the provided notebook JSON into structured groups and subgroups for the specified variable name."
+            content: `You are an expert in structured data extraction. Convert the provided notebook JSON into structured groups and subgroups. 
+                             Cells is the cell execution number as it is in the JSON.`
           },
           { role: "user", content: prompt }
         ],

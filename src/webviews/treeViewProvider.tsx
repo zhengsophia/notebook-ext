@@ -37,18 +37,21 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         // if any changes are made in the notebook editor
         vscode.window.onDidChangeActiveNotebookEditor((editor) => {
             if (editor) {
-                this.processNotebook(editor);
+                this.processVariables(editor);
+                console.log('Calling processTree...');
+                this.processTree(editor);
             }
         });
 
         // initialization : when the extension in first opened
         const activeEditor = vscode.window.activeNotebookEditor;
         if (activeEditor) {
-            this.processNotebook(activeEditor);
+            this.processVariables(activeEditor);
+            console.log('Calling processTree...');
+            this.processTree(activeEditor);
         }
 
         this.setupMessageListener();
-
         this.setupVariableListener();
 
         // setting the HTML content for the webview
@@ -56,7 +59,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     }
 
     // first present the variables   
-    private async processNotebook(editor: vscode.NotebookEditor) {
+    private async processVariables(editor: vscode.NotebookEditor) {
         try {
             const notebookUri = editor.notebook.uri;
             const doc = await vscode.workspace.openTextDocument(notebookUri);
@@ -68,119 +71,6 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
 
             // console.log('variables', variables)
             this.sendVariablesToWebview(variables);
-
-            // const prompt = this.generatePrompt(variables, codeCells);
-            // const structuredOutput = await this.getStructuredOutput(prompt);
-            // const structuredOutput = {
-            //     "groups": [
-            //       {
-            //         "name": "Data Preparation",
-            //         "subgroups": [
-            //           {
-            //             "name": "Importing Libraries",
-            //             "cells": [2]
-            //           },
-            //           {
-            //             "name": "Loading Data",
-            //             "cells": [1, 3]
-            //           },
-            //           {
-            //             "name": "Data Exploration",
-            //             "cells": [4, 5, 6, 7, 8, 9]
-            //           }
-            //         ]
-            //       },
-            //       {
-            //         "name": "Text Vectorization and Feature Engineering",
-            //         "subgroups": [
-            //           {
-            //             "name": "Manual Vectorization",
-            //             "cells": [10]
-            //           },
-            //           {
-            //             "name": "Count Vectorizer",
-            //             "cells": [11, 12]
-            //           },
-            //           {
-            //             "name": "TF-IDF Vectorizer",
-            //             "cells": [13]
-            //           }
-            //         ]
-            //       },
-            //       {
-            //         "name": "Model Training and Prediction",
-            //         "subgroups": [
-            //           {
-            //             "name": "Train-Test Split",
-            //             "cells": [14, 15]
-            //           },
-            //           {
-            //             "name": "Model Training",
-            //             "cells": [16]
-            //           },
-            //           {
-            //             "name": "Prediction",
-            //             "cells": [17]
-            //           },
-            //           {
-            //             "name": "Evaluation Metrics",
-            //             "cells": [18]
-            //           }
-            //         ]
-            //       },
-            //       {
-            //         "name": "Visualization",
-            //         "subgroups": [
-            //           {
-            //             "name": "Confusion Matrix",
-            //             "cells": [19, 20, 21]
-            //           },
-            //           {
-            //             "name": "Coefficient Visualization",
-            //             "cells": [22, 23, 24]
-            //           }
-            //         ]
-            //       },
-            //       {
-            //         "name": "Interpretability",
-            //         "subgroups": [
-            //           {
-            //             "name": "Text Prediction Explanation",
-            //             "cells": [25, 26, 27, 28]
-            //           }
-            //         ]
-            //       },
-            //       {
-            //         "name": "Extended Analysis",
-            //         "subgroups": [
-            //           {
-            //             "name": "Combined Categories Analysis",
-            //             "cells": [29, 30, 31]
-            //           },
-            //           {
-            //             "name": "Extended Train-Test Split",
-            //             "cells": [32]
-            //           },
-            //           {
-            //             "name": "Extended Model Training",
-            //             "cells": [33]
-            //           },
-            //           {
-            //             "name": "Extended Prediction",
-            //             "cells": [34]
-            //           },
-            //           {
-            //             "name": "Extended Evaluation Metrics",
-            //             "cells": [35, 36, 37, 38]
-            //           }
-            //         ]
-            //       }
-            //     ]
-            //   };
-
-            // console.log('LLM response', structuredOutput)
-
-            // this.sendTreeToWebview(structuredOutput);
         } catch (error) {
             console.error('Error processing notebook:', error);
             vscode.window.showErrorMessage('Failed to process notebook.');
@@ -188,15 +78,16 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     }
 
     // aggregate method to get the LLM response for the notebook   
-    private async processVariableTree(editor: any, variable: any) {
+    private async processTree(editor: vscode.NotebookEditor) {
         try {
+            console.log('beginning tree')
             const notebookUri = editor.notebook.uri;
             const doc = await vscode.workspace.openTextDocument(notebookUri);
             const notebookData = doc.getText();
             const notebookJson = JSON.parse(notebookData);
             const codeCells = this.filterCodeCells(notebookJson);
 
-            const prompt = this.generateTreePrompt(variable, codeCells);
+            const prompt = this.generateTreePrompt(codeCells);
             const structuredOutput = await this.getTreeOutput(prompt);
 
             console.log('LLM response', structuredOutput)
@@ -204,7 +95,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
             this.sendTreeToWebview(structuredOutput);
         } catch (error) {
             console.error('Error processing notebook:', error);
-            vscode.window.showErrorMessage('Failed to process notebook.');
+            vscode.window.showErrorMessage('Failed to process tree.');
         }
     }
 
@@ -236,7 +127,6 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
                 switch (message.type) {
                     case 'selectVariable':
                         const editor = vscode.window.activeNotebookEditor;
-                        this.processVariableTree(editor, message.name);
                         this.processVariableNarrative(editor, message.name);
                 }
             });
@@ -253,81 +143,71 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
             }));
     }
 
-    private generatePrompt(codeCells: any[]) {
-        return `Analyze the following JSON of notebook cells and group the actions conducted on the given variable in terms of patterns of analysis.  
+    // private generatePrompt(codeCells: any[]) {
+    //     return `Analyze the following JSON of notebook cells and group the actions conducted on the given variable in terms of patterns of analysis.  
         
-        ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}
-        `;
-    }
+    //     ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}
+    //     `;
+    // }
 
-    private generateTreePrompt(variable: any, codeCells: any[]) {
-        return `Analyze the following JSON of notebook cells and group the actions conducted on the given variable name throughout the analysis.  
+    private generateTreePrompt(codeCells: any[]) {
+        return `Analyze the following JSON of notebook cells and group them based on their functionality and/or structural patterns of analysis. Group should be the general pattern label, while subgroups label more specifically. Cell should specify the execution number of the one or more cells described by that subgroup.  
         
-        Variable: ${variable}; 
-
         ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}
         `;
     }
 
     private generateNarrativePrompt(variable: any, codeCells: any[]) {
-        return `Please provide a technical summary of this notebook with respect to the variable name specified that:
+        return `Please provide a technical summary of the given variable that:
 
         Starts with a one-sentence overview of actions performed on the variable 
-        Uses direct, factual language focused on key analytical decisions and data transformations
-        References critical steps with cell numbers in this format: {"key phrase"}[cell number(s)] where the cell numbers are comma separated
+        Uses direct, factual language focused on key analytical decisions
+        References critical steps with cell numbers in this format: {"key phrase"}[cell execution number(s)] where the cell numbers are comma separated
         Maintains an objective tone (avoid phrases like "this notebook explores...")
-        Prioritizes describing concrete actions performed on the data
+        Prioritizes describing concrete actions performed on the variable
+        The answer should be the summary itself, nothing else outputted.
 
-        Example format:
-        "This notebook is an analysis of customer churn using gradient boosting.
+        Here is an example output:
+        
+        "This variable is a dataframe describing customer churn rates.
         
         An {"initial exploratory analysis"}[cell 2,cell 3, cell 4] of the customer's {"spending patterns"}[cell 4] and corresponding segments. The data undergoes {"log transformation of numeric features"}[cell 8] followed by {"one-hot encoding of categorical variables"}[cell 9,10]. A {"random forest classifier"}[cell 15] identifies key predictive features, which inform feature selection for the final {"XGBoost model"}[cell 18]..."
         
-        Do this for variable ${variable}. 
-        code: ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}
+        Do this for variable ${variable}.
+
+        Here is the code: ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}
     `
     }
 
+    // LLM for narrative
     private async getNarrativeOutput(prompt: string) {
-        // const Subgroup = z.object({
-        //     name: z.string(),
-        //     cells: z.array(z.number()),
-        // });
-
-        // const Group = z.object({
-        //     name: z.string(),
-        //     subgroups: z.array(Subgroup),
-        // });
-
-        const NotebookSummarization = z.object({
-            narrative: z.string()
+        const narrative = z.object({
+            text: z.string()
         });
 
         try {
             const openai = new OpenAI({ apiKey: "key" });
-            const response = await openai.beta.chat.completions.parse({
+            const response = await openai.chat.completions.create({
                 model: 'gpt-4o-2024-08-06',
                 messages: [
                     {
                         role: 'system',
                         content:
-                            'You are an expert in structured data extraction. Convert the provided notebook JSON into a narrative for the specified variable name.',
+                            'You are an expert in structured data extraction. Convert the provided notebook JSON into a narrative for the specified variable.',
                     },
                     { role: 'user', content: prompt },
                 ],
-                response_format: zodResponseFormat(
-                    NotebookSummarization,
-                    'notebook_summarization'
-                ),
             });
-
-            return response.choices[0].message.parsed;
+    
+            return response.choices[0].message.content;
         } catch (error) {
             console.error('Error fetching OpenAI response:', error);
             throw error;
         }
     }
 
+
+    // LLM for tree
     private async getTreeOutput(prompt: string) {
         const Subgroup = z.object({
             name: z.string(),
@@ -351,7 +231,8 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
                     {
                         role: 'system',
                         content:
-                            'You are an expert in structured data extraction. Convert the provided notebook JSON into structured groups and subgroups for the specified variable name.',
+                            `You are an expert in structured data extraction. Convert the provided notebook JSON into structured groups and subgroups. 
+                             Cells is the cell execution number as it is in the JSON.`,
                     },
                     { role: 'user', content: prompt },
                 ],

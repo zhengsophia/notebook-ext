@@ -57831,7 +57831,7 @@ function BasicRichTreeView({ data }) {
       }
     }
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_Box.default, { sx: { minHeight: 352, minWidth: 250 }, children: labels.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_Box.default, { sx: { minWidth: 250 }, children: labels.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
     import_RichTreeView.RichTreeView,
     {
       items: labels,
@@ -57854,18 +57854,21 @@ function List({ data }) {
     console.log(variableName);
     vscodeApi_default?.postMessage({ type: "selectVariable", name: variableName });
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("ul", { children: data.map((variable, index) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
-    "li",
-    {
-      onClick: () => handleClick(variable),
-      style: {
-        width: "fit-content",
-        display: "list-item"
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "variables-container", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h2", { style: { fontSize: "1.5rem", fontWeight: "bold", color: "#2D3748", marginBottom: "1rem" }, children: "Variables" }),
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("ul", { children: data.map((variable, index) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+      "li",
+      {
+        onClick: () => handleClick(variable),
+        style: {
+          width: "fit-content",
+          display: "list-item"
+        },
+        children: variable
       },
-      children: variable
-    },
-    index
-  )) }) });
+      index
+    )) })
+  ] });
 }
 
 // src/Narrative.tsx
@@ -57881,17 +57884,19 @@ var FormattedText = ({
     let lastIndex = 0;
     const pattern = /\{([^}]+)\}\[([^\]]+)\]/g;
     let match2;
+    console.log("Input text:", text);
     while ((match2 = pattern.exec(text)) !== null) {
+      console.log("Match found:", match2);
       sections.push(text.slice(lastIndex, match2.index));
       references2.push({
         content: match2[1].trim(),
-        // reference text without braces
         cells: match2[2].trim()
       });
       lastIndex = pattern.lastIndex;
     }
     sections.push(text.slice(lastIndex));
-    console.log("sections", sections);
+    console.log("Final sections:", sections);
+    console.log("Final references:", references2);
     return { parts: sections, references: references2 };
   };
   const { parts, references } = parseTechDoc(content);
@@ -57909,7 +57914,7 @@ var FormattedText = ({
     ] }, index));
   };
   return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "content-wrapper", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "narrative-container", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { marginBottom: "1.5rem" }, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { style: { fontSize: "1.5rem", fontWeight: "bold", color: "#2D3748", marginBottom: "1rem" }, children: "Notebook Narrative" }),
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { style: { fontSize: "1.5rem", fontWeight: "bold", color: "#2D3748", marginBottom: "1rem" }, children: "Narrative" }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { fontSize: "14px", color: "#4A5568" }, children: renderContent() })
   ] }) }) });
 };
@@ -57921,13 +57926,14 @@ function parseFirstCellNumber(cellsString) {
   return null;
 }
 var Narrative = ({ data }) => {
+  console.log("narrative", data);
   const handleNodeSelect = (cellId) => {
     const cellIndex = parseFirstCellNumber(cellId);
     console.log("cellIndex", cellIndex, cellId);
     const payload = { type: "selectCell", index: cellIndex };
     vscodeApi_default?.postMessage(payload);
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(FormattedText, { onLinkClick: handleNodeSelect, content: data?.narrative }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(FormattedText, { onLinkClick: handleNodeSelect, content: data }) });
 };
 var Narrative_default = Narrative;
 
@@ -57959,9 +57965,11 @@ function App() {
     };
   }, []);
   return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { children: variables ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(List, { data: variables }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." }) }),
     /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { children: tree ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(BasicRichTreeView, { data: tree }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { children: narrative ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Narrative_default, { data: narrative }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." }) })
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: "content-wrapper", children: [
+      variables ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(List, { data: variables }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." }),
+      narrative ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Narrative_default, { data: narrative }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." })
+    ] })
   ] });
 }
 (function() {

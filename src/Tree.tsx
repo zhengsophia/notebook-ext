@@ -42,7 +42,7 @@ export default function BasicRichTreeView({ data }: { data: any }) {
   };
 
   return (
-    <Box sx={{ minHeight: 352, minWidth: 250 }}>
+    <Box sx={{ minWidth: 250 }}>
       {labels.length > 0 ? (
         <RichTreeView 
         items={labels}

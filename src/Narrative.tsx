@@ -16,31 +16,37 @@ const FormattedText: React.FC<FormattedTextProps> = ({
   const parseTechDoc = (text = "") => {
     const references: any[] = [];
     const sections: string[] = [];
-    
+
     let lastIndex = 0;
     const pattern = /\{([^}]+)\}\[([^\]]+)\]/g;
     let match;
-  
-    // Iterate through all matches
+
+    console.log("Input text:", text);
+
     while ((match = pattern.exec(text)) !== null) {
-      // Add text before the match
-      sections.push(text.slice(lastIndex, match.index));
-      
-      // Add the reference
-      references.push({
-        content: match[1].trim(), // reference text without braces
-        cells: match[2].trim(),
-      });
-  
-      lastIndex = pattern.lastIndex;
+        console.log("Match found:", match);
+
+        // Push text before the match
+        sections.push(text.slice(lastIndex, match.index));
+
+        // Push reference object
+        references.push({
+            content: match[1].trim(),
+            cells: match[2].trim(),
+        });
+
+        lastIndex = pattern.lastIndex;
     }
-  
-    // Add any remaining text after the last match
+
+    // Add remaining text after the last match
     sections.push(text.slice(lastIndex));
-  
-    console.log('sections',sections);
-    return { parts:sections, references };
-  };
+
+    console.log("Final sections:", sections);
+    console.log("Final references:", references);
+
+    return { parts: sections, references };
+};
+
 
 
   const { parts, references } = parseTechDoc(content);
@@ -75,7 +81,7 @@ const FormattedText: React.FC<FormattedTextProps> = ({
       <div className="narrative-container">
         <div style={{ marginBottom: '1.5rem' }}>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#2D3748', marginBottom: '1rem' }}>
-            Notebook Narrative
+            Narrative
           </h2>
           <div style={{ fontSize: '14px', color: '#4A5568' }}>
             {renderContent()}
@@ -105,6 +111,8 @@ export function parseFirstCellNumber(cellsString: string): number | null {
 // Demo component showing the TechDocDisplay in action
 const Narrative = ({data}:any) => {
 
+  console.log('narrative', data)
+
   const handleNodeSelect = (cellId: string) => {
 
     const cellIndex = parseFirstCellNumber(cellId);
@@ -118,7 +126,7 @@ const Narrative = ({data}:any) => {
 
   return (
     <div>
-      <FormattedText onLinkClick={handleNodeSelect} content={data?.narrative} />
+      <FormattedText onLinkClick={handleNodeSelect} content={data} />
     </div>
   );
 };
