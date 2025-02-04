@@ -6442,7 +6442,7 @@ __export(extension_exports, {
 module.exports = __toCommonJS(extension_exports);
 var vscode2 = __toESM(require("vscode"));
 
-// src/webviews/TreeViewProvider.tsx
+// src/webviews/treeViewProvider.tsx
 var vscode = __toESM(require("vscode"));
 
 // node_modules/zod/lib/index.mjs
@@ -17120,7 +17120,7 @@ function zodResponseFormat(zodObject, name, props) {
   }, (content) => zodObject.parse(JSON.parse(content)));
 }
 
-// src/webviews/TreeViewProvider.tsx
+// src/webviews/treeViewProvider.tsx
 var TreeViewProvider = class {
   constructor(_extensionUri) {
     this._extensionUri = _extensionUri;
@@ -17138,31 +17138,81 @@ var TreeViewProvider = class {
     };
     vscode.window.onDidChangeActiveNotebookEditor((editor) => {
       if (editor) {
-        this.processNotebookLLM(editor);
+        this.processVariables(editor);
+        console.log("Calling processTree...");
+        this.processTree(editor);
       }
     });
     const activeEditor = vscode.window.activeNotebookEditor;
     if (activeEditor) {
-      this.processNotebookLLM(activeEditor);
+      this.processVariables(activeEditor);
+      console.log("Calling processTree...");
+      this.processTree(activeEditor);
     }
     this.setupMessageListener();
+    this.setupVariableListener();
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
   }
-  // aggregate method to get the LLM response for the notebook   
-  async processNotebookLLM(editor) {
+  // first present the variables   
+  async processVariables(editor) {
     try {
       const notebookUri = editor.notebook.uri;
       const doc = await vscode.workspace.openTextDocument(notebookUri);
       const notebookData = doc.getText();
       const notebookJson = JSON.parse(notebookData);
       const codeCells = this.filterCodeCells(notebookJson);
-      const prompt = this.generatePrompt(codeCells);
-      const structuredOutput = await this.getStructuredOutput(prompt);
-      console.log("LLM response", structuredOutput);
-      this.sendDataToWebview(structuredOutput);
+      const variables = await this.detectPythonVariables(codeCells);
+      this.sendVariablesToWebview(variables);
     } catch (error) {
       console.error("Error processing notebook:", error);
       vscode.window.showErrorMessage("Failed to process notebook.");
+    }
+  }
+  // aggregate method to get the LLM response for the notebook   
+  async processTree(editor) {
+    try {
+      console.log("beginning tree");
+      const notebookUri = editor.notebook.uri;
+      const doc = await vscode.workspace.openTextDocument(notebookUri);
+      const notebookData = doc.getText();
+      const notebookJson = JSON.parse(notebookData);
+      const codeCells = this.filterCodeCells(notebookJson);
+      const prompt = this.generateTreePrompt(codeCells);
+      const structuredOutput = await this.getTreeOutput(prompt);
+      console.log("LLM response", structuredOutput);
+      this.sendTreeToWebview(structuredOutput);
+    } catch (error) {
+      console.error("Error processing notebook:", error);
+      vscode.window.showErrorMessage("Failed to process tree.");
+    }
+  }
+  // process  
+  async processVariableNarrative(editor, variable) {
+    try {
+      const notebookUri = editor.notebook.uri;
+      const doc = await vscode.workspace.openTextDocument(notebookUri);
+      const notebookData = doc.getText();
+      const notebookJson = JSON.parse(notebookData);
+      const codeCells = this.filterCodeCells(notebookJson);
+      const prompt = this.generateNarrativePrompt(variable, codeCells);
+      const structuredOutput = await this.getNarrativeOutput(prompt);
+      console.log("LLM response", structuredOutput);
+      this.sendNarrativeToWebview(structuredOutput);
+    } catch (error) {
+      console.error("Error processing notebook:", error);
+      vscode.window.showErrorMessage("Failed to process notebook.");
+    }
+  }
+  setupVariableListener() {
+    if (this._view) {
+      this._view.webview.onDidReceiveMessage(async (message) => {
+        console.log("message", message.type);
+        switch (message.type) {
+          case "selectVariable":
+            const editor = vscode.window.activeNotebookEditor;
+            this.processVariableNarrative(editor, message.name);
+        }
+      });
     }
   }
   filterCodeCells(notebook) {
@@ -17172,14 +17222,65 @@ var TreeViewProvider = class {
       source: cell.source
     }));
   }
-  generatePrompt(codeCells) {
-    return `Analyze the following JSON of notebook cells and group them based on their functionality and/or structural patterns of analysis. Group should be the general pattern label, while subgroups label more specifically. Cell should specify the one or more cell numbers described by that subgroup.  
+  // private generatePrompt(codeCells: any[]) {
+  //     return `Analyze the following JSON of notebook cells and group the actions conducted on the given variable in terms of patterns of analysis.  
+  //     ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}
+  //     `;
+  // }
+  generateTreePrompt(codeCells) {
+    return `Analyze the following JSON of notebook cells and group them based on their functionality and/or structural patterns of analysis. Group should be the general pattern label, while subgroups label more specifically. Cell should specify the execution number of the one or more cells described by that subgroup.  
         
         ${codeCells.map((cell, i2) => `Block ${i2 + 1}:
 ${cell.source.join("\n")}`).join("\n\n")}
         `;
   }
-  async getStructuredOutput(prompt) {
+  generateNarrativePrompt(variable, codeCells) {
+    return `Please provide a technical summary of the given variable that:
+
+        Starts with a one-sentence overview of actions performed on the variable 
+        Uses direct, factual language focused on key analytical decisions
+        References critical steps with cell numbers in this format: {"key phrase"}[cell execution number(s)] where the cell numbers are comma separated
+        Maintains an objective tone (avoid phrases like "this notebook explores...")
+        Prioritizes describing concrete actions performed on the variable
+        The answer should be the summary itself, nothing else outputted.
+
+        Here is an example output:
+        
+        "This variable is a dataframe describing customer churn rates.
+        
+        An {"initial exploratory analysis"}[cell 2,cell 3, cell 4] of the customer's {"spending patterns"}[cell 4] and corresponding segments. The data undergoes {"log transformation of numeric features"}[cell 8] followed by {"one-hot encoding of categorical variables"}[cell 9,10]. A {"random forest classifier"}[cell 15] identifies key predictive features, which inform feature selection for the final {"XGBoost model"}[cell 18]..."
+        
+        Do this for variable ${variable}.
+
+        Here is the code: ${codeCells.map((cell, i2) => `Block ${i2 + 1}:
+${cell.source.join("\n")}`).join("\n\n")}
+    `;
+  }
+  // LLM for narrative
+  async getNarrativeOutput(prompt) {
+    const narrative = z.object({
+      text: z.string()
+    });
+    try {
+      const openai = new openai_default({ apiKey: "key" });
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-2024-08-06",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert in structured data extraction. Convert the provided notebook JSON into a narrative for the specified variable."
+          },
+          { role: "user", content: prompt }
+        ]
+      });
+      return response.choices[0].message.content;
+    } catch (error) {
+      console.error("Error fetching OpenAI response:", error);
+      throw error;
+    }
+  }
+  // LLM for tree
+  async getTreeOutput(prompt) {
     const Subgroup = z.object({
       name: z.string(),
       cells: z.array(z.number())
@@ -17192,13 +17293,14 @@ ${cell.source.join("\n")}`).join("\n\n")}
       groups: z.array(Group)
     });
     try {
-      const openai = new openai_default({ apiKey: "replace" });
+      const openai = new openai_default({ apiKey: "key" });
       const response = await openai.beta.chat.completions.parse({
         model: "gpt-4o-2024-08-06",
         messages: [
           {
             role: "system",
-            content: "You are an expert in structured data extraction. Convert the provided notebook JSON into structured groups and subgroups."
+            content: `You are an expert in structured data extraction. Convert the provided notebook JSON into structured groups and subgroups. 
+                             Cells is the cell execution number as it is in the JSON.`
           },
           { role: "user", content: prompt }
         ],
@@ -17224,6 +17326,20 @@ ${cell.source.join("\n")}`).join("\n\n")}
       });
     }
   }
+  async detectPythonVariables(codeCells) {
+    const variableRegex = /\b([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*.*$/;
+    const variables = /* @__PURE__ */ new Set();
+    codeCells.forEach((cell) => {
+      cell.source.forEach((line) => {
+        const match = line.trim().match(variableRegex);
+        if (match) {
+          variables.add(match[1]);
+        }
+      });
+    });
+    return Array.from(variables);
+  }
+  // takes selected cell from App 
   setupMessageListener() {
     if (this._view) {
       this._view.webview.onDidReceiveMessage(async (message) => {
@@ -17260,10 +17376,26 @@ ${cell.source.join("\n")}`).join("\n\n")}
       });
     }
   }
-  sendDataToWebview(data) {
+  sendVariablesToWebview(data) {
     if (this._view) {
       this._view.webview.postMessage({
-        command: "fetchNotebookData",
+        command: "fetchVariables",
+        data
+      });
+    }
+  }
+  sendTreeToWebview(data) {
+    if (this._view) {
+      this._view.webview.postMessage({
+        command: "fetchTree",
+        data
+      });
+    }
+  }
+  sendNarrativeToWebview(data) {
+    if (this._view) {
+      this._view.webview.postMessage({
+        command: "fetchNarrative",
         data
       });
     }
