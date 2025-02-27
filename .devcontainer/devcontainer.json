@@ -1,5 +1,5 @@
 {
-    "name": "reimagined happiness",
+    "name": "notebook-ext codespace",
     "image": "mcr.microsoft.com/devcontainers/javascript-node:latest",
     "customizations": {
       "vscode": {
