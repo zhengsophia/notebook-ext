@@ -1,0 +1,15 @@
+{
+    "name": "reimagined happiness",
+    "image": "mcr.microsoft.com/devcontainers/javascript-node:latest",
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "connor4312.esbuild-problem-matchers"
+        ]
+      },
+      "settings": {
+      "editor.formatOnSave": true
+      }
+    }
+  }
+  
