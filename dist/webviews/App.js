@@ -37,7 +37,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var define_process_env_default;
 var init_define_process_env = __esm({
   "<define:process.env>"() {
-    define_process_env_default = { TERM_PROGRAM: "vscode", NODE: "/usr/local/bin/node", GEM_HOME: "/Users/sophiazheng/.gem/ruby/3.1.3", INIT_CWD: "/Users/sophiazheng/Documents/GitHub/notebook-ext", TERM: "xterm-256color", SHELL: "/bin/zsh", HOMEBREW_REPOSITORY: "/opt/homebrew", TMPDIR: "/var/folders/vn/skw3dlhd3y79vqz8w4rvqf000000gn/T/", npm_config_global_prefix: "/Users/sophiazheng/.npm-global", TERM_PROGRAM_VERSION: "1.96.4", ORIGINAL_XDG_CURRENT_DESKTOP: "undefined", MallocNanoZone: "0", COLOR: "1", npm_config_noproxy: "", npm_config_local_prefix: "/Users/sophiazheng/Documents/GitHub/notebook-ext", USER: "sophiazheng", COMMAND_MODE: "unix2003", npm_package_engines_vscode: "^1.96.0", npm_config_globalconfig: "/Users/sophiazheng/.npm-global/etc/npmrc", SSH_AUTH_SOCK: "/private/tmp/com.apple.launchd.dpcAjt9Jk7/Listeners", __CF_USER_TEXT_ENCODING: "0x1F5:0x0:0x0", npm_execpath: "/usr/local/lib/node_modules/npm/bin/npm-cli.js", PATH: "/Users/sophiazheng/Documents/GitHub/notebook-ext/node_modules/.bin:/Users/sophiazheng/Documents/GitHub/node_modules/.bin:/Users/sophiazheng/Documents/node_modules/.bin:/Users/sophiazheng/node_modules/.bin:/Users/node_modules/.bin:/node_modules/.bin:/usr/local/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/node-gyp-bin:/Users/sophiazheng/Documents/GitHub/notebook-ext/node_modules/.bin:/Users/sophiazheng/Documents/GitHub/node_modules/.bin:/Users/sophiazheng/Documents/node_modules/.bin:/Users/sophiazheng/node_modules/.bin:/Users/node_modules/.bin:/node_modules/.bin:/usr/local/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/node-gyp-bin:/Users/sophiazheng/.rbenv/shims:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Users/sophiazheng/.gem/ruby/3.1.3/bin:/Users/sophiazheng/.rubies/ruby-3.1.3/lib/ruby/gems/3.1.0/bin:/Users/sophiazheng/.rubies/ruby-3.1.3/bin:/Library/Frameworks/Python.framework/Versions/3.12/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Library/Frameworks/Python.framework/Versions/3.9/bin:/Users/sophiazheng/.local/bin", _: "/usr/local/bin/node", npm_package_json: "/Users/sophiazheng/Documents/GitHub/notebook-ext/package.json", __CFBundleIdentifier: "com.microsoft.VSCode", npm_config_init_module: "/Users/sophiazheng/.npm-init.js", npm_config_userconfig: "/Users/sophiazheng/.npmrc", PWD: "/Users/sophiazheng/Documents/GitHub/notebook-ext", npm_command: "run-script", EDITOR: "vi", npm_lifecycle_event: "watch:webviews", LANG: "en_US.UTF-8", npm_package_name: "notebook-ext", VSCODE_GIT_ASKPASS_EXTRA_ARGS: "", XPC_FLAGS: "0x0", npm_config_npm_version: "10.8.2", RUBY_ENGINE: "ruby", RBENV_SHELL: "bash", npm_config_node_gyp: "/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js", XPC_SERVICE_NAME: "0", npm_package_version: "0.0.1", SHLVL: "3", HOME: "/Users/sophiazheng", VSCODE_GIT_ASKPASS_MAIN: "/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass-main.js", GEM_ROOT: "/Users/sophiazheng/.rubies/ruby-3.1.3/lib/ruby/gems/3.1.0", HOMEBREW_PREFIX: "/opt/homebrew", LOGNAME: "sophiazheng", npm_config_cache: "/Users/sophiazheng/.npm", npm_lifecycle_script: "node esbuild.webviews.mjs --watch", VSCODE_GIT_IPC_HANDLE: "/var/folders/vn/skw3dlhd3y79vqz8w4rvqf000000gn/T/vscode-git-43e07d1bef.sock", GEM_PATH: "/Users/sophiazheng/.gem/ruby/3.1.3:/Users/sophiazheng/.rubies/ruby-3.1.3/lib/ruby/gems/3.1.0", RUBY_ROOT: "/Users/sophiazheng/.rubies/ruby-3.1.3", npm_config_user_agent: "npm/10.8.2 node/v20.17.0 darwin arm64 workspaces/false", VSCODE_GIT_ASKPASS_NODE: "/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (Plugin).app/Contents/MacOS/Code Helper (Plugin)", GIT_ASKPASS: "/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass.sh", INFOPATH: "/opt/homebrew/share/info:", HOMEBREW_CELLAR: "/opt/homebrew/Cellar", RUBYOPT: "", RUBY_VERSION: "3.1.3", COLORTERM: "truecolor", npm_config_prefix: "/Users/sophiazheng/.npm-global", npm_node_execpath: "/usr/local/bin/node" };
+    define_process_env_default = { TERM_PROGRAM: "vscode", NODE: "/usr/local/bin/node", GEM_HOME: "/Users/sophiazheng/.gem/ruby/3.1.3", INIT_CWD: "/Users/sophiazheng/Documents/GitHub/notebook-ext", TERM: "xterm-256color", SHELL: "/bin/zsh", HOMEBREW_REPOSITORY: "/opt/homebrew", TMPDIR: "/var/folders/vn/skw3dlhd3y79vqz8w4rvqf000000gn/T/", npm_config_global_prefix: "/Users/sophiazheng/.npm-global", TERM_PROGRAM_VERSION: "1.97.2", ORIGINAL_XDG_CURRENT_DESKTOP: "undefined", MallocNanoZone: "0", COLOR: "1", npm_config_noproxy: "", npm_config_local_prefix: "/Users/sophiazheng/Documents/GitHub/notebook-ext", USER: "sophiazheng", COMMAND_MODE: "unix2003", npm_package_engines_vscode: "^1.96.0", npm_config_globalconfig: "/Users/sophiazheng/.npm-global/etc/npmrc", SSH_AUTH_SOCK: "/private/tmp/com.apple.launchd.YEliMZpr3B/Listeners", __CF_USER_TEXT_ENCODING: "0x1F5:0x0:0x0", npm_execpath: "/usr/local/lib/node_modules/npm/bin/npm-cli.js", PATH: "/Users/sophiazheng/Documents/GitHub/notebook-ext/node_modules/.bin:/Users/sophiazheng/Documents/GitHub/node_modules/.bin:/Users/sophiazheng/Documents/node_modules/.bin:/Users/sophiazheng/node_modules/.bin:/Users/node_modules/.bin:/node_modules/.bin:/usr/local/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/node-gyp-bin:/Users/sophiazheng/Documents/GitHub/notebook-ext/node_modules/.bin:/Users/sophiazheng/Documents/GitHub/node_modules/.bin:/Users/sophiazheng/Documents/node_modules/.bin:/Users/sophiazheng/node_modules/.bin:/Users/node_modules/.bin:/node_modules/.bin:/usr/local/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/node-gyp-bin:/Users/sophiazheng/.rbenv/shims:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Users/sophiazheng/.gem/ruby/3.1.3/bin:/Users/sophiazheng/.rubies/ruby-3.1.3/lib/ruby/gems/3.1.0/bin:/Users/sophiazheng/.rubies/ruby-3.1.3/bin:/Library/Frameworks/Python.framework/Versions/3.12/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Library/Frameworks/Python.framework/Versions/3.9/bin:/Users/sophiazheng/.local/bin", LaunchInstanceID: "D35083FA-13EB-485B-8AAD-388ADB380DFB", _: "/usr/local/bin/node", npm_package_json: "/Users/sophiazheng/Documents/GitHub/notebook-ext/package.json", __CFBundleIdentifier: "com.microsoft.VSCode", npm_config_init_module: "/Users/sophiazheng/.npm-init.js", npm_config_userconfig: "/Users/sophiazheng/.npmrc", PWD: "/Users/sophiazheng/Documents/GitHub/notebook-ext", npm_command: "run-script", EDITOR: "vi", npm_lifecycle_event: "watch:webviews", LANG: "en_US.UTF-8", npm_package_name: "notebook-ext", VSCODE_GIT_ASKPASS_EXTRA_ARGS: "", XPC_FLAGS: "0x0", npm_config_npm_version: "10.8.2", RUBY_ENGINE: "ruby", RBENV_SHELL: "bash", npm_config_node_gyp: "/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js", XPC_SERVICE_NAME: "0", npm_package_version: "0.0.1", SHLVL: "3", HOME: "/Users/sophiazheng", VSCODE_GIT_ASKPASS_MAIN: "/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass-main.js", GEM_ROOT: "/Users/sophiazheng/.rubies/ruby-3.1.3/lib/ruby/gems/3.1.0", HOMEBREW_PREFIX: "/opt/homebrew", LOGNAME: "sophiazheng", npm_config_cache: "/Users/sophiazheng/.npm", npm_lifecycle_script: "node esbuild.webviews.mjs --watch", VSCODE_GIT_IPC_HANDLE: "/var/folders/vn/skw3dlhd3y79vqz8w4rvqf000000gn/T/vscode-git-43e07d1bef.sock", GEM_PATH: "/Users/sophiazheng/.gem/ruby/3.1.3:/Users/sophiazheng/.rubies/ruby-3.1.3/lib/ruby/gems/3.1.0", RUBY_ROOT: "/Users/sophiazheng/.rubies/ruby-3.1.3", npm_config_user_agent: "npm/10.8.2 node/v20.17.0 darwin arm64 workspaces/false", VSCODE_GIT_ASKPASS_NODE: "/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (Plugin).app/Contents/MacOS/Code Helper (Plugin)", GIT_ASKPASS: "/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass.sh", INFOPATH: "/opt/homebrew/share/info:", HOMEBREW_CELLAR: "/opt/homebrew/Cellar", RUBYOPT: "", RUBY_VERSION: "3.1.3", SECURITYSESSIONID: "186ab", COLORTERM: "truecolor", npm_config_prefix: "/Users/sophiazheng/.npm-global", npm_node_execpath: "/usr/local/bin/node" };
   }
 });
 
@@ -57798,29 +57798,35 @@ var vscodeApi_default = vscode;
 
 // src/Tree.tsx
 var import_jsx_runtime = __toESM(require_jsx_runtime());
-var convertToTreeViewItems = (json, parentId = "") => {
+var convertToTreeViewItems = (json, narrativeMapping, parentId = "") => {
   return json.groups.map((group, groupIndex) => {
     const groupId = `${parentId}group-${groupIndex}`;
     return {
       id: groupId,
       label: group.name,
+      // Basic string label for groups
       children: group.subgroups.map((subgroup, subgroupIndex) => {
         const subgroupId = `${groupId}-subgroup-${subgroupIndex}`;
+        const subgroupSentences = subgroup.cells.flatMap(
+          (cell) => (narrativeMapping[cell] || []).map((sentence, i) => ({
+            id: `${subgroupId}-narrative-${cell}-${i}`,
+            label: `${sentence}`
+            // labelComponent: <NarrativeLabel sentence={sentence} className="custom-narrative-label" />, // Send sentence here
+          }))
+        );
         return {
           id: subgroupId,
           label: subgroup.name,
-          children: subgroup.cells.map((cell) => ({
-            id: `${subgroupId}-cell-${cell}`,
-            label: `Cell ${cell}`,
-            index: cell
-          }))
+          children: subgroupSentences
         };
       })
     };
   });
 };
-function BasicRichTreeView({ data }) {
-  const labels = React5.useMemo(() => convertToTreeViewItems(data), [data]);
+function BasicRichTreeView({ data, narrativeMapping }) {
+  console.log("narrative mapping", narrativeMapping);
+  const labels = React5.useMemo(() => convertToTreeViewItems(data, narrativeMapping), [data, narrativeMapping]);
+  console.log("converted items", labels);
   const handleNodeSelect = (event, nodeId) => {
     if (nodeId.includes("cell")) {
       const cellIndex = nodeId.split("-cell-").pop();
@@ -57855,15 +57861,12 @@ function List({ data }) {
     vscodeApi_default?.postMessage({ type: "selectVariable", name: variableName });
   };
   return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "variables-container", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h2", { style: { fontSize: "1.5rem", fontWeight: "bold", color: "#2D3748", marginBottom: "1rem" }, children: "Variables" }),
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("ul", { children: data.map((variable, index) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
-      "li",
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h2", { className: "variables-title", children: "Variables" }),
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "variables-list", children: data.map((variable, index) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+      "span",
       {
         onClick: () => handleClick(variable),
-        style: {
-          width: "fit-content",
-          display: "list-item"
-        },
+        className: "variable-tag",
         children: variable
       },
       index
@@ -57939,10 +57942,26 @@ var Narrative_default = Narrative;
 
 // src/App.tsx
 var import_jsx_runtime4 = __toESM(require_jsx_runtime());
+function extractCellReferences(text) {
+  const cellRegex = /\{"([^"}]+)"}\[cell (\d+)]/g;
+  const sentences = text.match(/[^.?!]+[.?!]/g) || [text];
+  const extracted = {};
+  for (const sentence of sentences) {
+    let match2;
+    while ((match2 = cellRegex.exec(sentence)) !== null) {
+      const cellNumber = parseInt(match2[2], 10);
+      if (!extracted[cellNumber]) extracted[cellNumber] = [];
+      extracted[cellNumber].push(sentence.trim());
+    }
+  }
+  console.log("extracted", extracted);
+  return extracted;
+}
 function App() {
   const [variables, setVariables] = React6.useState(null);
   const [tree, setTree] = React6.useState(null);
   const [narrative, setNarrative] = React6.useState(null);
+  const [narrativeMapping, setNarrativeMapping] = React6.useState({});
   React6.useEffect(() => {
     const handleMessage = (event) => {
       const message = event.data;
@@ -57957,6 +57976,7 @@ function App() {
       if (message.command === "fetchNarrative") {
         console.log("Received data from TreeViewProvider:", message.data);
         setNarrative(message.data);
+        setNarrativeMapping(extractCellReferences(message.data));
       }
     };
     window.addEventListener("message", handleMessage);
@@ -57965,11 +57985,11 @@ function App() {
     };
   }, []);
   return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { children: tree ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(BasicRichTreeView, { data: tree }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: "content-wrapper", children: [
-      variables ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(List, { data: variables }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." }),
-      narrative ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Narrative_default, { data: narrative }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." })
-    ] })
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: "top-section", children: [
+      tree ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(BasicRichTreeView, { data: tree, narrativeMapping }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." }),
+      variables ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(List, { data: variables }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { children: narrative ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Narrative_default, { data: narrative }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." }) })
   ] });
 }
 (function() {
