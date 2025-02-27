@@ -17262,7 +17262,7 @@ ${cell.source.join("\n")}`).join("\n\n")}
       text: z.string()
     });
     try {
-      const openai = new openai_default({ apiKey: "key" });
+      const openai = new openai_default({ apiKey: "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" });
       const response = await openai.chat.completions.create({
         model: "gpt-4o-2024-08-06",
         messages: [
@@ -17293,7 +17293,7 @@ ${cell.source.join("\n")}`).join("\n\n")}
       groups: z.array(Group)
     });
     try {
-      const openai = new openai_default({ apiKey: "key" });
+      const openai = new openai_default({ apiKey: "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" });
       const response = await openai.beta.chat.completions.parse({
         model: "gpt-4o-2024-08-06",
         messages: [
