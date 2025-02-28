@@ -81,7 +81,7 @@ const FormattedText: React.FC<FormattedTextProps> = ({
       <div className="narrative-container">
         <div style={{ marginBottom: '1.5rem' }}>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#2D3748', marginBottom: '1rem' }}>
-            Narrative
+            Textual Summary
           </h2>
           <div style={{ fontSize: '14px', color: '#4A5568' }}>
             {renderContent()}

@@ -59039,7 +59039,7 @@ var FormattedText = ({
     ] }, index));
   };
   return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "content-wrapper", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "narrative-container", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { marginBottom: "1.5rem" }, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { style: { fontSize: "1.5rem", fontWeight: "bold", color: "#2D3748", marginBottom: "1rem" }, children: "Narrative" }),
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { style: { fontSize: "1.5rem", fontWeight: "bold", color: "#2D3748", marginBottom: "1rem" }, children: "Textual Summary" }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { fontSize: "14px", color: "#4A5568" }, children: renderContent() })
   ] }) }) });
 };
