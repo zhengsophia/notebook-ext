@@ -17262,9 +17262,9 @@ ${cell.source.join("\n")}`).join("\n\n")}
       text: z.string()
     });
     try {
-      const openai = new openai_default({ apiKey: "key" });
+      const openai = new openai_default({ apiKey: "REPLACE" });
       const response = await openai.chat.completions.create({
-        model: "gpt-4o-2024-08-06",
+        model: "gpt-4o-2024-11-20",
         messages: [
           {
             role: "system",
@@ -17293,9 +17293,9 @@ ${cell.source.join("\n")}`).join("\n\n")}
       groups: z.array(Group)
     });
     try {
-      const openai = new openai_default({ apiKey: "key" });
+      const openai = new openai_default({ apiKey: "REPLACE" });
       const response = await openai.beta.chat.completions.parse({
-        model: "gpt-4o-2024-08-06",
+        model: "gpt-4o-2024-11-20",
         messages: [
           {
             role: "system",
