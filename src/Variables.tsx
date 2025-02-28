@@ -1,8 +1,12 @@
 import * as React from 'react';
 import vscode from "./vscodeApi";
+import { useState } from "react";
+
 
 export default function List({ data }: { data: string[] }) {
+  const [selectedVariable, setSelectedVariable] = useState<string | null>(null);
   const handleClick = (variableName: string) => {
+    setSelectedVariable(variableName);
     console.log(variableName);
     vscode?.postMessage({ type: "selectVariable", name: variableName });
   };
@@ -15,7 +19,7 @@ export default function List({ data }: { data: string[] }) {
           <span 
             key={index} 
             onClick={() => handleClick(variable)} 
-            className="variable-tag"
+            className={`variable-tag ${selectedVariable === variable ? "selected" : ""}`}
           >
             {variable}
           </span>

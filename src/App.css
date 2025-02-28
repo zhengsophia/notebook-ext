@@ -90,5 +90,9 @@ body {
 }
 
 .variable-tag:hover {
-  background-color: #CBD5E0; 
+  background-color: #A0AEC0; 
+}
+
+.variable-tag.selected {
+  background-color: #A0AEC0; 
 }
