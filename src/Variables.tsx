@@ -3,7 +3,7 @@ import vscode from "./vscodeApi";
 import { useState } from "react";
 
 
-export default function List({ data }: { data: string[] }) {
+export default function List({ data }: { data: Record<string, string[]> }) {
   const [selectedVariable, setSelectedVariable] = useState<string | null>(null);
   const handleClick = (variableName: string) => {
     setSelectedVariable(variableName);
@@ -14,19 +14,43 @@ export default function List({ data }: { data: string[] }) {
   return (
     <div className="variables-container">
       <h2 className="variables-title">Variables</h2>
-      <div className="variables-list">
-        {data.map((variable, index) => (
-          <span 
-            key={index} 
-            onClick={() => handleClick(variable)} 
-            className={`variable-tag ${selectedVariable === variable ? "selected" : ""}`}
-          >
-            {variable}
-          </span>
+      <div className="clusters">
+        {Object.entries(data).map(([cluster, variables]) => (
+          <div key={cluster} className="cluster">
+            <h3 className="cluster-title">{cluster}</h3>
+            <div className="variables-list">
+              {variables.map((variable, index) => (
+                <span
+                  key={index}
+                  onClick={() => handleClick(variable)}
+                  className={`variable-tag ${selectedVariable === variable ? "selected" : ""}`}
+                >
+                  {variable}
+                </span>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </div>
   );
+
+  // return (
+  //   <div className="variables-container">
+  //     <h2 className="variables-title">Variables</h2>
+  //     <div className="variables-list">
+  //       {data.map((variable, index) => (
+  //         <span 
+  //           key={index} 
+  //           onClick={() => handleClick(variable)} 
+  //           className={`variable-tag ${selectedVariable === variable ? "selected" : ""}`}
+  //         >
+  //           {variable}
+  //         </span>
+  //       ))}
+  //     </div>
+  //   </div>
+  // );
 }
 
 

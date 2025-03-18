@@ -17121,13 +17121,15 @@ function zodResponseFormat(zodObject, name, props) {
 }
 
 // src/webviews/treeViewProvider.tsx
+var openai = new openai_default({ apiKey: "replace" });
 var TreeViewProvider = class {
   constructor(_extensionUri) {
     this._extensionUri = _extensionUri;
   }
+  // extension name
   static viewType = "meng-notebook.treeView";
   _view;
-  // Implementing the required method
+  // implementing the required method for extesions
   resolveWebviewView(webviewView, context, _token) {
     this._view = webviewView;
     webviewView.webview.options = {
@@ -17162,13 +17164,15 @@ var TreeViewProvider = class {
       const notebookJson = JSON.parse(notebookData);
       const codeCells = this.filterCodeCells(notebookJson);
       const variables = await this.detectPythonVariables(codeCells);
-      this.sendVariablesToWebview(variables);
+      const groupedVars = await this.groupVariablesByMeaning(variables);
+      this.sendVariablesToWebview(groupedVars);
     } catch (error) {
       console.error("Error processing notebook:", error);
       vscode.window.showErrorMessage("Failed to process notebook.");
     }
   }
-  // aggregate method to get the LLM response for the notebook   
+  // method that combines helper functions to get the LLM response for the notebook  
+  // and sends it within the command 
   async processTree(editor) {
     try {
       console.log("beginning tree");
@@ -17186,7 +17190,7 @@ var TreeViewProvider = class {
       vscode.window.showErrorMessage("Failed to process tree.");
     }
   }
-  // process  
+  // process the textual summary
   async processVariableNarrative(editor, variable) {
     try {
       const notebookUri = editor.notebook.uri;
@@ -17227,6 +17231,7 @@ var TreeViewProvider = class {
   //     ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}
   //     `;
   // }
+  // prompt generation for tree prompting
   generateTreePrompt(codeCells) {
     return `Analyze the following JSON of notebook cells and group them based on their functionality and/or structural patterns of analysis. Group should be the general pattern label, while subgroups label more specifically. Cell should specify the execution number of the one or more cells described by that subgroup.  
         
@@ -17234,6 +17239,7 @@ var TreeViewProvider = class {
 ${cell.source.join("\n")}`).join("\n\n")}
         `;
   }
+  // prompt generation for narrative prompting
   generateNarrativePrompt(variable, codeCells) {
     return `Please provide a technical summary of the given variable that:
 
@@ -17256,13 +17262,12 @@ ${cell.source.join("\n")}`).join("\n\n")}
 ${cell.source.join("\n")}`).join("\n\n")}
     `;
   }
-  // LLM for narrative
+  // LLM prompting for narrative
   async getNarrativeOutput(prompt) {
     const narrative = z.object({
       text: z.string()
     });
     try {
-      const openai = new openai_default({ apiKey: "REPLACE" });
       const response = await openai.chat.completions.create({
         model: "gpt-4o-2024-11-20",
         messages: [
@@ -17279,7 +17284,7 @@ ${cell.source.join("\n")}`).join("\n\n")}
       throw error;
     }
   }
-  // LLM for tree
+  // LLM prompting for tree
   async getTreeOutput(prompt) {
     const Subgroup = z.object({
       name: z.string(),
@@ -17293,7 +17298,6 @@ ${cell.source.join("\n")}`).join("\n\n")}
       groups: z.array(Group)
     });
     try {
-      const openai = new openai_default({ apiKey: "REPLACE" });
       const response = await openai.beta.chat.completions.parse({
         model: "gpt-4o-2024-11-20",
         messages: [
@@ -17339,6 +17343,45 @@ ${cell.source.join("\n")}`).join("\n\n")}
     });
     return Array.from(variables);
   }
+  cosineSimilarity(vecA, vecB) {
+    if (vecA.length !== vecB.length) {
+      throw new Error("Vectors must be the same length");
+    }
+    let dotProduct = 0;
+    let normA = 0;
+    let normB = 0;
+    for (let i2 = 0; i2 < vecA.length; i2++) {
+      dotProduct += vecA[i2] * vecB[i2];
+      normA += vecA[i2] * vecA[i2];
+      normB += vecB[i2] * vecB[i2];
+    }
+    if (normA === 0 || normB === 0) return 0;
+    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+  }
+  async groupVariablesByMeaning(variableNames) {
+    if (variableNames.length === 0) return {};
+    const embeddings = await Promise.all(variableNames.map(async (name) => {
+      const response = await openai.embeddings.create({
+        model: "text-embedding-ada-002",
+        input: name
+      });
+      return { name, embedding: response.data[0].embedding };
+    }));
+    const groups = {};
+    embeddings.forEach(({ name, embedding }) => {
+      let assigned = false;
+      for (const key in groups) {
+        const sim = this.cosineSimilarity(embedding, embeddings.find((e2) => e2.name === key).embedding);
+        if (sim > 0.8) {
+          groups[key].push(name);
+          assigned = true;
+          break;
+        }
+      }
+      if (!assigned) groups[name] = [name];
+    });
+    return groups;
+  }
   // takes selected cell from App 
   setupMessageListener() {
     if (this._view) {
@@ -17376,6 +17419,8 @@ ${cell.source.join("\n")}`).join("\n\n")}
       });
     }
   }
+  // when called, this function will represent the command 
+  // to pass variable data under the command `fetchVariables`
   sendVariablesToWebview(data) {
     if (this._view) {
       this._view.webview.postMessage({
@@ -17384,6 +17429,8 @@ ${cell.source.join("\n")}`).join("\n\n")}
       });
     }
   }
+  // when called, this function will represent the command 
+  // to pass GPT tree data  under the command `fetchTree`
   sendTreeToWebview(data) {
     if (this._view) {
       this._view.webview.postMessage({
@@ -17392,6 +17439,8 @@ ${cell.source.join("\n")}`).join("\n\n")}
       });
     }
   }
+  // when called, this function will represent the command 
+  // to pass GPT textual summary data  under the command `fetchTree`
   sendNarrativeToWebview(data) {
     if (this._view) {
       this._view.webview.postMessage({
@@ -17400,7 +17449,7 @@ ${cell.source.join("\n")}`).join("\n\n")}
       });
     }
   }
-  // helper method to get HTML content for the webview
+  // helper method to get HTML content for the webview, stays constant
   _getHtmlForWebview(webview) {
     const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "dist/webviews", "App.js"));
     const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "dist/webviews", "App.css"));

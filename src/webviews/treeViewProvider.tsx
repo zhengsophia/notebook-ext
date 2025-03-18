@@ -7,17 +7,19 @@ import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
 // import dotenv from "dotenv";
 
+const openai = new OpenAI({ apiKey: "replace" });
+
 export class TreeViewProvider implements vscode.WebviewViewProvider {
 
+    // extension name
     public static readonly viewType = 'meng-notebook.treeView';
-
     private _view?: vscode.WebviewView;
 
     constructor(
         private readonly _extensionUri: vscode.Uri,
     ) {}
 
-    // Implementing the required method
+    // implementing the required method for extesions
     resolveWebviewView(
         webviewView: vscode.WebviewView,
         context: vscode.WebviewViewResolveContext,
@@ -68,16 +70,18 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
 
             const codeCells = this.filterCodeCells(notebookJson);
             const variables = await this.detectPythonVariables(codeCells);
+            const groupedVars = await this.groupVariablesByMeaning(variables);
 
             // console.log('variables', variables)
-            this.sendVariablesToWebview(variables);
+            this.sendVariablesToWebview(groupedVars);
         } catch (error) {
             console.error('Error processing notebook:', error);
             vscode.window.showErrorMessage('Failed to process notebook.');
         }
     }
 
-    // aggregate method to get the LLM response for the notebook   
+    // method that combines helper functions to get the LLM response for the notebook  
+    // and sends it within the command 
     private async processTree(editor: vscode.NotebookEditor) {
         try {
             console.log('beginning tree')
@@ -99,7 +103,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         }
     }
 
-    // process  
+    // process the textual summary
     private async processVariableNarrative(editor: any, variable: any) {
         try {
             const notebookUri = editor.notebook.uri;
@@ -150,6 +154,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     //     `;
     // }
 
+    // prompt generation for tree prompting
     private generateTreePrompt(codeCells: any[]) {
         return `Analyze the following JSON of notebook cells and group them based on their functionality and/or structural patterns of analysis. Group should be the general pattern label, while subgroups label more specifically. Cell should specify the execution number of the one or more cells described by that subgroup.  
         
@@ -157,6 +162,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         `;
     }
 
+    // prompt generation for narrative prompting
     private generateNarrativePrompt(variable: any, codeCells: any[]) {
         return `Please provide a technical summary of the given variable that:
 
@@ -179,14 +185,13 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     `
     }
 
-    // LLM for narrative
+    // LLM prompting for narrative
     private async getNarrativeOutput(prompt: string) {
         const narrative = z.object({
             text: z.string()
         });
 
         try {
-            const openai = new OpenAI({ apiKey: "REPLACE" });
             const response = await openai.chat.completions.create({
                 model: 'gpt-4o-2024-11-20',
                 messages: [
@@ -207,7 +212,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     }
 
 
-    // LLM for tree
+    // LLM prompting for tree
     private async getTreeOutput(prompt: string) {
         const Subgroup = z.object({
             name: z.string(),
@@ -224,7 +229,6 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         });
 
         try {
-            const openai = new OpenAI({ apiKey: "REPLACE" });
             const response = await openai.beta.chat.completions.parse({
                 model: 'gpt-4o-2024-11-20',
                 messages: [
@@ -287,6 +291,57 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
 
     return Array.from(variables); // Convert Set to Array
   }
+
+    cosineSimilarity(vecA: number[], vecB: number[]): number {
+        if (vecA.length !== vecB.length) {
+            throw new Error("Vectors must be the same length");
+        }
+
+        let dotProduct = 0;
+        let normA = 0;
+        let normB = 0;
+
+        for (let i = 0; i < vecA.length; i++) {
+            dotProduct += vecA[i] * vecB[i];
+            normA += vecA[i] * vecA[i];
+            normB += vecB[i] * vecB[i];
+        }
+
+        if (normA === 0 || normB === 0) return 0; // Avoid division by zero
+
+        return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+    }
+
+    private async groupVariablesByMeaning(variableNames: string[]): Promise<Record<string, string[]>> {
+        if (variableNames.length === 0) return {};
+
+        // Get embeddings for each variable name
+        const embeddings = await Promise.all(variableNames.map(async (name) => {
+            const response = await openai.embeddings.create({
+                model: "text-embedding-ada-002",
+                input: name
+            });
+            return { name, embedding: response.data[0].embedding };
+        }));
+
+        // Clustering based on cosine similarity
+        const groups: Record<string, string[]> = {};
+
+        embeddings.forEach(({ name, embedding }) => {
+            let assigned = false;
+            for (const key in groups) {
+                const sim = this.cosineSimilarity(embedding, embeddings.find(e => e.name === key)!.embedding)
+                if (sim > 0.8) {
+                    groups[key].push(name);
+                    assigned = true;
+                    break;
+                }
+            }
+            if (!assigned) groups[name] = [name];
+        });
+
+        return groups;
+    }
 
   // takes selected cell from App 
     private setupMessageListener() {
@@ -351,6 +406,8 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         }
     }
 
+    // when called, this function will represent the command 
+    // to pass variable data under the command `fetchVariables`
     private sendVariablesToWebview(data: any) {
         if (this._view) {
             this._view.webview.postMessage({
@@ -360,6 +417,8 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         }
     }
 
+    // when called, this function will represent the command 
+    // to pass GPT tree data  under the command `fetchTree`
     private sendTreeToWebview(data: any) {
         if (this._view) {
             this._view.webview.postMessage({
@@ -369,6 +428,8 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         }
     }
 
+    // when called, this function will represent the command 
+    // to pass GPT textual summary data  under the command `fetchTree`
     private sendNarrativeToWebview(data: any) {
         if (this._view) {
             this._view.webview.postMessage({
@@ -378,7 +439,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         }
     }
 
-    // helper method to get HTML content for the webview
+    // helper method to get HTML content for the webview, stays constant
     private _getHtmlForWebview(webview: vscode.Webview): string {
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'dist/webviews', 'App.js'));
         const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'dist/webviews', 'App.css'));

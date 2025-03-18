@@ -19,7 +19,7 @@ export function parseFirstCellNumber(cellsString: string): number | null {
   return null;
 }
 
-// Custom NarrativeLabel component with formatted links
+// custom NarrativeLabel component with formatted links
 interface NarrativeLabelProps {
   sentence: string;
   className: string;
@@ -38,7 +38,6 @@ function NarrativeLabel({ sentence, className }: NarrativeLabelProps) {
     while ((match = pattern.exec(text)) !== null) {
       // Push text before the match
       sections.push(text.slice(lastIndex, match.index));
-
       // Push reference object
       references.push({
         content: match[1].trim(),
@@ -47,15 +46,14 @@ function NarrativeLabel({ sentence, className }: NarrativeLabelProps) {
 
       lastIndex = pattern.lastIndex;
     }
-
     // Add remaining text after the last match
     sections.push(text.slice(lastIndex));
-
     return { parts: sections, references };
   };
 
-  // Handle cell reference click
-  const handleCellClick = (cellsInfo: string) => {
+  // handle cell reference click for direct manipulation 
+  // under command `selectCell`
+  const handleCellClick = (cellsInfo: string) => { 
     const cellIndex = parseFirstCellNumber(cellsInfo);
     if (cellIndex !== null) {
       console.log('Cell reference clicked:', cellIndex);

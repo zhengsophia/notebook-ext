@@ -57,9 +57,9 @@ body {
   align-items: flex-start;
 }
 .variables-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 8px;
+  grid-template-columns: repeat(2, 1fr);
 }
 .variable-tag {
   display: inline-block;
@@ -76,5 +76,27 @@ body {
 }
 .variable-tag.selected {
   background-color: #A0AEC0;
+}
+.variables-container {
+  font-family: Arial, sans-serif;
+}
+.variables-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.clusters {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.cluster {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 8px;
+}
+.cluster-title {
+  font-weight: bold;
+  margin-bottom: 15px;
 }
 /*# sourceMappingURL=App.css.map */
