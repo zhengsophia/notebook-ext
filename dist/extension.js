@@ -17121,7 +17121,7 @@ function zodResponseFormat(zodObject, name, props) {
 }
 
 // src/webviews/treeViewProvider.tsx
-var openai = new openai_default({ apiKey: "replace" });
+var openai = new openai_default({ apiKey: "key" });
 var TreeViewProvider = class {
   constructor(_extensionUri) {
     this._extensionUri = _extensionUri;
@@ -17164,7 +17164,7 @@ var TreeViewProvider = class {
       const notebookJson = JSON.parse(notebookData);
       const codeCells = this.filterCodeCells(notebookJson);
       const variables = await this.detectPythonVariables(codeCells);
-      const groupedVars = await this.groupVariablesByMeaning(variables);
+      const groupedVars = await this.groupVariablesParse(codeCells, variables);
       this.sendVariablesToWebview(groupedVars);
     } catch (error) {
       console.error("Error processing notebook:", error);
@@ -17330,6 +17330,17 @@ ${cell.source.join("\n")}`).join("\n\n")}
       });
     }
   }
+  async handleArtifactSelection(event) {
+    if (!this._view) return;
+    const selectedCell = event.notebookEditor.notebook.cellAt(event.selections[0].start);
+    if (selectedCell.kind === vscode.NotebookCellKind.Code && selectedCell.executionSummary?.executionOrder) {
+      const executionCount = selectedCell.executionSummary.executionOrder;
+      await this._view.webview.postMessage({
+        type: "selectArtifact",
+        executionCount
+      });
+    }
+  }
   async detectPythonVariables(codeCells) {
     const variableRegex = /\b([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*.*$/;
     const variables = /* @__PURE__ */ new Set();
@@ -17343,6 +17354,266 @@ ${cell.source.join("\n")}`).join("\n\n")}
     });
     return Array.from(variables);
   }
+  // return freq too 
+  async groupVariablesParse(codeCells, variables) {
+    const functionClusters = {};
+    const globalVariables = /* @__PURE__ */ new Map();
+    const clusterFrequency = /* @__PURE__ */ new Map();
+    const functionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^)]*\)\s*:/;
+    const variableRegex = new RegExp(`\\b(${variables.join("|")})\\b`, "g");
+    let currentFunction = "";
+    codeCells.forEach((cell) => {
+      cell.source.forEach((line) => {
+        const functionMatch = line.match(functionRegex);
+        if (functionMatch) {
+          currentFunction = functionMatch[1];
+          if (!functionClusters[currentFunction]) {
+            functionClusters[currentFunction] = /* @__PURE__ */ new Map();
+          }
+        } else if (line.trim() === "") {
+          currentFunction = "";
+        }
+        const variableMatches = [...line.matchAll(variableRegex)];
+        variableMatches.forEach((match) => {
+          const variable = match[1];
+          if (currentFunction) {
+            functionClusters[currentFunction].set(variable, (functionClusters[currentFunction].get(variable) || 0) + 1);
+          } else {
+            globalVariables.set(variable, (globalVariables.get(variable) || 0) + 1);
+          }
+        });
+      });
+    });
+    for (const [func, vars] of Object.entries(functionClusters)) {
+      const totalFrequency = Array.from(vars.values()).reduce((acc, count) => acc + count, 0);
+      clusterFrequency.set(func, totalFrequency);
+    }
+    if (globalVariables.size > 0) {
+      const totalFrequency = Array.from(globalVariables.values()).reduce((acc, count) => acc + count, 0);
+      clusterFrequency.set("Global Variables", totalFrequency);
+    }
+    const sortedClusters = Array.from(clusterFrequency.entries()).sort((a2, b2) => b2[1] - a2[1]).map(([key]) => ({
+      cluster: key,
+      variables: key === "Global Variables" ? Array.from(globalVariables.entries()).sort((a2, b2) => b2[1] - a2[1]).map(([key2, freq]) => ({ name: key2, frequency: freq })) : Array.from(functionClusters[key].entries()).sort((a2, b2) => b2[1] - a2[1]).map(([key2, freq]) => ({ name: key2, frequency: freq }))
+    }));
+    return sortedClusters;
+  }
+  //   private async groupVariablesParse(codeCells: any, variables: string[]): Promise<{ cluster: string; variables: string[] }[]> {
+  //     const functionClusters: Record<string, Map<string, number>> = {};
+  //     const globalVariables: Map<string, number> = new Map();
+  //     const clusterFrequency: Map<string, number> = new Map();
+  //     const functionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^)]*\)\s*:/; 
+  //     const variableRegex = new RegExp(`\\b(${variables.join('|')})\\b`, 'g'); // Track only listed variables
+  //     let currentFunction = "";
+  //     codeCells.forEach((cell: any) => {
+  //         cell.source.forEach((line: string) => {
+  //             const functionMatch = line.match(functionRegex);
+  //             if (functionMatch) {
+  //                 currentFunction = functionMatch[1]; // Set function context
+  //                 if (!functionClusters[currentFunction]) {
+  //                     functionClusters[currentFunction] = new Map();
+  //                 }
+  //             } else if (line.trim() === "") {
+  //                 currentFunction = ""; // Reset function context on empty line
+  //             }
+  //             // Capture occurrences of explicitly listed variables (ignore local assignments)
+  //             const variableMatches = [...line.matchAll(variableRegex)];
+  //             variableMatches.forEach(match => {
+  //                 const variable = match[1];
+  //                 if (currentFunction) {
+  //                     functionClusters[currentFunction].set(variable, (functionClusters[currentFunction].get(variable) || 0) + 1);
+  //                 } else {
+  //                     globalVariables.set(variable, (globalVariables.get(variable) || 0) + 1);
+  //                 }
+  //             });
+  //         });
+  //     });
+  //     // Compute frequency of explicitly listed variables per function
+  //     for (const [func, vars] of Object.entries(functionClusters)) {
+  //         const totalFrequency = Array.from(vars.values()).reduce((acc, count) => acc + count, 0);
+  //         clusterFrequency.set(func, totalFrequency);
+  //     }
+  //     if (globalVariables.size > 0) {
+  //         const totalFrequency = Array.from(globalVariables.values()).reduce((acc, count) => acc + count, 0);
+  //         clusterFrequency.set("Global Variables", totalFrequency);
+  //     }
+  //     // Sort clusters by total variable usage
+  //     const sortedClusters = Array.from(clusterFrequency.entries())
+  //         .sort((a, b) => b[1] - a[1])
+  //         .map(([key]) => ({
+  //             cluster: key,
+  //             variables: key === "Global Variables"
+  //                 ? Array.from(globalVariables.entries()).sort((a, b) => b[1] - a[1]).map(([key]) => key)
+  //                 : Array.from(functionClusters[key].entries()).sort((a, b) => b[1] - a[1]).map(([key]) => key)
+  //         }));
+  //     return sortedClusters;
+  // }
+  // includes function params
+  //   private async groupVariablesParse(codeCells: any, variables: string[]): Promise<{ cluster: string; variables: string[] }[]> {
+  //     const functionClusters: Record<string, Map<string, number>> = {};
+  //     const globalVariables: Map<string, number> = new Map();
+  //     const clusterFrequency: Map<string, number> = new Map();
+  //     const functionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)\s*:/; 
+  //     const variableRegex = new RegExp(`\\b(${variables.join('|')})\\b`, 'g');
+  //     let currentFunction = "";
+  //     codeCells.forEach((cell: any) => {
+  //       cell.source.forEach((line: string) => {
+  //         const functionMatch = line.match(functionRegex);
+  //         if (functionMatch) {
+  //           currentFunction = functionMatch[1];
+  //           const params = functionMatch[2]
+  //             .split(',')
+  //             .map(param => param.trim().split('=')[0].trim())
+  //             .filter(param => param !== "");
+  //           if (!functionClusters[currentFunction]) {
+  //             functionClusters[currentFunction] = new Map();
+  //           }
+  //           params.forEach(param => functionClusters[currentFunction].set(param, 1));
+  //         } else if (line.trim() === "") {
+  //           currentFunction = "";
+  //         }
+  //         const variableMatches = [...line.matchAll(variableRegex)];
+  //         variableMatches.forEach(match => {
+  //           const variable = match[1];
+  //           if (currentFunction) {
+  //             const cluster = functionClusters[currentFunction];
+  //             cluster.set(variable, (cluster.get(variable) || 0) + 1);
+  //           } else {
+  //             globalVariables.set(variable, (globalVariables.get(variable) || 0) + 1);
+  //           }
+  //         });
+  //       });
+  //     });
+  //     for (const [func, vars] of Object.entries(functionClusters)) {
+  //       const totalFrequency = Array.from(vars.values()).reduce((acc, count) => acc + count, 0);
+  //       clusterFrequency.set(func, totalFrequency);
+  //     }
+  //     if (globalVariables.size > 0) {
+  //       const totalFrequency = Array.from(globalVariables.values()).reduce((acc, count) => acc + count, 0);
+  //       clusterFrequency.set("Global Variables", totalFrequency);
+  //     }
+  //     // Sort clusters by total variable usage
+  //     const sortedClusters = Array.from(clusterFrequency.entries())
+  //       .sort((a, b) => b[1] - a[1])
+  //       .map(([key]) => ({
+  //         cluster: key,
+  //         variables: key === "Global Variables"
+  //           ? Array.from(globalVariables.entries()).sort((a, b) => b[1] - a[1]).map(([key]) => key)
+  //           : Array.from(functionClusters[key].entries()).sort((a, b) => b[1] - a[1]).map(([key]) => key)
+  //       }));
+  //     return sortedClusters;
+  //   }
+  // FUNCTIONS AND GLOBAL VARS
+  //   private async groupVariablesParse(codeCells: any, variables: string[]): Promise<Record<string, string[]>> {
+  //     const functionClusters: Record<string, Set<string>> = {};
+  //     const globalVariables: Set<string> = new Set();
+  //     // Regex patterns
+  //     const functionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)\s*:/; 
+  //     const variableRegex = new RegExp(`\\b(${variables.join('|')})\\b`, 'g');
+  //     let currentFunction = "";
+  //     codeCells.forEach((cell: any) => {
+  //       cell.source.forEach((line: string) => {
+  //         const functionMatch = line.match(functionRegex);
+  //         // If a function is detected, store the function name and parameters
+  //         if (functionMatch) {
+  //           currentFunction = functionMatch[1];
+  //           const params = functionMatch[2]
+  //             .split(',')
+  //             .map(param => param.trim().split('=')[0].trim()) // Remove default values
+  //             .filter(param => param !== "");
+  //           if (!functionClusters[currentFunction]) {
+  //             functionClusters[currentFunction] = new Set(params);
+  //           }
+  //         } else if (line.trim() === "") {
+  //           // Reset function context if an empty line (potential end of function) is detected
+  //           currentFunction = "";
+  //         }
+  //         // Find variables in the line
+  //         const variableMatches = [...line.matchAll(variableRegex)];
+  //         variableMatches.forEach(match => {
+  //           const variable = match[1];
+  //           if (currentFunction) {
+  //             functionClusters[currentFunction].add(variable);
+  //           } else {
+  //             globalVariables.add(variable);
+  //           }
+  //         });
+  //       });
+  //     });
+  //     // Convert to object for easy viewing
+  //     const clusters: Record<string, string[]> = {};
+  //     for (const [func, vars] of Object.entries(functionClusters)) {
+  //       clusters[func] = Array.from(vars);
+  //     }
+  //     // Add global variables as a separate cluster
+  //     if (globalVariables.size > 0) {
+  //       clusters["Global Variables"] = Array.from(globalVariables);
+  //     }
+  //     return clusters;
+  //   }
+  // CO OCCURENCE 
+  //   private async groupVariablesParse(codeCells: any, variables: string[]): Promise<Record<string, string[]>> {
+  //     const variableUsage: Record<string, Set<string>> = {};
+  //     // Initialize variable tracking
+  //     variables.forEach((variable) => {
+  //       variableUsage[variable] = new Set();
+  //     });
+  //     // Regex patterns
+  //     const functionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(.*\)\s*:/; 
+  //     const variableRegex = new RegExp(`\\b(${variables.join('|')})\\b`, 'g');
+  //     let currentFunction = "";
+  //     // Analyze variable usage
+  //     codeCells.forEach((cell: any) => {
+  //       cell.source.forEach((line: string) => {
+  //         const functionMatch = line.match(functionRegex);
+  //         if (functionMatch) {
+  //           currentFunction = functionMatch[1]; 
+  //         }
+  //         const variableMatches = [...line.matchAll(variableRegex)];
+  //         const matchedVariables = variableMatches.map(match => match[1]);
+  //         // Track co-occurrence of variables
+  //         matchedVariables.forEach((var1) => {
+  //           matchedVariables.forEach((var2) => {
+  //             if (var1 !== var2) {
+  //               variableUsage[var1].add(var2);
+  //               variableUsage[var2].add(var1);
+  //             }
+  //           });
+  //         });
+  //       });
+  //     });
+  //     // Perform greedy clustering
+  //     const clusters: Record<string, string[]> = {};
+  //     const visited = new Set<string>();
+  //     let clusterIndex = 1;
+  //     function bfs(start: string) {
+  //       const queue = [start];
+  //       const cluster: string[] = [];
+  //       while (queue.length > 0) {
+  //         const variable = queue.shift()!;
+  //         if (!visited.has(variable)) {
+  //           visited.add(variable);
+  //           cluster.push(variable);
+  //           // Visit all connected variables
+  //           variableUsage[variable].forEach((neighbor) => {
+  //             if (!visited.has(neighbor)) {
+  //               queue.push(neighbor);
+  //             }
+  //           });
+  //         }
+  //       }
+  //       return cluster;
+  //     }
+  //     // Form clusters
+  //     for (const variable of variables) {
+  //       if (!visited.has(variable)) {
+  //         const newCluster = bfs(variable);
+  //         clusters[`Cluster ${clusterIndex}`] = newCluster;
+  //         clusterIndex++;
+  //       }
+  //     }
+  //     return clusters;
+  //   }
   cosineSimilarity(vecA, vecB) {
     if (vecA.length !== vecB.length) {
       throw new Error("Vectors must be the same length");
@@ -17414,7 +17685,8 @@ ${cell.source.join("\n")}`).join("\n\n")}
                 console.log("Could not find code cell with execution count:", message.index);
               }
             }
-            break;
+          case "selectCell": {
+          }
         }
       });
     }
@@ -17445,6 +17717,16 @@ ${cell.source.join("\n")}`).join("\n\n")}
     if (this._view) {
       this._view.webview.postMessage({
         command: "fetchNarrative",
+        data
+      });
+    }
+  }
+  // when called, this function will represent the command 
+  // to pass GPT textual summary data  under the command `fetchTree`
+  sendTextSelectionToWebview(data) {
+    if (this._view) {
+      this._view.webview.postMessage({
+        command: "fetchTextSelection",
         data
       });
     }

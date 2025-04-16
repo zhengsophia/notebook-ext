@@ -95,29 +95,46 @@ function App() {
     }, []);
 
     return (
-        <div>
-        <div className="top-section">
-            {tree ? (
-                <BasicRichTreeView data={tree} narrativeMapping={narrativeMapping} />
-            ) : (
-                <p>Loading notebook data...</p>
-            )}
+        <div className="notebook-container">
+            <div className="top-section">
+                {tree ? (
+                    <BasicRichTreeView data={tree} narrativeMapping={narrativeMapping} />
+                ) : (
+                    <p>Loading notebook data...</p>
+                )}
+            </div>
 
-            {variables ? (
-                <List data={variables} />
-            ) : (
-                <p>Loading notebook data...</p>
-            )}
+            <div className="bottom-section">
+                {variables ? (
+                    <List data={variables} />
+                ) : (
+                    <p>Loading notebook data...</p>
+                )}
+            </div>
         </div>
+    //     <div>
+    //     <div className="top-section">
+    //         {tree ? (
+    //             <BasicRichTreeView data={tree} narrativeMapping={narrativeMapping} />
+    //         ) : (
+    //             <p>Loading notebook data...</p>
+    //         )}
 
-        <div>
-            {narrative ? (
-                <Narrative data={narrative} />
-            ) : (
-                <p>Loading notebook data...</p>
-            )}
-        </div>
-    </div>
+    //         {variables ? (
+    //             <List data={variables} />
+    //         ) : (
+    //             <p>Loading notebook data...</p>
+    //         )}
+    //     </div>
+
+    //     {/* <div>
+    //         {narrative ? (
+    //             <Narrative data={narrative} />
+    //         ) : (
+    //             <p>Loading notebook data...</p>
+    //         )}
+    //     </div> */}
+    // </div>
     );    
 }
 

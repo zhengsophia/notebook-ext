@@ -75,6 +75,8 @@ const FormattedText: React.FC<FormattedTextProps> = ({
       </span>
     ));
   };
+
+  
   
   return (
     <div className="content-wrapper">

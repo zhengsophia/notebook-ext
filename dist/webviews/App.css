@@ -60,6 +60,7 @@ body {
   display: grid;
   gap: 8px;
   grid-template-columns: repeat(2, 1fr);
+  padding: 10px;
 }
 .variable-tag {
   display: inline-block;
@@ -70,6 +71,22 @@ body {
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   max-width: max-content;
+}
+.cluster-tag {
+  display: block;
+  background-color: #4da0f4;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  max-width: max-content;
+}
+.cluster-tag:hover {
+  background-color: #A0AEC0;
+}
+.cluster-tag.selected {
+  background-color: #A0AEC0;
 }
 .variable-tag:hover {
   background-color: #A0AEC0;
@@ -98,5 +115,19 @@ body {
 .cluster-title {
   font-weight: bold;
   margin-bottom: 15px;
+}
+.notebook-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.top-section {
+  flex: 1;
+  overflow: auto;
+  border-bottom: 1px solid #ccc;
+}
+.bottom-section {
+  flex: 1;
+  overflow: auto;
 }
 /*# sourceMappingURL=App.css.map */

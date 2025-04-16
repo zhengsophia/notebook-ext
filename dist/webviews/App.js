@@ -37,7 +37,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var define_process_env_default;
 var init_define_process_env = __esm({
   "<define:process.env>"() {
-    define_process_env_default = { TERM_PROGRAM: "vscode", NODE: "/usr/local/bin/node", GEM_HOME: "/Users/sophiazheng/.gem/ruby/3.1.3", INIT_CWD: "/Users/sophiazheng/Documents/GitHub/notebook-ext", TERM: "xterm-256color", SHELL: "/bin/zsh", HOMEBREW_REPOSITORY: "/opt/homebrew", TMPDIR: "/var/folders/vn/skw3dlhd3y79vqz8w4rvqf000000gn/T/", npm_config_global_prefix: "/Users/sophiazheng/.npm-global", TERM_PROGRAM_VERSION: "1.98.2", ORIGINAL_XDG_CURRENT_DESKTOP: "undefined", MallocNanoZone: "0", COLOR: "1", npm_config_noproxy: "", npm_config_local_prefix: "/Users/sophiazheng/Documents/GitHub/notebook-ext", USER: "sophiazheng", COMMAND_MODE: "unix2003", npm_package_engines_vscode: "^1.96.0", npm_config_globalconfig: "/Users/sophiazheng/.npm-global/etc/npmrc", SSH_AUTH_SOCK: "/private/tmp/com.apple.launchd.sYJo5So9tD/Listeners", __CF_USER_TEXT_ENCODING: "0x1F5:0x0:0x0", npm_execpath: "/usr/local/lib/node_modules/npm/bin/npm-cli.js", PATH: "/Users/sophiazheng/Documents/GitHub/notebook-ext/node_modules/.bin:/Users/sophiazheng/Documents/GitHub/node_modules/.bin:/Users/sophiazheng/Documents/node_modules/.bin:/Users/sophiazheng/node_modules/.bin:/Users/node_modules/.bin:/node_modules/.bin:/usr/local/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/node-gyp-bin:/Users/sophiazheng/Documents/GitHub/notebook-ext/node_modules/.bin:/Users/sophiazheng/Documents/GitHub/node_modules/.bin:/Users/sophiazheng/Documents/node_modules/.bin:/Users/sophiazheng/node_modules/.bin:/Users/node_modules/.bin:/node_modules/.bin:/usr/local/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/node-gyp-bin:/Users/sophiazheng/.rbenv/shims:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Users/sophiazheng/.gem/ruby/3.1.3/bin:/Users/sophiazheng/.rubies/ruby-3.1.3/lib/ruby/gems/3.1.0/bin:/Users/sophiazheng/.rubies/ruby-3.1.3/bin:/Library/Frameworks/Python.framework/Versions/3.12/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Library/Frameworks/Python.framework/Versions/3.9/bin:/Users/sophiazheng/.local/bin", LaunchInstanceID: "875EB0E5-EEA6-43A9-B847-D13292766D2C", _: "/usr/local/bin/node", npm_package_json: "/Users/sophiazheng/Documents/GitHub/notebook-ext/package.json", __CFBundleIdentifier: "com.microsoft.VSCode", npm_config_init_module: "/Users/sophiazheng/.npm-init.js", npm_config_userconfig: "/Users/sophiazheng/.npmrc", PWD: "/Users/sophiazheng/Documents/GitHub/notebook-ext", npm_command: "run-script", EDITOR: "vi", npm_lifecycle_event: "watch:webviews", LANG: "en_US.UTF-8", npm_package_name: "notebook-ext", VSCODE_GIT_ASKPASS_EXTRA_ARGS: "", XPC_FLAGS: "0x0", npm_config_npm_version: "10.8.2", RUBY_ENGINE: "ruby", RBENV_SHELL: "bash", npm_config_node_gyp: "/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js", XPC_SERVICE_NAME: "0", npm_package_version: "0.0.1", SHLVL: "3", HOME: "/Users/sophiazheng", VSCODE_GIT_ASKPASS_MAIN: "/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass-main.js", GEM_ROOT: "/Users/sophiazheng/.rubies/ruby-3.1.3/lib/ruby/gems/3.1.0", HOMEBREW_PREFIX: "/opt/homebrew", LOGNAME: "sophiazheng", npm_config_cache: "/Users/sophiazheng/.npm", npm_lifecycle_script: "node esbuild.webviews.mjs --watch", VSCODE_GIT_IPC_HANDLE: "/var/folders/vn/skw3dlhd3y79vqz8w4rvqf000000gn/T/vscode-git-43e07d1bef.sock", GEM_PATH: "/Users/sophiazheng/.gem/ruby/3.1.3:/Users/sophiazheng/.rubies/ruby-3.1.3/lib/ruby/gems/3.1.0", RUBY_ROOT: "/Users/sophiazheng/.rubies/ruby-3.1.3", npm_config_user_agent: "npm/10.8.2 node/v20.17.0 darwin arm64 workspaces/false", VSCODE_GIT_ASKPASS_NODE: "/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (Plugin).app/Contents/MacOS/Code Helper (Plugin)", GIT_ASKPASS: "/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass.sh", INFOPATH: "/opt/homebrew/share/info:", HOMEBREW_CELLAR: "/opt/homebrew/Cellar", RUBYOPT: "", RUBY_VERSION: "3.1.3", SECURITYSESSIONID: "186c3", COLORTERM: "truecolor", npm_config_prefix: "/Users/sophiazheng/.npm-global", npm_node_execpath: "/usr/local/bin/node" };
+    define_process_env_default = { TERM_PROGRAM: "vscode", NODE: "/usr/local/bin/node", GEM_HOME: "/Users/sophiazheng/.gem/ruby/3.1.3", INIT_CWD: "/Users/sophiazheng/Documents/GitHub/notebook-ext", TERM: "xterm-256color", SHELL: "/bin/zsh", HOMEBREW_REPOSITORY: "/opt/homebrew", TMPDIR: "/var/folders/vn/skw3dlhd3y79vqz8w4rvqf000000gn/T/", npm_config_global_prefix: "/Users/sophiazheng/.npm-global", TERM_PROGRAM_VERSION: "1.98.2", ORIGINAL_XDG_CURRENT_DESKTOP: "undefined", MallocNanoZone: "0", COLOR: "1", npm_config_noproxy: "", npm_config_local_prefix: "/Users/sophiazheng/Documents/GitHub/notebook-ext", USER: "sophiazheng", COMMAND_MODE: "unix2003", npm_package_engines_vscode: "^1.96.0", npm_config_globalconfig: "/Users/sophiazheng/.npm-global/etc/npmrc", SSH_AUTH_SOCK: "/private/tmp/com.apple.launchd.sYJo5So9tD/Listeners", __CF_USER_TEXT_ENCODING: "0x1F5:0x0:0x0", npm_execpath: "/usr/local/lib/node_modules/npm/bin/npm-cli.js", PATH: "/Users/sophiazheng/Documents/GitHub/notebook-ext/node_modules/.bin:/Users/sophiazheng/Documents/GitHub/node_modules/.bin:/Users/sophiazheng/Documents/node_modules/.bin:/Users/sophiazheng/node_modules/.bin:/Users/node_modules/.bin:/node_modules/.bin:/usr/local/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/node-gyp-bin:/Users/sophiazheng/Documents/GitHub/notebook-ext/node_modules/.bin:/Users/sophiazheng/Documents/GitHub/node_modules/.bin:/Users/sophiazheng/Documents/node_modules/.bin:/Users/sophiazheng/node_modules/.bin:/Users/node_modules/.bin:/node_modules/.bin:/usr/local/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/node-gyp-bin:/Users/sophiazheng/.rbenv/shims:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Users/sophiazheng/.gem/ruby/3.1.3/bin:/Users/sophiazheng/.rubies/ruby-3.1.3/lib/ruby/gems/3.1.0/bin:/Users/sophiazheng/.rubies/ruby-3.1.3/bin:/Library/Frameworks/Python.framework/Versions/3.12/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Library/Frameworks/Python.framework/Versions/3.9/bin:/Users/sophiazheng/.local/bin", _: "/usr/local/bin/node", npm_package_json: "/Users/sophiazheng/Documents/GitHub/notebook-ext/package.json", __CFBundleIdentifier: "com.microsoft.VSCode", npm_config_init_module: "/Users/sophiazheng/.npm-init.js", npm_config_userconfig: "/Users/sophiazheng/.npmrc", PWD: "/Users/sophiazheng/Documents/GitHub/notebook-ext", npm_command: "run-script", EDITOR: "vi", npm_lifecycle_event: "watch:webviews", LANG: "en_US.UTF-8", npm_package_name: "notebook-ext", VSCODE_GIT_ASKPASS_EXTRA_ARGS: "", XPC_FLAGS: "0x0", npm_config_npm_version: "10.8.2", RUBY_ENGINE: "ruby", RBENV_SHELL: "bash", npm_config_node_gyp: "/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js", XPC_SERVICE_NAME: "0", npm_package_version: "0.0.1", SHLVL: "3", HOME: "/Users/sophiazheng", VSCODE_GIT_ASKPASS_MAIN: "/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass-main.js", GEM_ROOT: "/Users/sophiazheng/.rubies/ruby-3.1.3/lib/ruby/gems/3.1.0", HOMEBREW_PREFIX: "/opt/homebrew", LOGNAME: "sophiazheng", npm_config_cache: "/Users/sophiazheng/.npm", npm_lifecycle_script: "node esbuild.webviews.mjs --watch", VSCODE_GIT_IPC_HANDLE: "/var/folders/vn/skw3dlhd3y79vqz8w4rvqf000000gn/T/vscode-git-43e07d1bef.sock", GEM_PATH: "/Users/sophiazheng/.gem/ruby/3.1.3:/Users/sophiazheng/.rubies/ruby-3.1.3/lib/ruby/gems/3.1.0", RUBY_ROOT: "/Users/sophiazheng/.rubies/ruby-3.1.3", npm_config_user_agent: "npm/10.8.2 node/v20.17.0 darwin arm64 workspaces/false", VSCODE_GIT_ASKPASS_NODE: "/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (Plugin).app/Contents/MacOS/Code Helper (Plugin)", GIT_ASKPASS: "/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass.sh", INFOPATH: "/opt/homebrew/share/info:", HOMEBREW_CELLAR: "/opt/homebrew/Cellar", RUBYOPT: "", RUBY_VERSION: "3.1.3", COLORTERM: "truecolor", npm_config_prefix: "/Users/sophiazheng/.npm-global", npm_node_execpath: "/usr/local/bin/node" };
   }
 });
 
@@ -2170,7 +2170,7 @@ var require_react_dom_production = __commonJS({
   "node_modules/react-dom/cjs/react-dom.production.js"(exports2) {
     "use strict";
     init_define_process_env();
-    var React7 = require_react();
+    var React8 = require_react();
     function formatProdErrorMessage(code) {
       var url = "https://react.dev/errors/" + code;
       if (1 < arguments.length) {
@@ -2210,7 +2210,7 @@ var require_react_dom_production = __commonJS({
         implementation
       };
     }
-    var ReactSharedInternals = React7.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
+    var ReactSharedInternals = React8.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
     function getCrossOriginStringAs(as, input) {
       if ("font" === as) return "";
       if ("string" === typeof input)
@@ -2365,7 +2365,7 @@ var require_react_dom_development = __commonJS({
         return dispatcher;
       }
       "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-      var React7 = require_react(), Internals = {
+      var React8 = require_react(), Internals = {
         d: {
           f: noop,
           r: function() {
@@ -2383,7 +2383,7 @@ var require_react_dom_development = __commonJS({
         },
         p: 0,
         findDOMNode: null
-      }, REACT_PORTAL_TYPE = Symbol.for("react.portal"), ReactSharedInternals = React7.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
+      }, REACT_PORTAL_TYPE = Symbol.for("react.portal"), ReactSharedInternals = React8.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
       "function" === typeof Map && null != Map.prototype && "function" === typeof Map.prototype.forEach && "function" === typeof Set && null != Set.prototype && "function" === typeof Set.prototype.clear && "function" === typeof Set.prototype.forEach || console.error(
         "React depends on Map and Set built-in types. Make sure that you load a polyfill in older browsers. https://reactjs.org/link/react-polyfills"
       );
@@ -2593,7 +2593,7 @@ var require_react_dom_client_production = __commonJS({
     "use strict";
     init_define_process_env();
     var Scheduler = require_scheduler();
-    var React7 = require_react();
+    var React8 = require_react();
     var ReactDOM2 = require_react_dom();
     function formatProdErrorMessage(code) {
       var url = "https://react.dev/errors/" + code;
@@ -2676,7 +2676,7 @@ var require_react_dom_client_production = __commonJS({
         }
       return null;
     }
-    var ReactSharedInternals = React7.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
+    var ReactSharedInternals = React8.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
     var assign2 = Object.assign;
     var prefix2;
     var suffix;
@@ -13624,7 +13624,7 @@ var require_react_dom_client_production = __commonJS({
         0 === i && attemptExplicitHydrationTarget(target);
       }
     };
-    var isomorphicReactPackageVersion$jscomp$inline_1686 = React7.version;
+    var isomorphicReactPackageVersion$jscomp$inline_1686 = React8.version;
     if ("19.0.0" !== isomorphicReactPackageVersion$jscomp$inline_1686)
       throw Error(
         formatProdErrorMessage(
@@ -14991,7 +14991,7 @@ var require_react_dom_client_development = __commonJS({
         "number" === type && getActiveElement(node2.ownerDocument) === node2 || node2.defaultValue === "" + value || (node2.defaultValue = "" + value);
       }
       function validateOptionProps(element, props) {
-        null == props.value && ("object" === typeof props.children && null !== props.children ? React7.Children.forEach(props.children, function(child) {
+        null == props.value && ("object" === typeof props.children && null !== props.children ? React8.Children.forEach(props.children, function(child) {
           null == child || "string" === typeof child || "number" === typeof child || "bigint" === typeof child || didWarnInvalidChild || (didWarnInvalidChild = true, console.error(
             "Cannot infer the option value of complex children. Pass a `value` prop or use a plain string as children to <option>."
           ));
@@ -28461,13 +28461,13 @@ var require_react_dom_client_development = __commonJS({
         ));
       }
       "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-      var Scheduler = require_scheduler(), React7 = require_react(), ReactDOM2 = require_react_dom(), REACT_LEGACY_ELEMENT_TYPE = Symbol.for("react.element"), REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler"), REACT_PROVIDER_TYPE = Symbol.for("react.provider"), REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy");
+      var Scheduler = require_scheduler(), React8 = require_react(), ReactDOM2 = require_react_dom(), REACT_LEGACY_ELEMENT_TYPE = Symbol.for("react.element"), REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler"), REACT_PROVIDER_TYPE = Symbol.for("react.provider"), REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy");
       Symbol.for("react.scope");
       Symbol.for("react.debug_trace_mode");
       var REACT_OFFSCREEN_TYPE = Symbol.for("react.offscreen");
       Symbol.for("react.legacy_hidden");
       Symbol.for("react.tracing_marker");
-      var REACT_MEMO_CACHE_SENTINEL = Symbol.for("react.memo_cache_sentinel"), MAYBE_ITERATOR_SYMBOL = Symbol.iterator, REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference"), ReactSharedInternals = React7.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, assign2 = Object.assign, disabledDepth = 0, prevLog, prevInfo, prevWarn, prevError, prevGroup, prevGroupCollapsed, prevGroupEnd;
+      var REACT_MEMO_CACHE_SENTINEL = Symbol.for("react.memo_cache_sentinel"), MAYBE_ITERATOR_SYMBOL = Symbol.iterator, REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference"), ReactSharedInternals = React8.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, assign2 = Object.assign, disabledDepth = 0, prevLog, prevInfo, prevWarn, prevError, prevGroup, prevGroupCollapsed, prevGroupEnd;
       disabledLog.__reactDisabledLog = true;
       var prefix2, suffix, reentry = false;
       var componentFrameCache = new ("function" === typeof WeakMap ? WeakMap : Map)();
@@ -31187,7 +31187,7 @@ var require_react_dom_client_development = __commonJS({
         }
       };
       (function() {
-        var isomorphicReactPackageVersion = React7.version;
+        var isomorphicReactPackageVersion = React8.version;
         if ("19.0.0" !== isomorphicReactPackageVersion)
           throw Error(
             'Incompatible React versions: The "react" and "react-dom" packages must have the exact same version. Instead got:\n  - react:      ' + (isomorphicReactPackageVersion + "\n  - react-dom:  19.0.0\nLearn more: https://react.dev/warnings/version-mismatch")
@@ -35296,9 +35296,9 @@ var require_react_jsx_runtime_development = __commonJS({
         info || (parentType = getComponentNameFromType(parentType)) && (info = "\n\nCheck the top-level render call using <" + parentType + ">.");
         return info;
       }
-      var React7 = require_react(), REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler");
+      var React8 = require_react(), REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler");
       Symbol.for("react.provider");
-      var REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy"), REACT_OFFSCREEN_TYPE = Symbol.for("react.offscreen"), MAYBE_ITERATOR_SYMBOL = Symbol.iterator, REACT_CLIENT_REFERENCE$2 = Symbol.for("react.client.reference"), ReactSharedInternals = React7.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, hasOwnProperty = Object.prototype.hasOwnProperty, assign2 = Object.assign, REACT_CLIENT_REFERENCE$1 = Symbol.for("react.client.reference"), isArrayImpl = Array.isArray, disabledDepth = 0, prevLog, prevInfo, prevWarn, prevError, prevGroup, prevGroupCollapsed, prevGroupEnd;
+      var REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy"), REACT_OFFSCREEN_TYPE = Symbol.for("react.offscreen"), MAYBE_ITERATOR_SYMBOL = Symbol.iterator, REACT_CLIENT_REFERENCE$2 = Symbol.for("react.client.reference"), ReactSharedInternals = React8.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, hasOwnProperty = Object.prototype.hasOwnProperty, assign2 = Object.assign, REACT_CLIENT_REFERENCE$1 = Symbol.for("react.client.reference"), isArrayImpl = Array.isArray, disabledDepth = 0, prevLog, prevInfo, prevWarn, prevError, prevGroup, prevGroupCollapsed, prevGroupEnd;
       disabledLog.__reactDisabledLog = true;
       var prefix2, suffix, reentry = false;
       var componentFrameCache = new ("function" === typeof WeakMap ? WeakMap : Map)();
@@ -35341,7 +35341,7 @@ var require_StyledEngineProvider = __commonJS({
       value: true
     });
     exports2.default = StyledEngineProvider;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _react2 = (init_emotion_react_esm(), __toCommonJS(emotion_react_esm_exports));
     var _cache = _interopRequireDefault((init_emotion_cache_esm(), __toCommonJS(emotion_cache_esm_exports)));
@@ -35440,7 +35440,7 @@ var require_GlobalStyles = __commonJS({
       value: true
     });
     exports2.default = GlobalStyles;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _react2 = (init_emotion_react_esm(), __toCommonJS(emotion_react_esm_exports));
     var _jsxRuntime = require_jsx_runtime();
@@ -35569,7 +35569,7 @@ var require_deepmerge = __commonJS({
     });
     exports2.default = deepmerge;
     exports2.isPlainObject = isPlainObject;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     function isPlainObject(item) {
       if (typeof item !== "object" || item === null) {
         return false;
@@ -35578,7 +35578,7 @@ var require_deepmerge = __commonJS({
       return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in item) && !(Symbol.iterator in item);
     }
     function deepClone(source) {
-      if (/* @__PURE__ */ React7.isValidElement(source) || !isPlainObject(source)) {
+      if (/* @__PURE__ */ React8.isValidElement(source) || !isPlainObject(source)) {
         return source;
       }
       const output = {};
@@ -35595,7 +35595,7 @@ var require_deepmerge = __commonJS({
       } : target;
       if (isPlainObject(target) && isPlainObject(source)) {
         Object.keys(source).forEach((key) => {
-          if (/* @__PURE__ */ React7.isValidElement(source[key])) {
+          if (/* @__PURE__ */ React8.isValidElement(source[key])) {
             output[key] = source[key];
           } else if (isPlainObject(source[key]) && // Avoid prototype pollution
           Object.prototype.hasOwnProperty.call(target, key) && isPlainObject(target[key])) {
@@ -37600,13 +37600,13 @@ var require_useThemeWithoutDefault = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _styledEngine = require_node();
     function isObjectEmpty(obj) {
       return Object.keys(obj).length === 0;
     }
     function useTheme3(defaultTheme = null) {
-      const contextTheme = React7.useContext(_styledEngine.ThemeContext);
+      const contextTheme = React8.useContext(_styledEngine.ThemeContext);
       return !contextTheme || isObjectEmpty(contextTheme) ? defaultTheme : contextTheme;
     }
     var _default = exports2.default = useTheme3;
@@ -37696,7 +37696,7 @@ var require_GlobalStyles3 = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _styledEngine = require_node();
     var _useTheme = _interopRequireDefault(require_useTheme2());
@@ -38388,7 +38388,7 @@ var require_createBox = __commonJS({
       value: true
     });
     exports2.default = createBox;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _clsx = _interopRequireDefault(require_clsx());
     var _styledEngine = _interopRequireDefault(require_node());
     var _styleFunctionSx = _interopRequireWildcard(require_styleFunctionSx2());
@@ -38404,7 +38404,7 @@ var require_createBox = __commonJS({
       const BoxRoot = (0, _styledEngine.default)("div", {
         shouldForwardProp: (prop) => prop !== "theme" && prop !== "sx" && prop !== "as"
       })(_styleFunctionSx.default);
-      const Box2 = /* @__PURE__ */ React7.forwardRef(function Box3(inProps, ref) {
+      const Box3 = /* @__PURE__ */ React8.forwardRef(function Box4(inProps, ref) {
         const theme = (0, _useTheme.default)(defaultTheme);
         const {
           className,
@@ -38419,7 +38419,7 @@ var require_createBox = __commonJS({
           ...other
         });
       });
-      return Box2;
+      return Box3;
     }
   }
 });
@@ -38582,11 +38582,11 @@ var require_Box = __commonJS({
     var _ClassNameGenerator = _interopRequireDefault(require_ClassNameGenerator2());
     var _createBox = _interopRequireDefault(require_createBox2());
     var _boxClasses = _interopRequireDefault(require_boxClasses());
-    var Box2 = (0, _createBox.default)({
+    var Box3 = (0, _createBox.default)({
       defaultClassName: _boxClasses.default.root,
       generateClassName: _ClassNameGenerator.default.generate
     });
-    define_process_env_default.NODE_ENV !== "production" ? Box2.propTypes = {
+    define_process_env_default.NODE_ENV !== "production" ? Box3.propTypes = {
       // ┌────────────────────────────── Warning ──────────────────────────────┐
       // │ These PropTypes are generated from the TypeScript type definitions. │
       // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
@@ -38605,7 +38605,7 @@ var require_Box = __commonJS({
        */
       sx: _propTypes.default.oneOfType([_propTypes.default.arrayOf(_propTypes.default.oneOfType([_propTypes.default.func, _propTypes.default.object, _propTypes.default.bool])), _propTypes.default.func, _propTypes.default.object])
     } : void 0;
-    var _default = exports2.default = Box2;
+    var _default = exports2.default = Box3;
   }
 });
 
@@ -39430,8 +39430,8 @@ var require_useEnhancedEffect = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
-    var useEnhancedEffect = typeof window !== "undefined" ? React7.useLayoutEffect : React7.useEffect;
+    var React8 = _interopRequireWildcard(require_react());
+    var useEnhancedEffect = typeof window !== "undefined" ? React8.useLayoutEffect : React8.useEffect;
     var _default = exports2.default = useEnhancedEffect;
   }
 });
@@ -39468,12 +39468,12 @@ var require_useMediaQuery = __commonJS({
     });
     exports2.default = void 0;
     exports2.unstable_createUseMediaQuery = unstable_createUseMediaQuery;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _useEnhancedEffect = _interopRequireDefault(require_useEnhancedEffect2());
     var _useThemeProps = require_useThemeProps2();
     var _useThemeWithoutDefault = _interopRequireDefault(require_useThemeWithoutDefault2());
     function useMediaQueryOld(query, defaultMatches, matchMedia2, ssrMatchMedia, noSsr) {
-      const [match2, setMatch] = React7.useState(() => {
+      const [match2, setMatch] = React8.useState(() => {
         if (noSsr && matchMedia2) {
           return matchMedia2(query).matches;
         }
@@ -39499,12 +39499,12 @@ var require_useMediaQuery = __commonJS({
       return match2;
     }
     var safeReact = {
-      ...React7
+      ...React8
     };
     var maybeReactUseSyncExternalStore = safeReact.useSyncExternalStore;
     function useMediaQueryNew(query, defaultMatches, matchMedia2, ssrMatchMedia, noSsr) {
-      const getDefaultSnapshot = React7.useCallback(() => defaultMatches, [defaultMatches]);
-      const getServerSnapshot = React7.useMemo(() => {
+      const getDefaultSnapshot = React8.useCallback(() => defaultMatches, [defaultMatches]);
+      const getServerSnapshot = React8.useMemo(() => {
         if (noSsr && matchMedia2) {
           return () => matchMedia2(query).matches;
         }
@@ -39516,7 +39516,7 @@ var require_useMediaQuery = __commonJS({
         }
         return getDefaultSnapshot;
       }, [getDefaultSnapshot, query, ssrMatchMedia, noSsr, matchMedia2]);
-      const [getSnapshot, subscribe] = React7.useMemo(() => {
+      const [getSnapshot, subscribe] = React8.useMemo(() => {
         if (matchMedia2 === null) {
           return [getDefaultSnapshot, () => () => {
           }];
@@ -39562,7 +39562,7 @@ var require_useMediaQuery = __commonJS({
         const useMediaQueryImplementation = maybeReactUseSyncExternalStore !== void 0 ? useMediaQueryNew : useMediaQueryOld;
         const match2 = useMediaQueryImplementation(query, defaultMatches, matchMedia2, ssrMatchMedia, noSsr);
         if (define_process_env_default.NODE_ENV !== "production") {
-          React7.useDebugValue({
+          React8.useDebugValue({
             query,
             match: match2
           });
@@ -40410,9 +40410,9 @@ var require_isMuiElement = __commonJS({
       value: true
     });
     exports2.default = isMuiElement;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     function isMuiElement(element, muiNames) {
-      return /* @__PURE__ */ React7.isValidElement(element) && muiNames.indexOf(
+      return /* @__PURE__ */ React8.isValidElement(element) && muiNames.indexOf(
         // For server components `muiName` is avaialble in element.type._payload.value.muiName
         // relevant info - https://github.com/facebook/react/blob/2807d781a08db8e9873687fccc25c0f12b4fb3d4/packages/react/src/ReactLazy.js#L45
         // eslint-disable-next-line no-underscore-dangle
@@ -40615,12 +40615,12 @@ var require_useId = __commonJS({
       value: true
     });
     exports2.default = useId;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var globalId = 0;
     function useGlobalId(idOverride) {
-      const [defaultId, setDefaultId] = React7.useState(idOverride);
+      const [defaultId, setDefaultId] = React8.useState(idOverride);
       const id = idOverride || defaultId;
-      React7.useEffect(() => {
+      React8.useEffect(() => {
         if (defaultId == null) {
           globalId += 1;
           setDefaultId(`mui-${globalId}`);
@@ -40629,7 +40629,7 @@ var require_useId = __commonJS({
       return id;
     }
     var safeReact = {
-      ...React7
+      ...React8
     };
     var maybeReactUseId = safeReact.useId;
     function useId(idOverride) {
@@ -40713,7 +40713,7 @@ var require_useControlled = __commonJS({
       value: true
     });
     exports2.default = useControlled;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     function useControlled({
       controlled,
       default: defaultProp,
@@ -40722,25 +40722,25 @@ var require_useControlled = __commonJS({
     }) {
       const {
         current: isControlled
-      } = React7.useRef(controlled !== void 0);
-      const [valueState, setValue] = React7.useState(defaultProp);
+      } = React8.useRef(controlled !== void 0);
+      const [valueState, setValue] = React8.useState(defaultProp);
       const value = isControlled ? controlled : valueState;
       if (define_process_env_default.NODE_ENV !== "production") {
-        React7.useEffect(() => {
+        React8.useEffect(() => {
           if (isControlled !== (controlled !== void 0)) {
             console.error([`MUI: A component is changing the ${isControlled ? "" : "un"}controlled ${state} state of ${name} to be ${isControlled ? "un" : ""}controlled.`, "Elements should not switch from uncontrolled to controlled (or vice versa).", `Decide between using a controlled or uncontrolled ${name} element for the lifetime of the component.`, "The nature of the state is determined during the first render. It's considered controlled if the value is not `undefined`.", "More info: https://fb.me/react-controlled-components"].join("\n"));
           }
         }, [state, name, controlled]);
         const {
           current: defaultValue
-        } = React7.useRef(defaultProp);
-        React7.useEffect(() => {
+        } = React8.useRef(defaultProp);
+        React8.useEffect(() => {
           if (!isControlled && !Object.is(defaultValue, defaultProp)) {
             console.error([`MUI: A component is changing the default ${state} state of an uncontrolled ${name} after being initialized. To suppress this warning opt to use a controlled ${name}.`].join("\n"));
           }
         }, [JSON.stringify(defaultProp)]);
       }
-      const setValueIfUncontrolled = React7.useCallback((newValue) => {
+      const setValueIfUncontrolled = React8.useCallback((newValue) => {
         if (!isControlled) {
           setValue(newValue);
         }
@@ -40781,14 +40781,14 @@ var require_useEventCallback = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _useEnhancedEffect = _interopRequireDefault(require_useEnhancedEffect2());
     function useEventCallback(fn) {
-      const ref = React7.useRef(fn);
+      const ref = React8.useRef(fn);
       (0, _useEnhancedEffect.default)(() => {
         ref.current = fn;
       });
-      return React7.useRef((...args) => (
+      return React8.useRef((...args) => (
         // @ts-expect-error hide `this`
         (0, ref.current)(...args)
       )).current;
@@ -40828,10 +40828,10 @@ var require_useForkRef = __commonJS({
       value: true
     });
     exports2.default = useForkRef;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _setRef = _interopRequireDefault(require_setRef2());
     function useForkRef(...refs) {
-      return React7.useMemo(() => {
+      return React8.useMemo(() => {
         if (refs.every((ref) => ref == null)) {
           return null;
         }
@@ -40875,10 +40875,10 @@ var require_useLazyRef = __commonJS({
       value: true
     });
     exports2.default = useLazyRef;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var UNINITIALIZED = {};
     function useLazyRef(init, initArg) {
-      const ref = React7.useRef(UNINITIALIZED);
+      const ref = React8.useRef(UNINITIALIZED);
       if (ref.current === UNINITIALIZED) {
         ref.current = init(initArg);
       }
@@ -40917,10 +40917,10 @@ var require_useOnMount = __commonJS({
       value: true
     });
     exports2.default = useOnMount;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var EMPTY = [];
     function useOnMount(fn) {
-      React7.useEffect(fn, EMPTY);
+      React8.useEffect(fn, EMPTY);
     }
   }
 });
@@ -41029,7 +41029,7 @@ var require_useIsFocusVisible = __commonJS({
     });
     exports2.default = useIsFocusVisible;
     exports2.teardown = teardown;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _useTimeout = require_useTimeout();
     var hadKeyboardEvent = true;
     var hadFocusVisibleRecently = false;
@@ -41106,12 +41106,12 @@ var require_useIsFocusVisible = __commonJS({
       return hadKeyboardEvent || focusTriggersKeyboardModality(target);
     }
     function useIsFocusVisible() {
-      const ref = React7.useCallback((node2) => {
+      const ref = React8.useCallback((node2) => {
         if (node2 != null) {
           prepare(node2.ownerDocument);
         }
       }, []);
-      const isFocusVisibleRef = React7.useRef(false);
+      const isFocusVisibleRef = React8.useRef(false);
       function handleBlurVisible() {
         if (isFocusVisibleRef.current) {
           hadFocusVisibleRecently = true;
@@ -41258,10 +41258,10 @@ var require_usePreviousProps = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var usePreviousProps = (value) => {
-      const ref = React7.useRef({});
-      React7.useEffect(() => {
+      const ref = React8.useRef({});
+      React8.useEffect(() => {
         ref.current = value;
       });
       return ref.current;
@@ -41299,9 +41299,9 @@ var require_getValidReactChildren = __commonJS({
       value: true
     });
     exports2.default = getValidReactChildren;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     function getValidReactChildren(children) {
-      return React7.Children.toArray(children).filter((child) => /* @__PURE__ */ React7.isValidElement(child));
+      return React8.Children.toArray(children).filter((child) => /* @__PURE__ */ React8.isValidElement(child));
     }
   }
 });
@@ -41879,9 +41879,9 @@ var require_getReactNodeRef = __commonJS({
       value: true
     });
     exports2.default = getReactNodeRef;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     function getReactNodeRef(element) {
-      if (!element || !/* @__PURE__ */ React7.isValidElement(element)) {
+      if (!element || !/* @__PURE__ */ React8.isValidElement(element)) {
         return null;
       }
       return element.props.propertyIsEnumerable("ref") ? element.props.ref : (
@@ -41923,9 +41923,9 @@ var require_getReactElementRef = __commonJS({
       value: true
     });
     exports2.default = getReactElementRef;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     function getReactElementRef(element) {
-      if (parseInt(React7.version, 10) >= 19) {
+      if (parseInt(React8.version, 10) >= 19) {
         return element?.props?.ref || null;
       }
       return element?.ref || null;
@@ -42400,8 +42400,8 @@ var require_ThemeContext = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
-    var ThemeContext2 = /* @__PURE__ */ React7.createContext(null);
+    var React8 = _interopRequireWildcard(require_react());
+    var ThemeContext2 = /* @__PURE__ */ React8.createContext(null);
     if (define_process_env_default.NODE_ENV !== "production") {
       ThemeContext2.displayName = "ThemeContext";
     }
@@ -42420,12 +42420,12 @@ var require_useTheme3 = __commonJS({
       value: true
     });
     exports2.default = useTheme3;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _ThemeContext = _interopRequireDefault(require_ThemeContext());
     function useTheme3() {
-      const theme = React7.useContext(_ThemeContext.default);
+      const theme = React8.useContext(_ThemeContext.default);
       if (define_process_env_default.NODE_ENV !== "production") {
-        React7.useDebugValue(theme);
+        React8.useDebugValue(theme);
       }
       return theme;
     }
@@ -42476,7 +42476,7 @@ var require_ThemeProvider = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _utils = require_utils();
     var _ThemeContext = _interopRequireDefault(require_ThemeContext());
@@ -42509,7 +42509,7 @@ var require_ThemeProvider = __commonJS({
           console.error(["MUI: You are providing a theme function prop to the ThemeProvider component:", "<ThemeProvider theme={outerTheme => outerTheme} />", "", "However, no outer theme is present.", "Make sure a theme is already injected higher in the React tree or provide a theme object."].join("\n"));
         }
       }
-      const theme = React7.useMemo(() => {
+      const theme = React8.useMemo(() => {
         const output = outerTheme === null ? {
           ...localTheme
         } : mergeOuterLocalTheme(outerTheme, localTheme);
@@ -42619,10 +42619,10 @@ var require_RtlProvider = __commonJS({
       value: true
     });
     exports2.useRtl = exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _jsxRuntime = require_jsx_runtime();
-    var RtlContext = /* @__PURE__ */ React7.createContext();
+    var RtlContext = /* @__PURE__ */ React8.createContext();
     function RtlProvider({
       value,
       ...props
@@ -42637,7 +42637,7 @@ var require_RtlProvider = __commonJS({
       value: _propTypes.default.bool
     } : void 0;
     var useRtl = () => {
-      const value = React7.useContext(RtlContext);
+      const value = React8.useContext(RtlContext);
       return value ?? false;
     };
     exports2.useRtl = useRtl;
@@ -42658,11 +42658,11 @@ var require_DefaultPropsProvider = __commonJS({
     });
     exports2.default = void 0;
     exports2.useDefaultProps = useDefaultProps;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _resolveProps = _interopRequireDefault(require_resolveProps2());
     var _jsxRuntime = require_jsx_runtime();
-    var PropsContext = /* @__PURE__ */ React7.createContext(void 0);
+    var PropsContext = /* @__PURE__ */ React8.createContext(void 0);
     function DefaultPropsProvider({
       value,
       children
@@ -42708,7 +42708,7 @@ var require_DefaultPropsProvider = __commonJS({
       props,
       name
     }) {
-      const ctx = React7.useContext(PropsContext);
+      const ctx = React8.useContext(PropsContext);
       return getThemeProps({
         props,
         name,
@@ -42758,7 +42758,7 @@ var require_ThemeProvider3 = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _privateTheming = require_node2();
     var _exactProp = _interopRequireDefault(require_exactProp2());
@@ -42769,7 +42769,7 @@ var require_ThemeProvider3 = __commonJS({
     var _jsxRuntime = require_jsx_runtime();
     var EMPTY_THEME = {};
     function useThemeScoping(themeId, upperTheme, localTheme, isPrivate = false) {
-      return React7.useMemo(() => {
+      return React8.useMemo(() => {
         const resolvedTheme = themeId ? upperTheme[themeId] || upperTheme : upperTheme;
         if (typeof localTheme === "function") {
           const mergedTheme = localTheme(resolvedTheme);
@@ -42907,7 +42907,7 @@ var require_InitColorSchemeScript = __commonJS({
     });
     exports2.DEFAULT_MODE_STORAGE_KEY = exports2.DEFAULT_COLOR_SCHEME_STORAGE_KEY = exports2.DEFAULT_ATTRIBUTE = void 0;
     exports2.default = InitColorSchemeScript;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _jsxRuntime = require_jsx_runtime();
     var DEFAULT_MODE_STORAGE_KEY = exports2.DEFAULT_MODE_STORAGE_KEY = "mode";
     var DEFAULT_COLOR_SCHEME_STORAGE_KEY = exports2.DEFAULT_COLOR_SCHEME_STORAGE_KEY = "color-scheme";
@@ -42996,7 +42996,7 @@ var require_useCurrentColorScheme = __commonJS({
     exports2.default = useCurrentColorScheme;
     exports2.getColorScheme = getColorScheme;
     exports2.getSystemMode = getSystemMode;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _InitColorSchemeScript = require_InitColorSchemeScript();
     function getSystemMode(mode) {
       if (typeof window !== "undefined" && typeof window.matchMedia === "function" && mode === "system") {
@@ -43055,7 +43055,7 @@ var require_useCurrentColorScheme = __commonJS({
       } = options;
       const joinedColorSchemes = supportedColorSchemes.join(",");
       const isMultiSchemes = supportedColorSchemes.length > 1;
-      const [state, setState] = React7.useState(() => {
+      const [state, setState] = React8.useState(() => {
         const initialMode = initializeValue(modeStorageKey, defaultMode);
         const lightColorScheme = initializeValue(`${colorSchemeStorageKey}-light`, defaultLightColorScheme);
         const darkColorScheme = initializeValue(`${colorSchemeStorageKey}-dark`, defaultDarkColorScheme);
@@ -43066,12 +43066,12 @@ var require_useCurrentColorScheme = __commonJS({
           darkColorScheme
         };
       });
-      const [isClient, setIsClient] = React7.useState(noSsr || !isMultiSchemes);
-      React7.useEffect(() => {
+      const [isClient, setIsClient] = React8.useState(noSsr || !isMultiSchemes);
+      React8.useEffect(() => {
         setIsClient(true);
       }, []);
       const colorScheme = getColorScheme(state);
-      const setMode = React7.useCallback((mode) => {
+      const setMode = React8.useCallback((mode) => {
         setState((currentState) => {
           if (mode === currentState.mode) {
             return currentState;
@@ -43088,7 +43088,7 @@ var require_useCurrentColorScheme = __commonJS({
           };
         });
       }, [modeStorageKey, defaultMode]);
-      const setColorScheme = React7.useCallback((value) => {
+      const setColorScheme = React8.useCallback((value) => {
         if (!value) {
           setState((currentState) => {
             try {
@@ -43158,7 +43158,7 @@ var require_useCurrentColorScheme = __commonJS({
           });
         }
       }, [joinedColorSchemes, colorSchemeStorageKey, defaultLightColorScheme, defaultDarkColorScheme]);
-      const handleMediaQuery = React7.useCallback((event) => {
+      const handleMediaQuery = React8.useCallback((event) => {
         if (state.mode === "system") {
           setState((currentState) => {
             const systemMode = event?.matches ? "dark" : "light";
@@ -43172,9 +43172,9 @@ var require_useCurrentColorScheme = __commonJS({
           });
         }
       }, [state.mode]);
-      const mediaListener = React7.useRef(handleMediaQuery);
+      const mediaListener = React8.useRef(handleMediaQuery);
       mediaListener.current = handleMediaQuery;
-      React7.useEffect(() => {
+      React8.useEffect(() => {
         if (typeof window.matchMedia !== "function" || !isMultiSchemes) {
           return void 0;
         }
@@ -43186,7 +43186,7 @@ var require_useCurrentColorScheme = __commonJS({
           media.removeListener(handler);
         };
       }, [isMultiSchemes]);
-      React7.useEffect(() => {
+      React8.useEffect(() => {
         if (storageWindow && isMultiSchemes) {
           const handleStorage = (event) => {
             const value = event.newValue;
@@ -43237,7 +43237,7 @@ var require_createCssVarsProvider = __commonJS({
     });
     exports2.DISABLE_CSS_TRANSITION = void 0;
     exports2.default = createCssVarsProvider;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _styledEngine = require_node();
     var _privateTheming = require_node2();
@@ -43274,11 +43274,11 @@ var require_createCssVarsProvider = __commonJS({
         },
         systemMode: void 0
       };
-      const ColorSchemeContext = /* @__PURE__ */ React7.createContext(void 0);
+      const ColorSchemeContext = /* @__PURE__ */ React8.createContext(void 0);
       if (define_process_env_default.NODE_ENV !== "production") {
         ColorSchemeContext.displayName = "ColorSchemeContext";
       }
-      const useColorScheme = () => React7.useContext(ColorSchemeContext) || defaultContext;
+      const useColorScheme = () => React8.useContext(ColorSchemeContext) || defaultContext;
       const defaultColorSchemes = {};
       const defaultComponents = {};
       function CssVarsProvider(props) {
@@ -43296,11 +43296,11 @@ var require_createCssVarsProvider = __commonJS({
           defaultMode: initialMode = "system",
           noSsr
         } = props;
-        const hasMounted = React7.useRef(false);
+        const hasMounted = React8.useRef(false);
         const upperTheme = (0, _privateTheming.useTheme)();
-        const ctx = React7.useContext(ColorSchemeContext);
+        const ctx = React8.useContext(ColorSchemeContext);
         const nested = !!ctx && !disableNestedContext;
-        const initialTheme = React7.useMemo(() => {
+        const initialTheme = React8.useMemo(() => {
           if (themeProp) {
             return themeProp;
           }
@@ -43314,7 +43314,7 @@ var require_createCssVarsProvider = __commonJS({
           cssVarPrefix
         } = restThemeProp;
         const joinedColorSchemes = Object.keys(colorSchemes).filter((k) => !!colorSchemes[k]).join(",");
-        const allColorSchemes = React7.useMemo(() => joinedColorSchemes.split(","), [joinedColorSchemes]);
+        const allColorSchemes = React8.useMemo(() => joinedColorSchemes.split(","), [joinedColorSchemes]);
         const defaultLightColorScheme2 = typeof defaultColorScheme === "string" ? defaultColorScheme : defaultColorScheme.light;
         const defaultDarkColorScheme2 = typeof defaultColorScheme === "string" ? defaultColorScheme : defaultColorScheme.dark;
         const defaultMode = colorSchemes[defaultLightColorScheme2] && colorSchemes[defaultDarkColorScheme2] ? initialMode : colorSchemes[restThemeProp.defaultColorScheme]?.palette?.mode || restThemeProp.palette?.mode;
@@ -43342,7 +43342,7 @@ var require_createCssVarsProvider = __commonJS({
           mode = ctx.mode;
           colorScheme = ctx.colorScheme;
         }
-        const memoTheme = React7.useMemo(() => {
+        const memoTheme = React8.useMemo(() => {
           const calculatedColorScheme = colorScheme || restThemeProp.defaultColorScheme;
           const themeVars = restThemeProp.generateThemeVars?.() || restThemeProp.vars;
           const theme = {
@@ -43373,7 +43373,7 @@ var require_createCssVarsProvider = __commonJS({
           return resolveTheme ? resolveTheme(theme) : theme;
         }, [restThemeProp, colorScheme, components, colorSchemes, cssVarPrefix]);
         const colorSchemeSelector = restThemeProp.colorSchemeSelector;
-        React7.useEffect(() => {
+        React8.useEffect(() => {
           if (colorScheme && colorSchemeNode && colorSchemeSelector && colorSchemeSelector !== "media") {
             const selector = colorSchemeSelector;
             let rule = colorSchemeSelector;
@@ -43405,7 +43405,7 @@ var require_createCssVarsProvider = __commonJS({
             }
           }
         }, [colorScheme, colorSchemeSelector, colorSchemeNode, allColorSchemes]);
-        React7.useEffect(() => {
+        React8.useEffect(() => {
           let timer;
           if (disableTransitionOnChange && hasMounted.current && documentNode) {
             const css2 = documentNode.createElement("style");
@@ -43420,13 +43420,13 @@ var require_createCssVarsProvider = __commonJS({
             clearTimeout(timer);
           };
         }, [colorScheme, disableTransitionOnChange, documentNode]);
-        React7.useEffect(() => {
+        React8.useEffect(() => {
           hasMounted.current = true;
           return () => {
             hasMounted.current = false;
           };
         }, []);
-        const contextValue = React7.useMemo(() => ({
+        const contextValue = React8.useMemo(() => ({
           allColorSchemes,
           colorScheme,
           darkColorScheme,
@@ -43445,7 +43445,7 @@ var require_createCssVarsProvider = __commonJS({
         if (disableStyleSheetGeneration || restThemeProp.cssVariables === false || nested && upperTheme?.cssVarPrefix === cssVarPrefix) {
           shouldGenerateStyleSheet = false;
         }
-        const element = /* @__PURE__ */ (0, _jsxRuntime.jsxs)(React7.Fragment, {
+        const element = /* @__PURE__ */ (0, _jsxRuntime.jsxs)(React8.Fragment, {
           children: [/* @__PURE__ */ (0, _jsxRuntime.jsx)(_ThemeProvider.default, {
             themeId: scopedTheme ? themeId : void 0,
             theme: memoTheme,
@@ -43919,7 +43919,7 @@ var require_createContainer = __commonJS({
       value: true
     });
     exports2.default = createContainer;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _generateUtilityClass = _interopRequireDefault(require_generateUtilityClass2());
@@ -44017,7 +44017,7 @@ var require_createContainer = __commonJS({
           }
         }
       }));
-      const Container = /* @__PURE__ */ React7.forwardRef(function Container2(inProps, ref) {
+      const Container = /* @__PURE__ */ React8.forwardRef(function Container2(inProps, ref) {
         const props = useThemeProps(inProps);
         const {
           className,
@@ -44462,7 +44462,7 @@ var require_createGrid = __commonJS({
       value: true
     });
     exports2.default = createGrid;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _isMuiElement = _interopRequireDefault(require_isMuiElement2());
@@ -44533,7 +44533,7 @@ var require_createGrid = __commonJS({
         return parsedProp;
       }
       const GridRoot = createStyledComponent(_gridGenerator.generateGridColumnsStyles, _gridGenerator.generateGridColumnSpacingStyles, _gridGenerator.generateGridRowSpacingStyles, _gridGenerator.generateGridSizeStyles, _gridGenerator.generateGridDirectionStyles, _gridGenerator.generateGridStyles, _gridGenerator.generateGridOffsetStyles);
-      const Grid = /* @__PURE__ */ React7.forwardRef(function Grid2(inProps, ref) {
+      const Grid = /* @__PURE__ */ React8.forwardRef(function Grid2(inProps, ref) {
         const theme = useTheme3();
         const themeProps = useThemeProps(inProps);
         const props = (0, _styleFunctionSx.extendSxProp)(themeProps);
@@ -44579,9 +44579,9 @@ var require_createGrid = __commonJS({
           ownerState,
           className: (0, _clsx.default)(classes.root, className),
           ...other,
-          children: React7.Children.map(children, (child) => {
-            if (/* @__PURE__ */ React7.isValidElement(child) && (0, _isMuiElement.default)(child, ["Grid"]) && container && child.props.container) {
-              return /* @__PURE__ */ React7.cloneElement(child, {
+          children: React8.Children.map(children, (child) => {
+            if (/* @__PURE__ */ React8.isValidElement(child) && (0, _isMuiElement.default)(child, ["Grid"]) && container && child.props.container) {
+              return /* @__PURE__ */ React8.cloneElement(child, {
                 unstable_level: child.props?.unstable_level ?? level + 1
               });
             }
@@ -44872,7 +44872,7 @@ var require_createStack = __commonJS({
     });
     exports2.default = createStack;
     exports2.style = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _deepmerge = _interopRequireDefault(require_deepmerge2());
@@ -44899,11 +44899,11 @@ var require_createStack = __commonJS({
       });
     }
     function joinChildren(children, separator) {
-      const childrenArray = React7.Children.toArray(children).filter(Boolean);
+      const childrenArray = React8.Children.toArray(children).filter(Boolean);
       return childrenArray.reduce((output, child, index) => {
         output.push(child);
         if (index < childrenArray.length - 1) {
-          output.push(/* @__PURE__ */ React7.cloneElement(separator, {
+          output.push(/* @__PURE__ */ React8.cloneElement(separator, {
             key: `separator-${index}`
           }));
         }
@@ -44998,7 +44998,7 @@ var require_createStack = __commonJS({
         return (0, _composeClasses.default)(slots, (slot) => (0, _generateUtilityClass.default)(componentName, slot), {});
       };
       const StackRoot = createStyledComponent(style);
-      const Stack = /* @__PURE__ */ React7.forwardRef(function Grid(inProps, ref) {
+      const Stack = /* @__PURE__ */ React8.forwardRef(function Grid(inProps, ref) {
         const themeProps = useThemeProps(inProps);
         const props = (0, _styleFunctionSx.extendSxProp)(themeProps);
         const {
@@ -47869,14 +47869,14 @@ var require_useTheme5 = __commonJS({
       value: true
     });
     exports2.default = useTheme3;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _system = require_system();
     var _defaultTheme = _interopRequireDefault(require_defaultTheme());
     var _identifier = _interopRequireDefault(require_identifier());
     function useTheme3() {
       const theme = (0, _system.useTheme)(_defaultTheme.default);
       if (define_process_env_default.NODE_ENV !== "production") {
-        React7.useDebugValue(theme);
+        React8.useDebugValue(theme);
       }
       return theme[_identifier.default] || theme;
     }
@@ -47992,7 +47992,7 @@ var require_ThemeProviderNoVars = __commonJS({
       value: true
     });
     exports2.default = ThemeProviderNoVars;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _system = require_system();
     var _identifier = _interopRequireDefault(require_identifier());
     var _jsxRuntime = require_jsx_runtime();
@@ -48040,7 +48040,7 @@ var require_InitColorSchemeScript3 = __commonJS({
       value: true
     });
     exports2.defaultConfig = exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _InitColorSchemeScript = _interopRequireDefault(require_InitColorSchemeScript2());
     var _jsxRuntime = require_jsx_runtime();
     var defaultConfig = exports2.defaultConfig = {
@@ -48073,7 +48073,7 @@ var require_ThemeProviderWithVars = __commonJS({
     exports2.CssVarsProvider = void 0;
     exports2.Experimental_CssVarsProvider = Experimental_CssVarsProvider;
     exports2.useColorScheme = exports2.getInitColorSchemeScript = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _styleFunctionSx = _interopRequireDefault(require_styleFunctionSx2());
     var _system = require_system();
     var _createTheme = _interopRequireDefault(require_createTheme3());
@@ -48149,7 +48149,7 @@ var require_ThemeProvider5 = __commonJS({
       value: true
     });
     exports2.default = ThemeProvider3;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _ThemeProviderNoVars = _interopRequireDefault(require_ThemeProviderNoVars());
     var _ThemeProviderWithVars = require_ThemeProviderWithVars();
     var _identifier = _interopRequireDefault(require_identifier());
@@ -48645,13 +48645,13 @@ var require_Box3 = __commonJS({
     var _identifier = _interopRequireDefault(require_identifier());
     var _boxClasses = _interopRequireDefault(require_boxClasses2());
     var defaultTheme = (0, _styles.createTheme)();
-    var Box2 = (0, _system.createBox)({
+    var Box3 = (0, _system.createBox)({
       themeId: _identifier.default,
       defaultTheme,
       defaultClassName: _boxClasses.default.root,
       generateClassName: _className.unstable_ClassNameGenerator.generate
     });
-    define_process_env_default.NODE_ENV !== "production" ? Box2.propTypes = {
+    define_process_env_default.NODE_ENV !== "production" ? Box3.propTypes = {
       // ┌────────────────────────────── Warning ──────────────────────────────┐
       // │ These PropTypes are generated from the TypeScript type definitions. │
       // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
@@ -48670,7 +48670,7 @@ var require_Box3 = __commonJS({
        */
       sx: _propTypes.default.oneOfType([_propTypes.default.arrayOf(_propTypes.default.oneOfType([_propTypes.default.func, _propTypes.default.object, _propTypes.default.bool])), _propTypes.default.func, _propTypes.default.object])
     } : void 0;
-    var _default = exports2.default = Box2;
+    var _default = exports2.default = Box3;
   }
 });
 
@@ -48824,10 +48824,10 @@ var require_useTreeViewModels = __commonJS({
     });
     exports2.useTreeViewModels = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var useTreeViewModels = (plugins, props) => {
-      const modelsRef = React7.useRef({});
-      const [modelsState, setModelsState] = React7.useState(() => {
+      const modelsRef = React8.useRef({});
+      const [modelsState, setModelsState] = React8.useState(() => {
         const initialState = {};
         plugins.forEach((plugin) => {
           if (plugin.models) {
@@ -48859,15 +48859,15 @@ var require_useTreeViewModels = __commonJS({
         Object.entries(modelsRef.current).forEach(([modelName, model]) => {
           const controlled = props[modelName];
           const newDefaultValue = model.getDefaultValue(props);
-          React7.useEffect(() => {
+          React8.useEffect(() => {
             if (model.isControlled !== (controlled !== void 0)) {
               console.error([`MUI X: A component is changing the ${model.isControlled ? "" : "un"}controlled ${modelName} state of TreeView to be ${model.isControlled ? "un" : ""}controlled.`, "Elements should not switch from uncontrolled to controlled (or vice versa).", `Decide between using a controlled or uncontrolled ${modelName} element for the lifetime of the component.`, "The nature of the state is determined during the first render. It's considered controlled if the value is not `undefined`.", "More info: https://fb.me/react-controlled-components"].join("\n"));
             }
           }, [controlled]);
           const {
             current: defaultValue
-          } = React7.useRef(newDefaultValue);
-          React7.useEffect(() => {
+          } = React8.useRef(newDefaultValue);
+          React8.useEffect(() => {
             if (!model.isControlled && defaultValue !== newDefaultValue) {
               console.error([`MUI X: A component is changing the default ${modelName} state of an uncontrolled TreeView after being initialized. To suppress this warning opt to use a controlled TreeView.`].join("\n"));
             }
@@ -48986,14 +48986,14 @@ var require_useTreeViewInstanceEvents = __commonJS({
       value: true
     });
     exports2.useTreeViewInstanceEvents = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _EventManager = require_EventManager2();
     var isSyntheticEvent = (event) => {
       return event.isPropagationStopped !== void 0;
     };
     var useTreeViewInstanceEvents = () => {
-      const [eventManager] = React7.useState(() => new _EventManager.EventManager());
-      const publishEvent = React7.useCallback((...args) => {
+      const [eventManager] = React8.useState(() => new _EventManager.EventManager());
+      const publishEvent = React8.useCallback((...args) => {
         const [name, params, event = {}] = args;
         event.defaultMuiPrevented = false;
         if (isSyntheticEvent(event) && event.isPropagationStopped()) {
@@ -49001,7 +49001,7 @@ var require_useTreeViewInstanceEvents = __commonJS({
         }
         eventManager.emit(name, params, event);
       }, [eventManager]);
-      const subscribeEvent = React7.useCallback((event, handler) => {
+      const subscribeEvent = React8.useCallback((event, handler) => {
         eventManager.on(event, handler);
         return () => {
           eventManager.removeListener(event, handler);
@@ -49121,14 +49121,14 @@ var require_useTreeViewId = __commonJS({
     });
     exports2.useTreeViewId = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _useTreeViewId = require_useTreeViewId_utils();
     var useTreeViewId = ({
       params,
       state,
       setState
     }) => {
-      React7.useEffect(() => {
+      React8.useEffect(() => {
         setState((prevState) => {
           if (prevState.id.treeId === params.id && prevState.id.treeId !== void 0) {
             return prevState;
@@ -49409,14 +49409,14 @@ var require_useTreeView = __commonJS({
     exports2.useTreeView = void 0;
     exports2.useTreeViewApiInitialization = useTreeViewApiInitialization;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _useForkRef = _interopRequireDefault(require_useForkRef2());
     var _useTreeViewModels = require_useTreeViewModels();
     var _corePlugins = require_corePlugins2();
     var _extractPluginParamsFromProps = require_extractPluginParamsFromProps();
     var _useTreeViewBuildContext = require_useTreeViewBuildContext();
     function useTreeViewApiInitialization(inputApiRef) {
-      const fallbackPublicApiRef = React7.useRef({});
+      const fallbackPublicApiRef = React8.useRef({});
       if (inputApiRef) {
         if (inputApiRef.current == null) {
           inputApiRef.current = {};
@@ -49443,10 +49443,10 @@ var require_useTreeView = __commonJS({
         props
       });
       const models = (0, _useTreeViewModels.useTreeViewModels)(plugins, pluginParams);
-      const instanceRef = React7.useRef({});
+      const instanceRef = React8.useRef({});
       const instance = instanceRef.current;
       const publicAPI = useTreeViewApiInitialization(apiRef);
-      const innerRootRef = React7.useRef(null);
+      const innerRootRef = React8.useRef(null);
       const handleRootRef = (0, _useForkRef.default)(innerRootRef, rootRef);
       const contextValue = (0, _useTreeViewBuildContext.useTreeViewBuildContext)({
         plugins,
@@ -49454,7 +49454,7 @@ var require_useTreeView = __commonJS({
         publicAPI,
         rootRef: innerRootRef
       });
-      const [state, setState] = React7.useState(() => {
+      const [state, setState] = React8.useState(() => {
         const temp = {};
         plugins.forEach((plugin) => {
           if (plugin.getInitialState) {
@@ -49541,8 +49541,8 @@ var require_TreeViewContext = __commonJS({
       value: true
     });
     exports2.TreeViewContext = void 0;
-    var React7 = _interopRequireWildcard(require_react());
-    var TreeViewContext = exports2.TreeViewContext = /* @__PURE__ */ React7.createContext(null);
+    var React8 = _interopRequireWildcard(require_react());
+    var TreeViewContext = exports2.TreeViewContext = /* @__PURE__ */ React8.createContext(null);
     if (define_process_env_default.NODE_ENV !== "production") {
       TreeViewContext.displayName = "TreeViewContext";
     }
@@ -49559,7 +49559,7 @@ var require_TreeViewProvider = __commonJS({
       value: true
     });
     exports2.TreeViewProvider = TreeViewProvider;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _TreeViewContext = require_TreeViewContext();
     var _jsxRuntime = require_jsx_runtime();
     function TreeViewProvider(props) {
@@ -49588,10 +49588,10 @@ var require_useTreeViewContext = __commonJS({
       value: true
     });
     exports2.useTreeViewContext = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _TreeViewContext = require_TreeViewContext();
     var useTreeViewContext = () => {
-      const context = React7.useContext(_TreeViewContext.TreeViewContext);
+      const context = React8.useContext(_TreeViewContext.TreeViewContext);
       if (context == null) {
         throw new Error(["MUI X: Could not find the Tree View context.", "It looks like you rendered your component outside of a SimpleTreeView or RichTreeView parent component.", "This can also happen if you are bundling multiple versions of the Tree View."].join("\n"));
       }
@@ -49673,8 +49673,8 @@ var require_TreeViewItemDepthContext = __commonJS({
       value: true
     });
     exports2.TreeViewItemDepthContext = void 0;
-    var React7 = _interopRequireWildcard(require_react());
-    var TreeViewItemDepthContext = exports2.TreeViewItemDepthContext = /* @__PURE__ */ React7.createContext(() => -1);
+    var React8 = _interopRequireWildcard(require_react());
+    var TreeViewItemDepthContext = exports2.TreeViewItemDepthContext = /* @__PURE__ */ React8.createContext(() => -1);
     if (define_process_env_default.NODE_ENV !== "production") {
       TreeViewItemDepthContext.displayName = "TreeViewItemDepthContext";
     }
@@ -49712,7 +49712,7 @@ var require_useTreeViewItems = __commonJS({
     exports2.useTreeViewItems = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
     var _objectWithoutPropertiesLoose2 = _interopRequireDefault(require_objectWithoutPropertiesLoose());
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _publishTreeViewEvent = require_publishTreeViewEvent();
     var _useTreeViewItems = require_useTreeViewItems_utils();
     var _TreeViewItemDepthContext = require_TreeViewItemDepthContext2();
@@ -49778,9 +49778,9 @@ var require_useTreeViewItems = __commonJS({
       setState,
       experimentalFeatures
     }) => {
-      const getItemMeta = React7.useCallback((itemId) => state.items.itemMetaMap[itemId], [state.items.itemMetaMap]);
-      const getItem = React7.useCallback((itemId) => state.items.itemMap[itemId], [state.items.itemMap]);
-      const getItemTree = React7.useCallback(() => {
+      const getItemMeta = React8.useCallback((itemId) => state.items.itemMetaMap[itemId], [state.items.itemMetaMap]);
+      const getItem = React8.useCallback((itemId) => state.items.itemMap[itemId], [state.items.itemMap]);
+      const getItemTree = React8.useCallback(() => {
         const getItemFromItemId = (id) => {
           const _state$items$itemMap$ = state.items.itemMap[id], item = (0, _objectWithoutPropertiesLoose2.default)(_state$items$itemMap$, _excluded);
           const newChildren = state.items.itemOrderedChildrenIds[id];
@@ -49791,7 +49791,7 @@ var require_useTreeViewItems = __commonJS({
         };
         return state.items.itemOrderedChildrenIds[_useTreeViewItems.TREE_VIEW_ROOT_PARENT_ID].map(getItemFromItemId);
       }, [state.items.itemMap, state.items.itemOrderedChildrenIds]);
-      const isItemDisabled = React7.useCallback((itemId) => {
+      const isItemDisabled = React8.useCallback((itemId) => {
         if (itemId == null) {
           return false;
         }
@@ -49810,11 +49810,11 @@ var require_useTreeViewItems = __commonJS({
         }
         return false;
       }, [instance]);
-      const getItemIndex = React7.useCallback((itemId) => {
+      const getItemIndex = React8.useCallback((itemId) => {
         const parentId = instance.getItemMeta(itemId).parentId ?? _useTreeViewItems.TREE_VIEW_ROOT_PARENT_ID;
         return state.items.itemChildrenIndexes[parentId][itemId];
       }, [instance, state.items.itemChildrenIndexes]);
-      const getItemOrderedChildrenIds = React7.useCallback((itemId) => state.items.itemOrderedChildrenIds[itemId ?? _useTreeViewItems.TREE_VIEW_ROOT_PARENT_ID] ?? [], [state.items.itemOrderedChildrenIds]);
+      const getItemOrderedChildrenIds = React8.useCallback((itemId) => state.items.itemOrderedChildrenIds[itemId ?? _useTreeViewItems.TREE_VIEW_ROOT_PARENT_ID] ?? [], [state.items.itemOrderedChildrenIds]);
       const getItemDOMElement = (itemId) => {
         const itemMeta = instance.getItemMeta(itemId);
         if (itemMeta == null) {
@@ -49832,12 +49832,12 @@ var require_useTreeViewItems = __commonJS({
         }
         return !instance.isItemDisabled(itemId);
       };
-      const areItemUpdatesPreventedRef = React7.useRef(false);
-      const preventItemUpdates = React7.useCallback(() => {
+      const areItemUpdatesPreventedRef = React8.useRef(false);
+      const preventItemUpdates = React8.useCallback(() => {
         areItemUpdatesPreventedRef.current = true;
       }, []);
-      const areItemUpdatesPrevented = React7.useCallback(() => areItemUpdatesPreventedRef.current, []);
-      React7.useEffect(() => {
+      const areItemUpdatesPrevented = React8.useCallback(() => areItemUpdatesPreventedRef.current, []);
+      React8.useEffect(() => {
         if (instance.areItemUpdatesPrevented()) {
           return;
         }
@@ -49985,14 +49985,14 @@ var require_useTreeViewExpansion = __commonJS({
     });
     exports2.useTreeViewExpansion = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _useEventCallback = _interopRequireDefault(require_useEventCallback2());
     var useTreeViewExpansion = ({
       instance,
       params,
       models
     }) => {
-      const expandedItemsMap = React7.useMemo(() => {
+      const expandedItemsMap = React8.useMemo(() => {
         const temp = /* @__PURE__ */ new Map();
         models.expandedItems.value.forEach((id) => {
           temp.set(id, true);
@@ -50003,8 +50003,8 @@ var require_useTreeViewExpansion = __commonJS({
         params.onExpandedItemsChange?.(event, value);
         models.expandedItems.setControlledValue(value);
       };
-      const isItemExpanded = React7.useCallback((itemId) => expandedItemsMap.has(itemId), [expandedItemsMap]);
-      const isItemExpandable = React7.useCallback((itemId) => !!instance.getItemMeta(itemId)?.expandable, [instance]);
+      const isItemExpanded = React8.useCallback((itemId) => expandedItemsMap.has(itemId), [expandedItemsMap]);
+      const isItemExpandable = React8.useCallback((itemId) => !!instance.getItemMeta(itemId)?.expandable, [instance]);
       const toggleItemExpansion = (0, _useEventCallback.default)((event, itemId) => {
         const isExpandedBefore = instance.isItemExpanded(itemId);
         instance.setItemExpansion(event, itemId, !isExpandedBefore);
@@ -50039,7 +50039,7 @@ var require_useTreeViewExpansion = __commonJS({
           setExpandedItems(event, newExpanded);
         }
       };
-      const expansionTrigger = React7.useMemo(() => {
+      const expansionTrigger = React8.useMemo(() => {
         if (params.expansionTrigger) {
           return params.expansionTrigger;
         }
@@ -50320,7 +50320,7 @@ var require_useTreeViewSelection = __commonJS({
     });
     exports2.useTreeViewSelection = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _tree = require_tree();
     var _useTreeViewSelection = require_useTreeViewSelection_utils();
     var useTreeViewSelection = ({
@@ -50328,9 +50328,9 @@ var require_useTreeViewSelection = __commonJS({
       params,
       models
     }) => {
-      const lastSelectedItem = React7.useRef(null);
-      const lastSelectedRange = React7.useRef({});
-      const selectedItemsMap = React7.useMemo(() => {
+      const lastSelectedItem = React8.useRef(null);
+      const lastSelectedRange = React8.useRef({});
+      const selectedItemsMap = React8.useMemo(() => {
         const temp = /* @__PURE__ */ new Map();
         if (Array.isArray(models.selectedItems.value)) {
           models.selectedItems.value.forEach((id) => {
@@ -50620,7 +50620,7 @@ var require_useInstanceEventHandler = __commonJS({
     });
     exports2.createUseInstanceEventHandler = createUseInstanceEventHandler;
     exports2.useInstanceEventHandler = exports2.unstable_resetCleanupTracking = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _TimerBasedCleanupTracking = require_TimerBasedCleanupTracking();
     var _FinalizationRegistryBasedCleanupTracking = require_FinalizationRegistryBasedCleanupTracking();
     var ObjectToBeRetainedByReact = class {
@@ -50631,11 +50631,11 @@ var require_useInstanceEventHandler = __commonJS({
         if (registryContainer2.registry === null) {
           registryContainer2.registry = typeof FinalizationRegistry !== "undefined" ? new _FinalizationRegistryBasedCleanupTracking.FinalizationRegistryBasedCleanupTracking() : new _TimerBasedCleanupTracking.TimerBasedCleanupTracking();
         }
-        const [objectRetainedByReact] = React7.useState(new ObjectToBeRetainedByReact());
-        const subscription = React7.useRef(null);
-        const handlerRef = React7.useRef(void 0);
+        const [objectRetainedByReact] = React8.useState(new ObjectToBeRetainedByReact());
+        const subscription = React8.useRef(null);
+        const handlerRef = React8.useRef(void 0);
         handlerRef.current = handler;
-        const cleanupTokenRef = React7.useRef(null);
+        const cleanupTokenRef = React8.useRef(null);
         if (!subscription.current && handlerRef.current) {
           const enhancedHandler = (params, event) => {
             if (!event.defaultMuiPrevented) {
@@ -50665,7 +50665,7 @@ var require_useInstanceEventHandler = __commonJS({
             cleanupTokenRef.current = null;
           }
         }
-        React7.useEffect(() => {
+        React8.useEffect(() => {
           if (!subscription.current && handlerRef.current) {
             const enhancedHandler = (params, event) => {
               if (!event.defaultMuiPrevented) {
@@ -50736,7 +50736,7 @@ var require_useTreeViewFocus = __commonJS({
     });
     exports2.useTreeViewFocus = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _useEventCallback = _interopRequireDefault(require_useEventCallback2());
     var _ownerDocument = _interopRequireDefault(require_ownerDocument2());
     var _useInstanceEventHandler = require_useInstanceEventHandler();
@@ -50773,8 +50773,8 @@ var require_useTreeViewFocus = __commonJS({
           }));
         }
       });
-      const isTreeViewFocused = React7.useCallback(() => !!rootRef.current && rootRef.current.contains((0, _utils.getActiveElement)((0, _ownerDocument.default)(rootRef.current))), [rootRef]);
-      const isItemFocused = React7.useCallback((itemId) => state.focusedItemId === itemId && isTreeViewFocused(), [state.focusedItemId, isTreeViewFocused]);
+      const isTreeViewFocused = React8.useCallback(() => !!rootRef.current && rootRef.current.contains((0, _utils.getActiveElement)((0, _ownerDocument.default)(rootRef.current))), [rootRef]);
+      const isItemFocused = React8.useCallback((itemId) => state.focusedItemId === itemId && isTreeViewFocused(), [state.focusedItemId, isTreeViewFocused]);
       const isItemVisible = (itemId) => {
         const itemMeta = instance.getItemMeta(itemId);
         return itemMeta && (itemMeta.parentId == null || instance.isItemExpanded(itemMeta.parentId));
@@ -50894,7 +50894,7 @@ var require_useTreeViewLabel_itemPlugin = __commonJS({
       value: true
     });
     exports2.useTreeViewLabelItemPlugin = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _TreeViewProvider = require_TreeViewProvider2();
     var useTreeViewLabelItemPlugin = ({
       props
@@ -50906,9 +50906,9 @@ var require_useTreeViewLabel_itemPlugin = __commonJS({
         label,
         itemId
       } = props;
-      const [labelInputValue, setLabelInputValue] = React7.useState(label);
+      const [labelInputValue, setLabelInputValue] = React8.useState(label);
       const isItemBeingEdited = instance.isItemBeingEdited(itemId);
-      React7.useEffect(() => {
+      React8.useEffect(() => {
         if (!isItemBeingEdited) {
           setLabelInputValue(label);
         }
@@ -50977,7 +50977,7 @@ var require_useTreeViewLabel = __commonJS({
     });
     exports2.useTreeViewLabel = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _warning = require_warning2();
     var _useTreeViewLabel = require_useTreeViewLabel_itemPlugin();
     var useTreeViewLabel = ({
@@ -50986,7 +50986,7 @@ var require_useTreeViewLabel = __commonJS({
       setState,
       params
     }) => {
-      const editedItemRef = React7.useRef(state.editedItemId);
+      const editedItemRef = React8.useRef(state.editedItemId);
       const isItemBeingEditedRef = (itemId) => editedItemRef.current === itemId;
       const setEditedItemId = (editedItemId) => {
         setState((prevState) => (0, _extends2.default)({}, prevState, {
@@ -51098,7 +51098,7 @@ var require_useTreeViewKeyboardNavigation = __commonJS({
       value: true
     });
     exports2.useTreeViewKeyboardNavigation = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _RtlProvider = require_RtlProvider();
     var _useEventCallback = _interopRequireDefault(require_useEventCallback2());
     var _tree = require_tree();
@@ -51113,11 +51113,11 @@ var require_useTreeViewKeyboardNavigation = __commonJS({
       state
     }) => {
       const isRtl = (0, _RtlProvider.useRtl)();
-      const firstCharMap = React7.useRef({});
+      const firstCharMap = React8.useRef({});
       const updateFirstCharMap = (0, _useEventCallback.default)((callback) => {
         firstCharMap.current = callback(firstCharMap.current);
       });
-      React7.useEffect(() => {
+      React8.useEffect(() => {
         if (instance.areItemUpdatesPrevented()) {
           return;
         }
@@ -52946,7 +52946,7 @@ var require_GlobalStyles5 = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _system = require_system();
     var _defaultTheme = _interopRequireDefault(require_defaultTheme());
@@ -53028,7 +53028,7 @@ var require_zero_styled2 = __commonJS({
         return _useTheme.default;
       }
     });
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _styleFunctionSx = require_styleFunctionSx2();
     var _useTheme = _interopRequireDefault(require_useTheme5());
     var _GlobalStyles = _interopRequireDefault(require_GlobalStyles6());
@@ -53082,7 +53082,7 @@ var require_DefaultPropsProvider3 = __commonJS({
     });
     exports2.default = void 0;
     exports2.useDefaultProps = useDefaultProps;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _DefaultPropsProvider = _interopRequireWildcard(require_DefaultPropsProvider2());
     var _jsxRuntime = require_jsx_runtime();
@@ -53227,7 +53227,7 @@ var require_SvgIcon = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _composeClasses = _interopRequireDefault(require_composeClasses2());
@@ -53344,7 +53344,7 @@ var require_SvgIcon = __commonJS({
         }
       ]
     })));
-    var SvgIcon = /* @__PURE__ */ React7.forwardRef(function SvgIcon2(inProps, ref) {
+    var SvgIcon = /* @__PURE__ */ React8.forwardRef(function SvgIcon2(inProps, ref) {
       const props = (0, _DefaultPropsProvider.useDefaultProps)({
         props: inProps,
         name: "MuiSvgIcon"
@@ -53361,7 +53361,7 @@ var require_SvgIcon = __commonJS({
         viewBox = "0 0 24 24",
         ...other
       } = props;
-      const hasSvgAsChild = /* @__PURE__ */ React7.isValidElement(children) && children.type === "svg";
+      const hasSvgAsChild = /* @__PURE__ */ React8.isValidElement(children) && children.type === "svg";
       const ownerState = {
         ...props,
         color,
@@ -53524,7 +53524,7 @@ var require_createSvgIcon = __commonJS({
       value: true
     });
     exports2.default = createSvgIcon;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _SvgIcon = _interopRequireDefault(require_SvgIcon2());
     var _jsxRuntime = require_jsx_runtime();
     function createSvgIcon(path, displayName) {
@@ -53540,7 +53540,7 @@ var require_createSvgIcon = __commonJS({
         Component.displayName = `${displayName}Icon`;
       }
       Component.muiName = _SvgIcon.default.muiName;
-      return /* @__PURE__ */ React7.memo(/* @__PURE__ */ React7.forwardRef(Component));
+      return /* @__PURE__ */ React8.memo(/* @__PURE__ */ React8.forwardRef(Component));
     }
   }
 });
@@ -53983,7 +53983,7 @@ var require_Collapse = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _clsx = _interopRequireDefault(require_clsx());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _reactTransitionGroup = require_cjs();
@@ -54095,7 +54095,7 @@ var require_Collapse = __commonJS({
         }
       }]
     });
-    var Collapse = /* @__PURE__ */ React7.forwardRef(function Collapse2(inProps, ref) {
+    var Collapse = /* @__PURE__ */ React8.forwardRef(function Collapse2(inProps, ref) {
       const props = (0, _DefaultPropsProvider.useDefaultProps)({
         props: inProps,
         name: "MuiCollapse"
@@ -54129,12 +54129,12 @@ var require_Collapse = __commonJS({
       const classes = useUtilityClasses(ownerState);
       const theme = (0, _zeroStyled.useTheme)();
       const timer = (0, _useTimeout.default)();
-      const wrapperRef = React7.useRef(null);
-      const autoTransitionDuration = React7.useRef();
+      const wrapperRef = React8.useRef(null);
+      const autoTransitionDuration = React8.useRef();
       const collapsedSize = typeof collapsedSizeProp === "number" ? `${collapsedSizeProp}px` : collapsedSizeProp;
       const isHorizontal = orientation === "horizontal";
       const size = isHorizontal ? "width" : "height";
-      const nodeRef = React7.useRef(null);
+      const nodeRef = React8.useRef(null);
       const handleRef = (0, _utils2.useForkRef)(ref, nodeRef);
       const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
         if (callback) {
@@ -54433,8 +54433,8 @@ var require_FormControlContext = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
-    var FormControlContext = /* @__PURE__ */ React7.createContext(void 0);
+    var React8 = _interopRequireWildcard(require_react());
+    var FormControlContext = /* @__PURE__ */ React8.createContext(void 0);
     if (define_process_env_default.NODE_ENV !== "production") {
       FormControlContext.displayName = "FormControlContext";
     }
@@ -54454,10 +54454,10 @@ var require_useFormControl = __commonJS({
       value: true
     });
     exports2.default = useFormControl;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _FormControlContext = _interopRequireDefault(require_FormControlContext());
     function useFormControl() {
-      return React7.useContext(_FormControlContext.default);
+      return React8.useContext(_FormControlContext.default);
     }
   }
 });
@@ -54475,7 +54475,7 @@ var require_useLazyRipple = __commonJS({
     });
     exports2.LazyRipple = void 0;
     exports2.default = useLazyRipple;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _useLazyRef = _interopRequireDefault(require_useLazyRef2());
     var LazyRipple = class _LazyRipple {
       /** React ref to the ripple instance */
@@ -54488,10 +54488,10 @@ var require_useLazyRipple = __commonJS({
       }
       static use() {
         const ripple = (0, _useLazyRef.default)(_LazyRipple.create).current;
-        const [shouldMount, setShouldMount] = React7.useState(false);
+        const [shouldMount, setShouldMount] = React8.useState(false);
         ripple.shouldMount = shouldMount;
         ripple.setShouldMount = setShouldMount;
-        React7.useEffect(ripple.mountEffect, [shouldMount]);
+        React8.useEffect(ripple.mountEffect, [shouldMount]);
         return ripple;
       }
       constructor() {
@@ -54580,7 +54580,7 @@ var require_Ripple = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _jsxRuntime = require_jsx_runtime();
@@ -54596,7 +54596,7 @@ var require_Ripple = __commonJS({
         onExited,
         timeout
       } = props;
-      const [leaving, setLeaving] = React7.useState(false);
+      const [leaving, setLeaving] = React8.useState(false);
       const rippleClassName = (0, _clsx.default)(className, classes.ripple, classes.rippleVisible, pulsate && classes.ripplePulsate);
       const rippleStyles = {
         width: rippleSize,
@@ -54608,7 +54608,7 @@ var require_Ripple = __commonJS({
       if (!inProp && !leaving) {
         setLeaving(true);
       }
-      React7.useEffect(() => {
+      React8.useEffect(() => {
         if (!inProp && onExited != null) {
           const timeoutId = setTimeout(onExited, timeout);
           return () => {
@@ -54697,7 +54697,7 @@ var require_TouchRipple = __commonJS({
       value: true
     });
     exports2.default = exports2.TouchRippleRoot = exports2.TouchRippleRipple = exports2.DELAY_RIPPLE = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _reactTransitionGroup = require_cjs();
     var _clsx = _interopRequireDefault(require_clsx());
@@ -54811,7 +54811,7 @@ var require_TouchRipple = __commonJS({
     animation-delay: 200ms;
   }
 `;
-    var TouchRipple = /* @__PURE__ */ React7.forwardRef(function TouchRipple2(inProps, ref) {
+    var TouchRipple = /* @__PURE__ */ React8.forwardRef(function TouchRipple2(inProps, ref) {
       const props = (0, _DefaultPropsProvider.useDefaultProps)({
         props: inProps,
         name: "MuiTouchRipple"
@@ -54822,20 +54822,20 @@ var require_TouchRipple = __commonJS({
         className,
         ...other
       } = props;
-      const [ripples, setRipples] = React7.useState([]);
-      const nextKey = React7.useRef(0);
-      const rippleCallback = React7.useRef(null);
-      React7.useEffect(() => {
+      const [ripples, setRipples] = React8.useState([]);
+      const nextKey = React8.useRef(0);
+      const rippleCallback = React8.useRef(null);
+      React8.useEffect(() => {
         if (rippleCallback.current) {
           rippleCallback.current();
           rippleCallback.current = null;
         }
       }, [ripples]);
-      const ignoringMouseDown = React7.useRef(false);
+      const ignoringMouseDown = React8.useRef(false);
       const startTimer = (0, _useTimeout.default)();
-      const startTimerCommit = React7.useRef(null);
-      const container = React7.useRef(null);
-      const startCommit = React7.useCallback((params) => {
+      const startTimerCommit = React8.useRef(null);
+      const container = React8.useRef(null);
+      const startCommit = React8.useCallback((params) => {
         const {
           pulsate: pulsate2,
           rippleX,
@@ -54861,7 +54861,7 @@ var require_TouchRipple = __commonJS({
         nextKey.current += 1;
         rippleCallback.current = cb;
       }, [classes]);
-      const start = React7.useCallback((event = {}, options = {}, cb = () => {
+      const start = React8.useCallback((event = {}, options = {}, cb = () => {
       }) => {
         const {
           pulsate: pulsate2 = false,
@@ -54935,12 +54935,12 @@ var require_TouchRipple = __commonJS({
           });
         }
       }, [centerProp, startCommit, startTimer]);
-      const pulsate = React7.useCallback(() => {
+      const pulsate = React8.useCallback(() => {
         start({}, {
           pulsate: true
         });
       }, [start]);
-      const stop = React7.useCallback((event, cb) => {
+      const stop = React8.useCallback((event, cb) => {
         startTimer.clear();
         if (event?.type === "touchend" && startTimerCommit.current) {
           startTimerCommit.current();
@@ -54959,7 +54959,7 @@ var require_TouchRipple = __commonJS({
         });
         rippleCallback.current = cb;
       }, [startTimer]);
-      React7.useImperativeHandle(ref, () => ({
+      React8.useImperativeHandle(ref, () => ({
         pulsate,
         start,
         stop
@@ -55027,7 +55027,7 @@ var require_ButtonBase = __commonJS({
       value: true
     });
     exports2.default = exports2.ButtonBaseRoot = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _refType = _interopRequireDefault(require_refType2());
@@ -55102,7 +55102,7 @@ var require_ButtonBase = __commonJS({
         colorAdjust: "exact"
       }
     });
-    var ButtonBase = /* @__PURE__ */ React7.forwardRef(function ButtonBase2(inProps, ref) {
+    var ButtonBase = /* @__PURE__ */ React8.forwardRef(function ButtonBase2(inProps, ref) {
       const props = (0, _DefaultPropsProvider.useDefaultProps)({
         props: inProps,
         name: "MuiButtonBase"
@@ -55139,21 +55139,21 @@ var require_ButtonBase = __commonJS({
         type,
         ...other
       } = props;
-      const buttonRef = React7.useRef(null);
+      const buttonRef = React8.useRef(null);
       const ripple = (0, _useLazyRipple.default)();
       const handleRippleRef = (0, _useForkRef.default)(ripple.ref, touchRippleRef);
-      const [focusVisible, setFocusVisible] = React7.useState(false);
+      const [focusVisible, setFocusVisible] = React8.useState(false);
       if (disabled && focusVisible) {
         setFocusVisible(false);
       }
-      React7.useImperativeHandle(action, () => ({
+      React8.useImperativeHandle(action, () => ({
         focusVisible: () => {
           setFocusVisible(true);
           buttonRef.current.focus();
         }
       }), []);
       const enableTouchRipple = ripple.shouldMount && !disableRipple && !disabled;
-      React7.useEffect(() => {
+      React8.useEffect(() => {
         if (focusVisible && focusRipple && !disableRipple) {
           ripple.pulsate();
         }
@@ -55555,7 +55555,7 @@ var require_SwitchBase = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _refType = _interopRequireDefault(require_refType2());
@@ -55632,7 +55632,7 @@ var require_SwitchBase = __commonJS({
       padding: 0,
       zIndex: 1
     });
-    var SwitchBase = /* @__PURE__ */ React7.forwardRef(function SwitchBase2(props, ref) {
+    var SwitchBase = /* @__PURE__ */ React8.forwardRef(function SwitchBase2(props, ref) {
       const {
         autoFocus,
         checked: checkedProp,
@@ -55859,7 +55859,7 @@ var require_CheckBoxOutlineBlank = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _createSvgIcon = _interopRequireDefault(require_createSvgIcon());
     var _jsxRuntime = require_jsx_runtime();
     var _default = exports2.default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)("path", {
@@ -55880,7 +55880,7 @@ var require_CheckBox = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _createSvgIcon = _interopRequireDefault(require_createSvgIcon());
     var _jsxRuntime = require_jsx_runtime();
     var _default = exports2.default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)("path", {
@@ -55901,7 +55901,7 @@ var require_IndeterminateCheckBox = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _createSvgIcon = _interopRequireDefault(require_createSvgIcon());
     var _jsxRuntime = require_jsx_runtime();
     var _default = exports2.default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)("path", {
@@ -55972,7 +55972,7 @@ var require_Checkbox = __commonJS({
       value: true
     });
     exports2.default = void 0;
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _refType = _interopRequireDefault(require_refType2());
@@ -56071,7 +56071,7 @@ var require_Checkbox = __commonJS({
     var defaultCheckedIcon = /* @__PURE__ */ (0, _jsxRuntime.jsx)(_CheckBox.default, {});
     var defaultIcon = /* @__PURE__ */ (0, _jsxRuntime.jsx)(_CheckBoxOutlineBlank.default, {});
     var defaultIndeterminateIcon = /* @__PURE__ */ (0, _jsxRuntime.jsx)(_IndeterminateCheckBox.default, {});
-    var Checkbox = /* @__PURE__ */ React7.forwardRef(function Checkbox2(inProps, ref) {
+    var Checkbox = /* @__PURE__ */ React8.forwardRef(function Checkbox2(inProps, ref) {
       const props = (0, _DefaultPropsProvider.useDefaultProps)({
         props: inProps,
         name: "MuiCheckbox"
@@ -56104,10 +56104,10 @@ var require_Checkbox = __commonJS({
           "data-indeterminate": indeterminate,
           ...inputProps
         },
-        icon: /* @__PURE__ */ React7.cloneElement(icon, {
+        icon: /* @__PURE__ */ React8.cloneElement(icon, {
           fontSize: icon.props.fontSize ?? size
         }),
-        checkedIcon: /* @__PURE__ */ React7.cloneElement(indeterminateIcon, {
+        checkedIcon: /* @__PURE__ */ React8.cloneElement(indeterminateIcon, {
           fontSize: indeterminateIcon.props.fontSize ?? size
         }),
         ownerState,
@@ -56422,7 +56422,7 @@ var require_TreeItem2DragAndDropOverlay = __commonJS({
     });
     exports2.TreeItem2DragAndDropOverlay = TreeItem2DragAndDropOverlay;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _styles = require_styles();
     var _system = require_system();
@@ -56576,7 +56576,7 @@ var require_TreeItemContent = __commonJS({
     exports2.TreeItemContent = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
     var _objectWithoutPropertiesLoose2 = _interopRequireDefault(require_objectWithoutPropertiesLoose());
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _Checkbox = _interopRequireDefault(require_Checkbox2());
@@ -56585,7 +56585,7 @@ var require_TreeItemContent = __commonJS({
     var _TreeItem2LabelInput = require_TreeItem2LabelInput2();
     var _jsxRuntime = require_jsx_runtime();
     var _excluded = ["classes", "className", "displayIcon", "expansionIcon", "icon", "label", "itemId", "onClick", "onMouseDown", "dragAndDropOverlayProps", "labelInputProps"];
-    var TreeItemContent = exports2.TreeItemContent = /* @__PURE__ */ React7.forwardRef(function TreeItemContent2(props, ref) {
+    var TreeItemContent = exports2.TreeItemContent = /* @__PURE__ */ React8.forwardRef(function TreeItemContent2(props, ref) {
       const {
         classes,
         className,
@@ -56617,7 +56617,7 @@ var require_TreeItemContent = __commonJS({
         toggleItemEditing
       } = (0, _useTreeItemState.useTreeItemState)(itemId);
       const icon = iconProp || expansionIcon || displayIcon;
-      const checkboxRef = React7.useRef(null);
+      const checkboxRef = React8.useRef(null);
       const handleMouseDown = (event) => {
         preventSelection(event);
         if (onMouseDown) {
@@ -56752,7 +56752,7 @@ var require_icons = __commonJS({
     });
     exports2.TreeViewExpandIcon = exports2.TreeViewCollapseIcon = void 0;
     var _utils = require_utils4();
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _jsxRuntime = require_jsx_runtime();
     var TreeViewExpandIcon = exports2.TreeViewExpandIcon = (0, _utils.createSvgIcon)(/* @__PURE__ */ (0, _jsxRuntime.jsx)("path", {
       d: "M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
@@ -56855,7 +56855,7 @@ var require_TreeItem = __commonJS({
     exports2.TreeItem = void 0;
     var _objectWithoutPropertiesLoose2 = _interopRequireDefault(require_objectWithoutPropertiesLoose());
     var _extends2 = _interopRequireDefault(require_extends());
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _Collapse = _interopRequireDefault(require_Collapse2());
@@ -57015,7 +57015,7 @@ var require_TreeItem = __commonJS({
         }
       }]
     });
-    var TreeItem = exports2.TreeItem = /* @__PURE__ */ React7.forwardRef(function TreeItem3(inProps, inRef) {
+    var TreeItem = exports2.TreeItem = /* @__PURE__ */ React8.forwardRef(function TreeItem3(inProps, inRef) {
       const {
         icons: contextIcons,
         runItemPlugins,
@@ -57032,7 +57032,7 @@ var require_TreeItem = __commonJS({
         treeId,
         instance
       } = (0, _TreeViewProvider.useTreeViewContext)();
-      const depthContext = React7.useContext(_TreeViewItemDepthContext.TreeViewItemDepthContext);
+      const depthContext = React8.useContext(_TreeViewItemDepthContext.TreeViewItemDepthContext);
       const props = useThemeProps({
         props: inProps,
         name: "MuiTreeItem"
@@ -57075,8 +57075,8 @@ var require_TreeItem = __commonJS({
         rootRef,
         propsEnhancers
       } = runItemPlugins(props);
-      const rootRefObject = React7.useRef(null);
-      const contentRefObject = React7.useRef(null);
+      const rootRefObject = React8.useRef(null);
+      const contentRefObject = React8.useRef(null);
       const handleRootRef = (0, _useForkRef.default)(inRef, rootRef, rootRefObject);
       const handleContentRef = (0, _useForkRef.default)(ContentProps?.ref, contentRef, contentRefObject);
       const slots = {
@@ -57399,7 +57399,7 @@ var require_RichTreeViewItems = __commonJS({
     exports2.RichTreeViewItems = RichTreeViewItems;
     var _extends2 = _interopRequireDefault(require_extends());
     var _objectWithoutPropertiesLoose2 = _interopRequireDefault(require_objectWithoutPropertiesLoose());
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _useSlotProps2 = _interopRequireDefault(require_useSlotProps2());
     var _TreeItem = require_TreeItem2();
     var _jsxRuntime = require_jsx_runtime();
@@ -57426,7 +57426,7 @@ var require_RichTreeViewItems = __commonJS({
           label
         }
       }), itemProps = (0, _objectWithoutPropertiesLoose2.default)(_useSlotProps, _excluded);
-      const children = React7.useMemo(() => itemsToRender ? /* @__PURE__ */ (0, _jsxRuntime.jsx)(RichTreeViewItems, {
+      const children = React8.useMemo(() => itemsToRender ? /* @__PURE__ */ (0, _jsxRuntime.jsx)(RichTreeViewItems, {
         itemsToRender,
         slots,
         slotProps
@@ -57441,7 +57441,7 @@ var require_RichTreeViewItems = __commonJS({
         slots,
         slotProps
       } = props;
-      return /* @__PURE__ */ (0, _jsxRuntime.jsx)(React7.Fragment, {
+      return /* @__PURE__ */ (0, _jsxRuntime.jsx)(React8.Fragment, {
         children: itemsToRender.map((item) => /* @__PURE__ */ (0, _jsxRuntime.jsx)(WrappedTreeItem, {
           slots,
           slotProps,
@@ -57468,7 +57468,7 @@ var require_RichTreeView = __commonJS({
     });
     exports2.RichTreeViewRoot = exports2.RichTreeView = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _composeClasses = _interopRequireDefault(require_composeClasses2());
     var _useSlotProps = _interopRequireDefault(require_useSlotProps2());
@@ -57501,7 +57501,7 @@ var require_RichTreeView = __commonJS({
       outline: 0,
       position: "relative"
     });
-    var RichTreeView2 = exports2.RichTreeView = /* @__PURE__ */ React7.forwardRef(function RichTreeView3(inProps, ref) {
+    var RichTreeView3 = exports2.RichTreeView = /* @__PURE__ */ React8.forwardRef(function RichTreeView4(inProps, ref) {
       const props = useThemeProps({
         props: inProps,
         name: "MuiRichTreeView"
@@ -57544,7 +57544,7 @@ var require_RichTreeView = __commonJS({
         }))
       });
     });
-    define_process_env_default.NODE_ENV !== "production" ? RichTreeView2.propTypes = {
+    define_process_env_default.NODE_ENV !== "production" ? RichTreeView3.propTypes = {
       // ----------------------------- Warning --------------------------------
       // | These PropTypes are generated from the TypeScript type definitions |
       // | To update them edit the TypeScript types and run "pnpm proptypes"  |
@@ -57798,7 +57798,7 @@ var require_useTreeItem2Utils = __commonJS({
       }
       return Boolean(reactChildren);
     };
-    var useTreeItem2Utils2 = ({
+    var useTreeItem2Utils3 = ({
       itemId,
       children
     }) => {
@@ -57914,7 +57914,7 @@ var require_useTreeItem2Utils = __commonJS({
         publicAPI
       };
     };
-    exports2.useTreeItem2Utils = useTreeItem2Utils2;
+    exports2.useTreeItem2Utils = useTreeItem2Utils3;
   }
 });
 
@@ -57948,7 +57948,7 @@ var require_useTreeItem2 = __commonJS({
     });
     exports2.useTreeItem2 = void 0;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _extractEventHandlers = _interopRequireDefault(require_extractEventHandlers2());
     var _useForkRef = _interopRequireDefault(require_useForkRef2());
     var _TreeViewProvider = require_TreeViewProvider2();
@@ -57975,7 +57975,7 @@ var require_useTreeItem2 = __commonJS({
         instance,
         publicAPI
       } = (0, _TreeViewProvider.useTreeViewContext)();
-      const depthContext = React7.useContext(_TreeViewItemDepthContext.TreeViewItemDepthContext);
+      const depthContext = React8.useContext(_TreeViewItemDepthContext.TreeViewItemDepthContext);
       const {
         id,
         itemId,
@@ -57995,11 +57995,11 @@ var require_useTreeItem2 = __commonJS({
         itemId,
         children
       });
-      const rootRefObject = React7.useRef(null);
-      const contentRefObject = React7.useRef(null);
+      const rootRefObject = React8.useRef(null);
+      const contentRefObject = React8.useRef(null);
       const handleRootRef = (0, _useForkRef.default)(rootRef, pluginRootRef, rootRefObject);
       const handleContentRef = (0, _useForkRef.default)(contentRef, contentRefObject);
-      const checkboxRef = React7.useRef(null);
+      const checkboxRef = React8.useRef(null);
       const idAttribute = (0, _useTreeViewId.generateTreeItemIdAttribute)({
         itemId,
         treeId,
@@ -58244,7 +58244,7 @@ var require_TreeItem2Icon = __commonJS({
     });
     exports2.TreeItem2Icon = TreeItem2Icon;
     var _extends2 = _interopRequireDefault(require_extends());
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _resolveComponentProps = _interopRequireDefault(require_resolveComponentProps2());
     var _useSlotProps = _interopRequireDefault(require_useSlotProps2());
@@ -58347,7 +58347,7 @@ var require_TreeItem22 = __commonJS({
     exports2.TreeItem2Root = exports2.TreeItem2Label = exports2.TreeItem2IconContainer = exports2.TreeItem2GroupTransition = exports2.TreeItem2Content = exports2.TreeItem2Checkbox = exports2.TreeItem2 = void 0;
     var _objectWithoutPropertiesLoose2 = _interopRequireDefault(require_objectWithoutPropertiesLoose());
     var _extends2 = _interopRequireDefault(require_extends());
-    var React7 = _interopRequireWildcard(require_react());
+    var React8 = _interopRequireWildcard(require_react());
     var _propTypes = _interopRequireDefault(require_prop_types());
     var _clsx = _interopRequireDefault(require_clsx());
     var _unsupportedProp = _interopRequireDefault(require_unsupportedProp2());
@@ -58505,7 +58505,7 @@ var require_TreeItem22 = __commonJS({
         }
       }]
     });
-    var TreeItem2Checkbox = exports2.TreeItem2Checkbox = (0, _zeroStyled.styled)(/* @__PURE__ */ React7.forwardRef((props, ref) => {
+    var TreeItem2Checkbox = exports2.TreeItem2Checkbox = (0, _zeroStyled.styled)(/* @__PURE__ */ React8.forwardRef((props, ref) => {
       const {
         visible
       } = props, other = (0, _objectWithoutPropertiesLoose2.default)(props, _excluded);
@@ -58544,7 +58544,7 @@ var require_TreeItem22 = __commonJS({
       };
       return (0, _composeClasses.default)(slots, _TreeItem.getTreeItemUtilityClass, classes);
     };
-    var TreeItem22 = exports2.TreeItem2 = /* @__PURE__ */ React7.forwardRef(function TreeItem23(inProps, forwardedRef) {
+    var TreeItem23 = exports2.TreeItem2 = /* @__PURE__ */ React8.forwardRef(function TreeItem24(inProps, forwardedRef) {
       const props = useThemeProps({
         props: inProps,
         name: "MuiTreeItem2"
@@ -58662,7 +58662,7 @@ var require_TreeItem22 = __commonJS({
         }))
       });
     });
-    define_process_env_default.NODE_ENV !== "production" ? TreeItem22.propTypes = {
+    define_process_env_default.NODE_ENV !== "production" ? TreeItem23.propTypes = {
       // ----------------------------- Warning --------------------------------
       // | These PropTypes are generated from the TypeScript type definitions |
       // | To update them edit the TypeScript types and run "pnpm proptypes"  |
@@ -58786,8 +58786,8 @@ var require_useTreeViewApiRef = __commonJS({
       value: true
     });
     exports2.useTreeViewApiRef = void 0;
-    var React7 = _interopRequireWildcard(require_react());
-    var useTreeViewApiRef = () => React7.useRef(void 0);
+    var React8 = _interopRequireWildcard(require_react());
+    var useTreeViewApiRef = () => React8.useRef(void 0);
     exports2.useTreeViewApiRef = useTreeViewApiRef;
   }
 });
@@ -58819,7 +58819,7 @@ var require_hooks = __commonJS({
 
 // src/App.tsx
 init_define_process_env();
-var React6 = __toESM(require_react());
+var React7 = __toESM(require_react());
 var import_client = __toESM(require_client());
 
 // src/Tree.tsx
@@ -58973,100 +58973,115 @@ function BasicRichTreeView({ data, narrativeMapping }) {
 
 // src/Variables.tsx
 init_define_process_env();
-var import_react4 = __toESM(require_react());
+var React6 = __toESM(require_react());
+var import_Box2 = __toESM(require_Box4());
+var import_RichTreeView2 = __toESM(require_RichTreeView2());
+var import_TreeItem22 = __toESM(require_TreeItem23());
+var import_hooks2 = __toESM(require_hooks());
 var import_jsx_runtime2 = __toESM(require_jsx_runtime());
-function List({ data }) {
-  const [selectedVariable, setSelectedVariable] = (0, import_react4.useState)(null);
-  const handleClick = (variableName) => {
-    setSelectedVariable(variableName);
-    console.log(variableName);
-    vscodeApi_default?.postMessage({ type: "selectVariable", name: variableName });
-  };
-  return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "variables-container", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h2", { className: "variables-title", children: "Variables" }),
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "clusters", children: Object.entries(data).map(([cluster, variables]) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "cluster", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h3", { className: "cluster-title", children: cluster }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "variables-list", children: variables.map((variable, index) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
-        "span",
-        {
-          onClick: () => handleClick(variable),
-          className: `variable-tag ${selectedVariable === variable ? "selected" : ""}`,
-          children: variable
-        },
-        index
-      )) })
-    ] }, cluster)) })
-  ] });
-}
-
-// src/Narrative.tsx
-init_define_process_env();
-var import_jsx_runtime3 = __toESM(require_jsx_runtime());
-var FormattedText = ({
-  content,
-  onLinkClick = (cellInfo) => console.log("Link clicked:", cellInfo)
-}) => {
-  const parseTechDoc = (text = "") => {
-    const references2 = [];
-    const sections = [];
-    let lastIndex = 0;
-    const pattern = /\{([^}]+)\}\[([^\]]+)\]/g;
-    let match2;
-    console.log("Input text:", text);
-    while ((match2 = pattern.exec(text)) !== null) {
-      console.log("Match found:", match2);
-      sections.push(text.slice(lastIndex, match2.index));
-      references2.push({
-        content: match2[1].trim(),
-        cells: match2[2].trim()
-      });
-      lastIndex = pattern.lastIndex;
-    }
-    sections.push(text.slice(lastIndex));
-    console.log("Final sections:", sections);
-    console.log("Final references:", references2);
-    return { parts: sections, references: references2 };
-  };
-  const { parts, references } = parseTechDoc(content);
-  console.log("parts", parts);
-  const renderContent = () => {
-    const { parts: parts2, references: references2 } = parseTechDoc(content);
-    const sections = parts2;
-    console.log("secs", sections, "ref", references2);
-    return sections.map((section, index) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
-      section,
-      index < references2.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { onClick: () => {
-        console.log("reference", references2[index], "index", index);
-        onLinkClick(references2[index].cells);
-      }, style: { color: "blue", cursor: "pointer" }, children: references2[index].content.replace(/^['"]|['"]$/g, "") })
-    ] }, index));
-  };
-  return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "content-wrapper", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "narrative-container", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { marginBottom: "1.5rem" }, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { style: { fontSize: "1.5rem", fontWeight: "bold", color: "#2D3748", marginBottom: "1rem" }, children: "Textual Summary" }),
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { fontSize: "14px", color: "#4A5568" }, children: renderContent() })
-  ] }) }) });
+var convertClusterDataToTree = (data, minFreq, maxFreq) => {
+  return data.map((clusterItem, clusterIndex) => {
+    const clusterId = `cluster-${clusterIndex}`;
+    return {
+      id: clusterId,
+      label: clusterItem.cluster,
+      children: clusterItem.variables.map((variable, varIndex) => {
+        return {
+          id: `${clusterId}-var-${varIndex}`,
+          label: variable.name,
+          frequency: variable.frequency,
+          isVariable: true
+          // For conditional styling or handling
+        };
+      })
+    };
+  });
 };
-function parseFirstCellNumber2(cellsString) {
-  const match2 = cellsString.match(/\d+/);
-  if (match2) {
-    return parseInt(match2[0], 10);
+var getColorForFrequency = (frequency, minFreq, maxFreq) => {
+  const range = maxFreq - minFreq;
+  const binSize = range / 10;
+  let binIndex = Math.floor((frequency - minFreq) / binSize);
+  binIndex = Math.min(9, Math.max(0, binIndex));
+  const colorScale = [
+    "rgb(255, 255, 255)",
+    // White for very low frequencies
+    "rgb(255, 230, 230)",
+    // Very light red
+    "rgb(255, 204, 204)",
+    // Light red for low frequencies
+    "rgb(255, 179, 128)",
+    // Light orange
+    "rgb(255, 128, 0)",
+    // Orange
+    "rgb(204, 102, 0)",
+    // Dark orange
+    "rgb(255, 76, 76)",
+    // Orange
+    "rgb(255, 51, 51)",
+    // Dark orange
+    "rgb(255, 0, 0)",
+    "rgb(153, 0, 0)"
+    // Dark red for high frequencies
+  ];
+  return colorScale[binIndex];
+};
+var getTextColor = (backgroundColor) => {
+  const match2 = backgroundColor.match(/\d+/g);
+  if (match2 && match2.length === 3) {
+    const [r, g, b] = match2.map(Number);
+    const normalizedR = r / 255;
+    const normalizedG = g / 255;
+    const normalizedB = b / 255;
+    const luminance = 0.2126 * normalizedR + 0.7152 * normalizedG + 0.0722 * normalizedB;
+    return luminance > 0.5 ? "black" : "white";
   }
-  return null;
-}
-var Narrative = ({ data }) => {
-  console.log("narrative", data);
-  const handleNodeSelect = (cellId) => {
-    const cellIndex = parseFirstCellNumber2(cellId);
-    console.log("cellIndex", cellIndex, cellId);
-    const payload = { type: "selectCell", index: cellIndex };
-    vscodeApi_default?.postMessage(payload);
-  };
-  return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(FormattedText, { onLinkClick: handleNodeSelect, content: data }) });
+  return "black";
 };
-var Narrative_default = Narrative;
+var CustomTreeItem3 = React6.forwardRef(function CustomTreeItem4(props, ref) {
+  const { publicAPI } = (0, import_hooks2.useTreeItem2Utils)({
+    itemId: props.itemId,
+    children: props.children
+  });
+  const item = publicAPI.getItem(props.itemId);
+  const backgroundColor = item.frequency !== void 0 ? getColorForFrequency(item.frequency, 0, 100) : "transparent";
+  const color = getTextColor(backgroundColor);
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+    import_TreeItem22.TreeItem2,
+    {
+      ...props,
+      ref
+    }
+  );
+});
+function VariableTreeView({ data }) {
+  const allFrequencies = data.flatMap((d) => d.variables.map((v) => v.frequency));
+  const minFreq = Math.min(...allFrequencies);
+  const maxFreq = Math.max(...allFrequencies);
+  const treeItems = React6.useMemo(
+    () => convertClusterDataToTree(data, minFreq, maxFreq),
+    [data]
+  );
+  const handleItemClick = (_, nodeId) => {
+    const match2 = nodeId.match(/var-\d+/);
+    if (match2) {
+      const variableName = treeItems.flatMap((c) => c.children ?? []).find((v) => v.id === nodeId)?.label;
+      if (variableName) {
+        vscodeApi_default?.postMessage({ type: "selectVariable", name: variableName });
+      }
+    }
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_Box2.default, { sx: { minWidth: 250 }, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+    import_RichTreeView2.RichTreeView,
+    {
+      items: treeItems,
+      onItemClick: handleItemClick,
+      slots: { item: CustomTreeItem3 }
+    }
+  ) });
+}
 
 // src/App.tsx
-var import_jsx_runtime4 = __toESM(require_jsx_runtime());
+var import_jsx_runtime3 = __toESM(require_jsx_runtime());
 function extractCellReferences(text) {
   const sentenceEndRegex = /[.!?](?=\s|$)/g;
   let sentences = [];
@@ -59101,11 +59116,11 @@ function extractCellReferences(text) {
   return extracted;
 }
 function App() {
-  const [variables, setVariables] = React6.useState(null);
-  const [tree, setTree] = React6.useState(null);
-  const [narrative, setNarrative] = React6.useState(null);
-  const [narrativeMapping, setNarrativeMapping] = React6.useState({});
-  React6.useEffect(() => {
+  const [variables, setVariables] = React7.useState(null);
+  const [tree, setTree] = React7.useState(null);
+  const [narrative, setNarrative] = React7.useState(null);
+  const [narrativeMapping, setNarrativeMapping] = React7.useState({});
+  React7.useEffect(() => {
     const handleMessage = (event) => {
       const message = event.data;
       if (message.command === "fetchVariables") {
@@ -59127,19 +59142,16 @@ function App() {
       window.removeEventListener("message", handleMessage);
     };
   }, []);
-  return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: "top-section", children: [
-      tree ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(BasicRichTreeView, { data: tree, narrativeMapping }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." }),
-      variables ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(List, { data: variables }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { children: narrative ? /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Narrative_default, { data: narrative }) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { children: "Loading notebook data..." }) })
+  return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "notebook-container", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "top-section", children: tree ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(BasicRichTreeView, { data: tree, narrativeMapping }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "Loading notebook data..." }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "bottom-section", children: variables ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(VariableTreeView, { data: variables }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "Loading notebook data..." }) })
   ] });
 }
 (function() {
   const rootElement = document.getElementById("app");
   if (rootElement) {
     const root = import_client.default.createRoot(rootElement);
-    root.render(/* @__PURE__ */ (0, import_jsx_runtime4.jsx)(App, {}));
+    root.render(/* @__PURE__ */ (0, import_jsx_runtime3.jsx)(App, {}));
   } else {
     console.error("Root element not found.");
   }
