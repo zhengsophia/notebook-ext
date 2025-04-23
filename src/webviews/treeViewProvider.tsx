@@ -1,23 +1,21 @@
 import * as vscode from 'vscode';
-// import * as fs from 'fs';
-// import * as path from 'path';
-// import axios from 'axios'; // If needed for external API calls
 import { z } from 'zod';
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
-// import dotenv from "dotenv";
+
+const openai = new OpenAI({ apiKey: "key" });
 
 export class TreeViewProvider implements vscode.WebviewViewProvider {
 
+    // extension name
     public static readonly viewType = 'meng-notebook.treeView';
-
     private _view?: vscode.WebviewView;
 
     constructor(
         private readonly _extensionUri: vscode.Uri,
     ) {}
 
-    // Implementing the required method
+    // implementing the required method for extesions
     resolveWebviewView(
         webviewView: vscode.WebviewView,
         context: vscode.WebviewViewResolveContext,
@@ -42,6 +40,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
                 this.processTree(editor);
             }
         });
+        
 
         // initialization : when the extension in first opened
         const activeEditor = vscode.window.activeNotebookEditor;
@@ -68,16 +67,18 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
 
             const codeCells = this.filterCodeCells(notebookJson);
             const variables = await this.detectPythonVariables(codeCells);
+            const groupedVars = await this.groupVariablesParse(codeCells, variables);
 
             // console.log('variables', variables)
-            this.sendVariablesToWebview(variables);
+            this.sendVariablesToWebview(groupedVars);
         } catch (error) {
             console.error('Error processing notebook:', error);
             vscode.window.showErrorMessage('Failed to process notebook.');
         }
     }
 
-    // aggregate method to get the LLM response for the notebook   
+    // method that combines helper functions to get the LLM response for the notebook  
+    // and sends it within the command 
     private async processTree(editor: vscode.NotebookEditor) {
         try {
             console.log('beginning tree')
@@ -99,7 +100,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         }
     }
 
-    // process  
+    // process the textual summary
     private async processVariableNarrative(editor: any, variable: any) {
         try {
             const notebookUri = editor.notebook.uri;
@@ -150,6 +151,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     //     `;
     // }
 
+    // prompt generation for tree prompting
     private generateTreePrompt(codeCells: any[]) {
         return `Analyze the following JSON of notebook cells and group them based on their functionality and/or structural patterns of analysis. Group should be the general pattern label, while subgroups label more specifically. Cell should specify the execution number of the one or more cells described by that subgroup.  
         
@@ -157,6 +159,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         `;
     }
 
+    // prompt generation for narrative prompting
     private generateNarrativePrompt(variable: any, codeCells: any[]) {
         return `Please provide a technical summary of the given variable that:
 
@@ -179,14 +182,13 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     `
     }
 
-    // LLM for narrative
+    // LLM prompting for narrative
     private async getNarrativeOutput(prompt: string) {
         const narrative = z.object({
             text: z.string()
         });
 
         try {
-            const openai = new OpenAI({ apiKey: "REPLACE" });
             const response = await openai.chat.completions.create({
                 model: 'gpt-4o-2024-11-20',
                 messages: [
@@ -207,7 +209,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     }
 
 
-    // LLM for tree
+    // LLM prompting for tree
     private async getTreeOutput(prompt: string) {
         const Subgroup = z.object({
             name: z.string(),
@@ -224,7 +226,6 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         });
 
         try {
-            const openai = new OpenAI({ apiKey: "REPLACE" });
             const response = await openai.beta.chat.completions.parse({
                 model: 'gpt-4o-2024-11-20',
                 messages: [
@@ -267,6 +268,25 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
       }
   }
 
+  private async handleArtifactSelection(event: vscode.NotebookEditorSelectionChangeEvent) {
+    if (!this._view) return;
+    
+    const selectedCell = event.notebookEditor.notebook.cellAt(event.selections[0].start);
+    
+    // for code cells, get the execution order
+    if (selectedCell.kind === vscode.NotebookCellKind.Code && 
+        selectedCell.executionSummary?.executionOrder) {
+        const executionCount = selectedCell.executionSummary.executionOrder;
+        
+        await this._view.webview.postMessage({
+            type: 'selectArtifact',
+            executionCount: executionCount
+        });
+    }
+}
+
+  
+
   private async detectPythonVariables(codeCells: any) {
     // Regular expression to match variable assignments in Python (e.g., x = 10)
     const variableRegex = /\b([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*.*$/;
@@ -287,6 +307,382 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
 
     return Array.from(variables); // Convert Set to Array
   }
+
+  // return freq too 
+  private async groupVariablesParse(codeCells: any, variables: string[]): Promise<{ cluster: string; variables: { name: string; frequency: number }[] }[]> {
+    const functionClusters: Record<string, Map<string, number>> = {};
+    const globalVariables: Map<string, number> = new Map();
+    const clusterFrequency: Map<string, number> = new Map();
+
+    const functionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^)]*\)\s*:/;
+    const variableRegex = new RegExp(`\\b(${variables.join('|')})\\b`, 'g'); // Track only listed variables
+
+    let currentFunction = "";
+
+    codeCells.forEach((cell: any) => {
+        cell.source.forEach((line: string) => {
+            const functionMatch = line.match(functionRegex);
+
+            if (functionMatch) {
+                currentFunction = functionMatch[1]; // Set function context
+                if (!functionClusters[currentFunction]) {
+                    functionClusters[currentFunction] = new Map();
+                }
+            } else if (line.trim() === "") {
+                currentFunction = ""; // Reset function context on empty line
+            }
+
+            // Capture occurrences of explicitly listed variables (ignore local assignments)
+            const variableMatches = [...line.matchAll(variableRegex)];
+            variableMatches.forEach(match => {
+                const variable = match[1];
+                if (currentFunction) {
+                    functionClusters[currentFunction].set(variable, (functionClusters[currentFunction].get(variable) || 0) + 1);
+                } else {
+                    globalVariables.set(variable, (globalVariables.get(variable) || 0) + 1);
+                }
+            });
+        });
+    });
+
+    // Compute frequency of explicitly listed variables per function
+    for (const [func, vars] of Object.entries(functionClusters)) {
+        const totalFrequency = Array.from(vars.values()).reduce((acc, count) => acc + count, 0);
+        clusterFrequency.set(func, totalFrequency);
+    }
+
+    if (globalVariables.size > 0) {
+        const totalFrequency = Array.from(globalVariables.values()).reduce((acc, count) => acc + count, 0);
+        clusterFrequency.set("Global Variables", totalFrequency);
+    }
+
+    // Sort clusters by total variable usage
+    const sortedClusters = Array.from(clusterFrequency.entries())
+        .sort((a, b) => b[1] - a[1])
+        .map(([key]) => ({
+            cluster: key,
+            variables: key === "Global Variables"
+                ? Array.from(globalVariables.entries()).sort((a, b) => b[1] - a[1]).map(([key, freq]) => ({ name: key, frequency: freq }))
+                : Array.from(functionClusters[key].entries()).sort((a, b) => b[1] - a[1]).map(([key, freq]) => ({ name: key, frequency: freq }))
+        }));
+
+    return sortedClusters;
+}
+
+
+//   private async groupVariablesParse(codeCells: any, variables: string[]): Promise<{ cluster: string; variables: string[] }[]> {
+//     const functionClusters: Record<string, Map<string, number>> = {};
+//     const globalVariables: Map<string, number> = new Map();
+//     const clusterFrequency: Map<string, number> = new Map();
+
+//     const functionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^)]*\)\s*:/; 
+//     const variableRegex = new RegExp(`\\b(${variables.join('|')})\\b`, 'g'); // Track only listed variables
+
+//     let currentFunction = "";
+
+//     codeCells.forEach((cell: any) => {
+//         cell.source.forEach((line: string) => {
+//             const functionMatch = line.match(functionRegex);
+
+//             if (functionMatch) {
+//                 currentFunction = functionMatch[1]; // Set function context
+//                 if (!functionClusters[currentFunction]) {
+//                     functionClusters[currentFunction] = new Map();
+//                 }
+//             } else if (line.trim() === "") {
+//                 currentFunction = ""; // Reset function context on empty line
+//             }
+
+//             // Capture occurrences of explicitly listed variables (ignore local assignments)
+//             const variableMatches = [...line.matchAll(variableRegex)];
+//             variableMatches.forEach(match => {
+//                 const variable = match[1];
+//                 if (currentFunction) {
+//                     functionClusters[currentFunction].set(variable, (functionClusters[currentFunction].get(variable) || 0) + 1);
+//                 } else {
+//                     globalVariables.set(variable, (globalVariables.get(variable) || 0) + 1);
+//                 }
+//             });
+//         });
+//     });
+
+//     // Compute frequency of explicitly listed variables per function
+//     for (const [func, vars] of Object.entries(functionClusters)) {
+//         const totalFrequency = Array.from(vars.values()).reduce((acc, count) => acc + count, 0);
+//         clusterFrequency.set(func, totalFrequency);
+//     }
+
+//     if (globalVariables.size > 0) {
+//         const totalFrequency = Array.from(globalVariables.values()).reduce((acc, count) => acc + count, 0);
+//         clusterFrequency.set("Global Variables", totalFrequency);
+//     }
+
+//     // Sort clusters by total variable usage
+//     const sortedClusters = Array.from(clusterFrequency.entries())
+//         .sort((a, b) => b[1] - a[1])
+//         .map(([key]) => ({
+//             cluster: key,
+//             variables: key === "Global Variables"
+//                 ? Array.from(globalVariables.entries()).sort((a, b) => b[1] - a[1]).map(([key]) => key)
+//                 : Array.from(functionClusters[key].entries()).sort((a, b) => b[1] - a[1]).map(([key]) => key)
+//         }));
+
+//     return sortedClusters;
+// }
+
+// includes function params
+//   private async groupVariablesParse(codeCells: any, variables: string[]): Promise<{ cluster: string; variables: string[] }[]> {
+//     const functionClusters: Record<string, Map<string, number>> = {};
+//     const globalVariables: Map<string, number> = new Map();
+//     const clusterFrequency: Map<string, number> = new Map();
+  
+//     const functionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)\s*:/; 
+//     const variableRegex = new RegExp(`\\b(${variables.join('|')})\\b`, 'g');
+  
+//     let currentFunction = "";
+  
+//     codeCells.forEach((cell: any) => {
+//       cell.source.forEach((line: string) => {
+//         const functionMatch = line.match(functionRegex);
+  
+//         if (functionMatch) {
+//           currentFunction = functionMatch[1];
+//           const params = functionMatch[2]
+//             .split(',')
+//             .map(param => param.trim().split('=')[0].trim())
+//             .filter(param => param !== "");
+//           if (!functionClusters[currentFunction]) {
+//             functionClusters[currentFunction] = new Map();
+//           }
+//           params.forEach(param => functionClusters[currentFunction].set(param, 1));
+//         } else if (line.trim() === "") {
+//           currentFunction = "";
+//         }
+  
+//         const variableMatches = [...line.matchAll(variableRegex)];
+//         variableMatches.forEach(match => {
+//           const variable = match[1];
+//           if (currentFunction) {
+//             const cluster = functionClusters[currentFunction];
+//             cluster.set(variable, (cluster.get(variable) || 0) + 1);
+//           } else {
+//             globalVariables.set(variable, (globalVariables.get(variable) || 0) + 1);
+//           }
+//         });
+//       });
+//     });
+  
+//     for (const [func, vars] of Object.entries(functionClusters)) {
+//       const totalFrequency = Array.from(vars.values()).reduce((acc, count) => acc + count, 0);
+//       clusterFrequency.set(func, totalFrequency);
+//     }
+  
+//     if (globalVariables.size > 0) {
+//       const totalFrequency = Array.from(globalVariables.values()).reduce((acc, count) => acc + count, 0);
+//       clusterFrequency.set("Global Variables", totalFrequency);
+//     }
+  
+//     // Sort clusters by total variable usage
+//     const sortedClusters = Array.from(clusterFrequency.entries())
+//       .sort((a, b) => b[1] - a[1])
+//       .map(([key]) => ({
+//         cluster: key,
+//         variables: key === "Global Variables"
+//           ? Array.from(globalVariables.entries()).sort((a, b) => b[1] - a[1]).map(([key]) => key)
+//           : Array.from(functionClusters[key].entries()).sort((a, b) => b[1] - a[1]).map(([key]) => key)
+//       }));
+  
+//     return sortedClusters;
+//   }
+
+
+  // FUNCTIONS AND GLOBAL VARS
+//   private async groupVariablesParse(codeCells: any, variables: string[]): Promise<Record<string, string[]>> {
+//     const functionClusters: Record<string, Set<string>> = {};
+//     const globalVariables: Set<string> = new Set();
+  
+//     // Regex patterns
+//     const functionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)\s*:/; 
+//     const variableRegex = new RegExp(`\\b(${variables.join('|')})\\b`, 'g');
+  
+//     let currentFunction = "";
+  
+//     codeCells.forEach((cell: any) => {
+//       cell.source.forEach((line: string) => {
+//         const functionMatch = line.match(functionRegex);
+  
+//         // If a function is detected, store the function name and parameters
+//         if (functionMatch) {
+//           currentFunction = functionMatch[1];
+//           const params = functionMatch[2]
+//             .split(',')
+//             .map(param => param.trim().split('=')[0].trim()) // Remove default values
+//             .filter(param => param !== "");
+  
+//           if (!functionClusters[currentFunction]) {
+//             functionClusters[currentFunction] = new Set(params);
+//           }
+//         } else if (line.trim() === "") {
+//           // Reset function context if an empty line (potential end of function) is detected
+//           currentFunction = "";
+//         }
+  
+//         // Find variables in the line
+//         const variableMatches = [...line.matchAll(variableRegex)];
+//         variableMatches.forEach(match => {
+//           const variable = match[1];
+//           if (currentFunction) {
+//             functionClusters[currentFunction].add(variable);
+//           } else {
+//             globalVariables.add(variable);
+//           }
+//         });
+//       });
+//     });
+  
+//     // Convert to object for easy viewing
+//     const clusters: Record<string, string[]> = {};
+//     for (const [func, vars] of Object.entries(functionClusters)) {
+//       clusters[func] = Array.from(vars);
+//     }
+    
+//     // Add global variables as a separate cluster
+//     if (globalVariables.size > 0) {
+//       clusters["Global Variables"] = Array.from(globalVariables);
+//     }
+  
+//     return clusters;
+//   }
+  
+
+  // CO OCCURENCE 
+//   private async groupVariablesParse(codeCells: any, variables: string[]): Promise<Record<string, string[]>> {
+//     const variableUsage: Record<string, Set<string>> = {};
+  
+//     // Initialize variable tracking
+//     variables.forEach((variable) => {
+//       variableUsage[variable] = new Set();
+//     });
+  
+//     // Regex patterns
+//     const functionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(.*\)\s*:/; 
+//     const variableRegex = new RegExp(`\\b(${variables.join('|')})\\b`, 'g');
+  
+//     let currentFunction = "";
+  
+//     // Analyze variable usage
+//     codeCells.forEach((cell: any) => {
+//       cell.source.forEach((line: string) => {
+//         const functionMatch = line.match(functionRegex);
+//         if (functionMatch) {
+//           currentFunction = functionMatch[1]; 
+//         }
+  
+//         const variableMatches = [...line.matchAll(variableRegex)];
+//         const matchedVariables = variableMatches.map(match => match[1]);
+  
+//         // Track co-occurrence of variables
+//         matchedVariables.forEach((var1) => {
+//           matchedVariables.forEach((var2) => {
+//             if (var1 !== var2) {
+//               variableUsage[var1].add(var2);
+//               variableUsage[var2].add(var1);
+//             }
+//           });
+//         });
+//       });
+//     });
+  
+//     // Perform greedy clustering
+//     const clusters: Record<string, string[]> = {};
+//     const visited = new Set<string>();
+  
+//     let clusterIndex = 1;
+  
+//     function bfs(start: string) {
+//       const queue = [start];
+//       const cluster: string[] = [];
+  
+//       while (queue.length > 0) {
+//         const variable = queue.shift()!;
+//         if (!visited.has(variable)) {
+//           visited.add(variable);
+//           cluster.push(variable);
+  
+//           // Visit all connected variables
+//           variableUsage[variable].forEach((neighbor) => {
+//             if (!visited.has(neighbor)) {
+//               queue.push(neighbor);
+//             }
+//           });
+//         }
+//       }
+//       return cluster;
+//     }
+  
+//     // Form clusters
+//     for (const variable of variables) {
+//       if (!visited.has(variable)) {
+//         const newCluster = bfs(variable);
+//         clusters[`Cluster ${clusterIndex}`] = newCluster;
+//         clusterIndex++;
+//       }
+//     }
+  
+//     return clusters;
+//   }
+  
+
+    cosineSimilarity(vecA: number[], vecB: number[]): number {
+        if (vecA.length !== vecB.length) {
+            throw new Error("Vectors must be the same length");
+        }
+
+        let dotProduct = 0;
+        let normA = 0;
+        let normB = 0;
+
+        for (let i = 0; i < vecA.length; i++) {
+            dotProduct += vecA[i] * vecB[i];
+            normA += vecA[i] * vecA[i];
+            normB += vecB[i] * vecB[i];
+        }
+
+        if (normA === 0 || normB === 0) return 0; // Avoid division by zero
+
+        return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+    }
+
+    private async groupVariablesByMeaning(variableNames: string[]): Promise<Record<string, string[]>> {
+        if (variableNames.length === 0) return {};
+
+        // Get embeddings for each variable name
+        const embeddings = await Promise.all(variableNames.map(async (name) => {
+            const response = await openai.embeddings.create({
+                model: "text-embedding-ada-002",
+                input: name
+            });
+            return { name, embedding: response.data[0].embedding };
+        }));
+
+        // Clustering based on cosine similarity
+        const groups: Record<string, string[]> = {};
+
+        embeddings.forEach(({ name, embedding }) => {
+            let assigned = false;
+            for (const key in groups) {
+                const sim = this.cosineSimilarity(embedding, embeddings.find(e => e.name === key)!.embedding)
+                if (sim > 0.8) {
+                    groups[key].push(name);
+                    assigned = true;
+                    break;
+                }
+            }
+            if (!assigned) groups[name] = [name];
+        });
+
+        return groups;
+    }
 
   // takes selected cell from App 
     private setupMessageListener() {
@@ -344,13 +740,18 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
                           } else {
                             console.log('Could not find code cell with execution count:', message.index);
                         }
-                        }
-                        break;
+                    }
+                    case 'selectCell': {
+
+                    }
                 }
             });
         }
     }
+    
 
+    // when called, this function will represent the command 
+    // to pass variable data under the command `fetchVariables`
     private sendVariablesToWebview(data: any) {
         if (this._view) {
             this._view.webview.postMessage({
@@ -360,6 +761,8 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         }
     }
 
+    // when called, this function will represent the command 
+    // to pass GPT tree data  under the command `fetchTree`
     private sendTreeToWebview(data: any) {
         if (this._view) {
             this._view.webview.postMessage({
@@ -369,6 +772,8 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         }
     }
 
+    // when called, this function will represent the command 
+    // to pass GPT textual summary data  under the command `fetchTree`
     private sendNarrativeToWebview(data: any) {
         if (this._view) {
             this._view.webview.postMessage({
@@ -378,7 +783,18 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         }
     }
 
-    // helper method to get HTML content for the webview
+    // when called, this function will represent the command 
+    // to pass GPT textual summary data  under the command `fetchTree`
+    private sendTextSelectionToWebview(data: any) {
+        if (this._view) {
+            this._view.webview.postMessage({
+                command: 'fetchTextSelection',
+                data: data,
+            });
+        }
+    }
+
+    // helper method to get HTML content for the webview, stays constant
     private _getHtmlForWebview(webview: vscode.Webview): string {
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'dist/webviews', 'App.js'));
         const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'dist/webviews', 'App.css'));

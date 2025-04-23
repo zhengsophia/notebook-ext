@@ -72,9 +72,10 @@ body {
 }
 
 .variables-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 8px;
+  grid-template-columns: repeat(2, 1fr);
+  padding: 10px;
 }
 
 .variable-tag {
@@ -89,10 +90,74 @@ body {
   max-width: max-content;
 }
 
+.cluster-tag {
+  display: block;
+  background-color: #4da0f4;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  max-width: max-content;
+}
+
+.cluster-tag:hover {
+  background-color: #A0AEC0; 
+}
+
+.cluster-tag.selected {
+  background-color: #A0AEC0; 
+}
+
 .variable-tag:hover {
   background-color: #A0AEC0; 
 }
 
 .variable-tag.selected {
   background-color: #A0AEC0; 
+}
+
+/* NEW CSS */
+.variables-container {
+  font-family: Arial, sans-serif;
+}
+
+.variables-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.clusters {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cluster {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.cluster-title {
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.notebook-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.top-section {
+  flex: 1; 
+  overflow: auto; 
+  border-bottom: 1px solid #ccc; 
+}
+
+.bottom-section {
+  flex: 1;
+  overflow: auto; 
 }
