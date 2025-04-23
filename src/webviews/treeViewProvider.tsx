@@ -1,11 +1,7 @@
 import * as vscode from 'vscode';
-// import * as fs from 'fs';
-// import * as path from 'path';
-// import axios from 'axios'; // If needed for external API calls
 import { z } from 'zod';
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
-// import dotenv from "dotenv";
 
 const openai = new OpenAI({ apiKey: "key" });
 
