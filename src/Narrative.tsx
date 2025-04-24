@@ -1,19 +1,26 @@
 // import * as React from 'react';
+// UNUSED RN
 
-import { ReactElement, JSXElementConstructor, ReactNode, ReactPortal, Key } from "react";
-import vscode from "./vscodeApi";
+import {
+  ReactElement,
+  JSXElementConstructor,
+  ReactNode,
+  ReactPortal,
+  Key,
+} from 'react';
+import vscode from './vscodeApi';
 
 interface FormattedTextProps {
-  content: string; 
-  onLinkClick?: (cellInfo: string) => void; 
+  content: string;
+  onLinkClick?: (cellInfo: string) => void;
 }
 
 const FormattedText: React.FC<FormattedTextProps> = ({
   content,
-  onLinkClick = (cellInfo: any) => console.log("Link clicked:", cellInfo),
+  onLinkClick = (cellInfo: any) => console.log('Link clicked:', cellInfo),
 }) => {
   // separate out references
-  const parseTechDoc = (text = "") => {
+  const parseTechDoc = (text = '') => {
     const references: any[] = [];
     const sections: string[] = [];
 
@@ -21,37 +28,34 @@ const FormattedText: React.FC<FormattedTextProps> = ({
     const pattern = /\{([^}]+)\}\[([^\]]+)\]/g;
     let match;
 
-    console.log("Input text:", text);
+    console.log('Input text:', text);
 
     while ((match = pattern.exec(text)) !== null) {
-        console.log("Match found:", match);
+      console.log('Match found:', match);
 
-        // Push text before the match
-        sections.push(text.slice(lastIndex, match.index));
+      // Push text before the match
+      sections.push(text.slice(lastIndex, match.index));
 
-        // Push reference object
-        references.push({
-            content: match[1].trim(),
-            cells: match[2].trim(),
-        });
+      // Push reference object
+      references.push({
+        content: match[1].trim(),
+        cells: match[2].trim(),
+      });
 
-        lastIndex = pattern.lastIndex;
+      lastIndex = pattern.lastIndex;
     }
 
     // Add remaining text after the last match
     sections.push(text.slice(lastIndex));
 
-    console.log("Final sections:", sections);
-    console.log("Final references:", references);
+    console.log('Final sections:', sections);
+    console.log('Final references:', references);
 
     return { parts: sections, references };
-};
-
-
+  };
 
   const { parts, references } = parseTechDoc(content);
-  console.log('parts',parts);
-
+  console.log('parts', parts);
 
   // Reconstruct the document with hyperlinks
   const renderContent = () => {
@@ -63,12 +67,15 @@ const FormattedText: React.FC<FormattedTextProps> = ({
       <span key={index}>
         {section}
         {index < references.length && (
-          <span  onClick={()=>{
-            console.log('reference', references[index],"index", index);
+          <span
+            onClick={() => {
+              console.log('reference', references[index], 'index', index);
 
-            // parse references[index].cells for the first number and pass in the cell number
-            onLinkClick(references[index].cells);
-          }} style={{ color: 'blue', cursor: 'pointer' }}>
+              // parse references[index].cells for the first number and pass in the cell number
+              onLinkClick(references[index].cells);
+            }}
+            style={{ color: 'blue', cursor: 'pointer' }}
+          >
             {references[index].content.replace(/^['"]|['"]$/g, '')}
           </span>
         )}
@@ -76,13 +83,18 @@ const FormattedText: React.FC<FormattedTextProps> = ({
     ));
   };
 
-  
-  
   return (
     <div className="content-wrapper">
       <div className="narrative-container">
         <div style={{ marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#2D3748', marginBottom: '1rem' }}>
+          <h2
+            style={{
+              fontSize: '1.5rem',
+              fontWeight: 'bold',
+              color: '#2D3748',
+              marginBottom: '1rem',
+            }}
+          >
             Textual Summary
           </h2>
           <div style={{ fontSize: '14px', color: '#4A5568' }}>
@@ -102,29 +114,24 @@ const FormattedText: React.FC<FormattedTextProps> = ({
 };
 
 export function parseFirstCellNumber(cellsString: string): number | null {
-    // Use regex to find the first number in the string
-    const match = cellsString.match(/\d+/);
-    if (match) {
-        return parseInt(match[0], 10); // Subtract 1 to convert from 1-based to 0-based index
-    }
-    return null;
+  // Use regex to find the first number in the string
+  const match = cellsString.match(/\d+/);
+  if (match) {
+    return parseInt(match[0], 10); // Subtract 1 to convert from 1-based to 0-based index
+  }
+  return null;
 }
 
 // Demo component showing the TechDocDisplay in action
-const Narrative = ({data}:any) => {
-
-  console.log('narrative', data)
+const Narrative = ({ data }: any) => {
+  console.log('narrative', data);
 
   const handleNodeSelect = (cellId: string) => {
-
     const cellIndex = parseFirstCellNumber(cellId);
-    console.log('cellIndex',cellIndex,cellId);
-    const payload = { type: "selectCell", index: cellIndex }
+    console.log('cellIndex', cellIndex, cellId);
+    const payload = { type: 'selectCell', index: cellIndex };
     vscode?.postMessage(payload);
-    
   };
-
-
 
   return (
     <div>
@@ -132,6 +139,5 @@ const Narrative = ({data}:any) => {
     </div>
   );
 };
-
 
 export default Narrative;

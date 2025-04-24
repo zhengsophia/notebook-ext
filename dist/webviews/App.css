@@ -83,16 +83,16 @@ body {
   max-width: max-content;
 }
 .cluster-tag:hover {
-  background-color: #A0AEC0;
+  background-color: #a0aec0;
 }
 .cluster-tag.selected {
-  background-color: #A0AEC0;
+  background-color: #a0aec0;
 }
 .variable-tag:hover {
-  background-color: #A0AEC0;
+  background-color: #a0aec0;
 }
 .variable-tag.selected {
-  background-color: #A0AEC0;
+  background-color: #a0aec0;
 }
 .variables-container {
   font-family: Arial, sans-serif;
@@ -122,12 +122,12 @@ body {
   height: 100vh;
 }
 .top-section {
-  flex: 1;
+  flex: 0 0 33.33%;
   overflow: auto;
   border-bottom: 1px solid #ccc;
 }
 .bottom-section {
-  flex: 1;
+  flex: 0 0 66.66%;
   overflow: auto;
 }
 /*# sourceMappingURL=App.css.map */
