@@ -36,11 +36,6 @@ body {
   align-items: flex-start;
   flex-direction: row;
 }
-.variables-container {
-  overflow-y: auto;
-  max-width: max-content;
-  flex-shrink: 0;
-}
 .narrative-container {
   margin: 15px;
   flex-grow: 1;
@@ -56,11 +51,20 @@ body {
   gap: 20px;
   align-items: flex-start;
 }
-.variables-list {
-  display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(2, 1fr);
-  padding: 10px;
+.variables-container {
+  overflow-y: auto;
+  max-width: 100%;
+  width: 100%;
+  flex-shrink: 0;
+  overflow-x: hidden;
+}
+#variables-list {
+  padding: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 .variable-tag {
   display: inline-block;

@@ -17976,6 +17976,7 @@ var TreeViewProvider = class {
       if (word) {
         console.log("got word", word);
         this.handleArtifactSelection(word);
+        this.processVariableNarrative(editor, word);
       }
     });
     const activeEditor = vscode.window.activeNotebookEditor;

@@ -49,6 +49,8 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
       if (word) {
         console.log('got word', word);
         this.handleArtifactSelection(word);
+        const editor = vscode.window.activeNotebookEditor;
+        this.processVariableNarrative(editor, word);
       }
       //   }
     });
