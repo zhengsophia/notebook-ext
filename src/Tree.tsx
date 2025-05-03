@@ -2,13 +2,11 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import vscode from "./vscodeApi";
+import vscode from './vscodeApi';
 import { TreeItem2, TreeItem2Props } from '@mui/x-tree-view/TreeItem2';
-import Narrative from './Narrative';
-import Typography from '@mui/material/Typography';
+// import Narrative from './Narrative';
 import { useTreeItem2Utils } from '@mui/x-tree-view/hooks';
 
-//TRY 2
 // Parse the first cell number from a cell reference string
 export function parseFirstCellNumber(cellsString: string): number | null {
   // Use regex to find the first number in the string
@@ -27,7 +25,7 @@ interface NarrativeLabelProps {
 
 function NarrativeLabel({ sentence, className }: NarrativeLabelProps) {
   // Parse the sentence to extract text parts and references
-  const parseTechDoc = (text = "") => {
+  const parseTechDoc = (text = '') => {
     const references: any[] = [];
     const sections: string[] = [];
 
@@ -51,25 +49,25 @@ function NarrativeLabel({ sentence, className }: NarrativeLabelProps) {
     return { parts: sections, references };
   };
 
-  // handle cell reference click for direct manipulation 
+  // handle cell reference click for direct manipulation
   // under command `selectCell`
-  const handleCellClick = (cellsInfo: string) => { 
+  const handleCellClick = (cellsInfo: string) => {
     const cellIndex = parseFirstCellNumber(cellsInfo);
     if (cellIndex !== null) {
       console.log('Cell reference clicked:', cellIndex);
-      vscode?.postMessage({ type: "selectCell", index: cellIndex });
+      vscode?.postMessage({ type: 'selectCell', index: cellIndex });
     }
   };
 
   // Render the content with formatted links
   const renderContent = () => {
     const { parts, references } = parseTechDoc(sentence);
-    
+
     return parts.map((section, index) => (
       <React.Fragment key={index}>
         {section}
         {index < references.length && (
-          <span 
+          <span
             onClick={() => handleCellClick(references[index].cells)}
             style={{ color: '#4299e1', cursor: 'pointer' }}
           >
@@ -79,12 +77,8 @@ function NarrativeLabel({ sentence, className }: NarrativeLabelProps) {
       </React.Fragment>
     ));
   };
-  
-  return (
-    <span className={className}>
-      {renderContent()}
-    </span>
-  );
+
+  return <span className={className}>{renderContent()}</span>;
 }
 
 // Interface to extend TreeItem with custom data
@@ -96,16 +90,16 @@ interface CustomItemData {
 // Custom TreeItem component that conditionally renders different label types
 const CustomTreeItem = React.forwardRef(function CustomTreeItem(
   props: TreeItem2Props,
-  ref: React.Ref<HTMLLIElement>,
+  ref: React.Ref<HTMLLIElement>
 ) {
   const { publicAPI } = useTreeItem2Utils({
     itemId: props.itemId,
     children: props.children,
   });
-  
-  const item = publicAPI.getItem(props.itemId) as TreeViewBaseItem & CustomItemData;
-  
-  // If this is a narrative item, use the NarrativeLabel component for the label
+
+  const item = publicAPI.getItem(props.itemId) as TreeViewBaseItem &
+    CustomItemData;
+  // if narrative node, use custom NarrativeLabel component for the label
   if (item?.isNarrative) {
     return (
       <TreeItem2
@@ -120,16 +114,16 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
       />
     );
   }
-  
-  // Otherwise use the default label rendering
+  // else use the default label rendering
   return <TreeItem2 {...props} ref={ref} />;
 });
 
-// Modified conversion function that marks narrative items
+// helper conversion function to map LLM generated groups to tree items
+// with custom conversion for the in line textual summaries as optional leaf nodes
 const convertToTreeViewItems = (
   json: any,
   narrativeMapping: { [cell: number]: string[] },
-  parentId = ""
+  parentId = ''
 ): TreeViewBaseItem[] => {
   return json.groups.map((group: any, groupIndex: number) => {
     const groupId = `${parentId}group-${groupIndex}`;
@@ -139,16 +133,17 @@ const convertToTreeViewItems = (
       children: group.subgroups.map((subgroup: any, subgroupIndex: number) => {
         const subgroupId = `${groupId}-subgroup-${subgroupIndex}`;
         // Create narrative items with custom data
-        const subgroupSentences: (TreeViewBaseItem & CustomItemData)[] = subgroup.cells.flatMap((cell: number) =>
-          (narrativeMapping[cell] || []).map((sentence, i) => ({
-            id: `${subgroupId}-narrative-${cell}-${i}`,
-            label: sentence, // This is still needed but won't be directly displayed
-            cellIndex: cell, // Store the cell index for click handler
-            // Add custom data for the Narrative component
-            isNarrative: true,
-            sentence: sentence,
-          }))
-        );
+        const subgroupSentences: (TreeViewBaseItem & CustomItemData)[] =
+          subgroup.cells.flatMap((cell: number) =>
+            (narrativeMapping[cell] || []).map((sentence, i) => ({
+              id: `${subgroupId}-narrative-${cell}-${i}`,
+              label: sentence, // This is still needed but won't be directly displayed
+              cellIndex: cell, // Store the cell index for click handler
+              // Add custom data for the Narrative component
+              isNarrative: true,
+              sentence: sentence,
+            }))
+          );
         return {
           id: subgroupId,
           label: subgroup.name,
@@ -159,14 +154,55 @@ const convertToTreeViewItems = (
   });
 };
 
-export default function BasicRichTreeView({ data, narrativeMapping }: { data: any; narrativeMapping: { [cell: number]: string[] } }) {
+// helper function to grab every node that's a narrative + their parents
+function collectExpandableIds(
+  items: (TreeViewBaseItem & CustomItemData)[]
+): string[] {
+  const parents = new Set<string>();
+
+  function walk(nodes: (TreeViewBaseItem & CustomItemData)[], path: string[]) {
+    for (const node of nodes) {
+      const myPath = [...path, node.id];
+      if (node.isNarrative) {
+        for (let i = 0; i < path.length; i++) {
+          parents.add(path[i]);
+        }
+      }
+      if (node.children) {
+        walk(node.children as any, myPath);
+      }
+    }
+  }
+  walk(items, []);
+  return Array.from(parents);
+}
+
+export default function BasicRichTreeView({
+  data,
+  narrativeMapping,
+}: {
+  data: any;
+  narrativeMapping: { [cell: number]: string[] };
+}) {
   console.log('narrative mapping', narrativeMapping);
+
+  // 2.1. convert tree items
   const items = React.useMemo(
-    () => convertToTreeViewItems(data, narrativeMapping), 
+    () => convertToTreeViewItems(data, narrativeMapping),
     [data, narrativeMapping]
   );
   console.log('converted items', items);
-  
+
+  // 2.2. setting expanded IDs to any narrative nodes + their parents
+  const [expandedIds, setExpandedIds] = React.useState<string[]>(() =>
+    collectExpandableIds(items)
+  );
+
+  // 2.3. dynamically recomputing changes in tree nodes for auto-expansion
+  React.useEffect(() => {
+    setExpandedIds(collectExpandableIds(items));
+  }, [items]);
+
   const handleNodeSelect = (event: React.SyntheticEvent, nodeId: string) => {
     if (nodeId.includes('narrative')) {
       // Extract the cell index from the nodeId
@@ -175,32 +211,48 @@ export default function BasicRichTreeView({ data, narrativeMapping }: { data: an
         const cellIndex = parseInt(match[1], 10);
         console.log('selected cell index', cellIndex);
         // Post the selected cell index to the VSCode extension
-        vscode?.postMessage({ type: "selectCell", index: cellIndex });
+        vscode?.postMessage({ type: 'selectCell', index: cellIndex });
       }
     }
   };
-  
+
+  console.log('expanded', expandedIds);
+
   return (
     <Box sx={{ minWidth: 250 }}>
       {items.length > 0 ? (
-        <RichTreeView 
+        <RichTreeView
           items={items}
+          expandedItems={expandedIds}
+          onExpandedItemsChange={(event, newIds) => {
+            setExpandedIds(newIds);
+          }}
           onItemClick={handleNodeSelect}
           slots={{ item: CustomTreeItem }}
+          // sx={{
+          //   '& .MuiTreeItem-label': {
+          //     fontSize: '12px !important',
+          //     textAlign: 'left',
+          //     transition: 'opacity 150ms ease-in-out',
+          //     opacity: 0.4,
+          //   },
+          //   '& .MuiTreeItem-root.Mui-expanded .MuiTreeItem-label': {
+          //     opacity: 1,
+          //   },
+          // }}
           sx={{
             '& .MuiTreeItem-label': {
               fontSize: '12px !important',
-              textAlign: 'left', 
+              textAlign: 'left',
             },
           }}
         />
       ) : (
-        <p>Loading notebook data...</p> 
+        <p>Loading notebook data…</p>
       )}
     </Box>
   );
 }
-
 
 // TRY 1
 // interface NarrativeLabelProps {
@@ -235,9 +287,9 @@ export default function BasicRichTreeView({ data, narrativeMapping }: { data: an
 //             id: `${subgroupId}-narrative-${cell}-${i}`,
 //             // label: `${sentence}`,
 //             labelComponent: (
-//               <NarrativeLabel 
-//                 sentence={sentence} 
-//                 className="custom-narrative-label" 
+//               <NarrativeLabel
+//                 sentence={sentence}
+//                 className="custom-narrative-label"
 //               />
 //             ),
 //           }))
@@ -253,10 +305,8 @@ export default function BasicRichTreeView({ data, narrativeMapping }: { data: an
 //   });
 // };
 
-
-
 // export default function BasicRichTreeView({ data, narrativeMapping }: { data: any; narrativeMapping: { [cell: number]: string[] } }) {
-//   console.log('narrative mapping', narrativeMapping)  
+//   console.log('narrative mapping', narrativeMapping)
 //   const labels = React.useMemo(() => convertToTreeViewItems(data, narrativeMapping), [data, narrativeMapping]);
 //   console.log('converted items', labels)
 //   const handleNodeSelect = (event: React.SyntheticEvent, nodeId: string) => {
@@ -274,19 +324,19 @@ export default function BasicRichTreeView({ data, narrativeMapping }: { data: an
 //   return (
 //     <Box sx={{ minWidth: 250 }}>
 //       {labels.length > 0 ? (
-//         <RichTreeView 
+//         <RichTreeView
 //         items={labels}
 //         onItemClick={handleNodeSelect}
 //         // slots={{ item: CustomTreeItem }}
 //         sx={{
 //           '& .MuiTreeItem-label': {
 //             fontSize: '12px !important',
-//             textAlign: 'left', 
+//             textAlign: 'left',
 //           },
 //         }}
 //       />
 //       ) : (
-//         <p>Loading notebook data...</p> 
+//         <p>Loading notebook data...</p>
 //       )}
 //     </Box>
 //   );
@@ -331,7 +381,7 @@ export default function BasicRichTreeView({ data, narrativeMapping }: { data: an
 //   return (
 //     <Box sx={{ minWidth: 250 }}>
 //       {labels.length > 0 ? (
-//         <RichTreeView 
+//         <RichTreeView
 //           items={labels}
 //           onItemClick={handleNodeSelect}
 //           sx={{
@@ -342,7 +392,7 @@ export default function BasicRichTreeView({ data, narrativeMapping }: { data: an
 //           }}
 //         />
 //       ) : (
-//         <p>Loading notebook data...</p> 
+//         <p>Loading notebook data...</p>
 //       )}
 //     </Box>
 //   );

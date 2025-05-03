@@ -14,6 +14,53 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
 
   constructor(private readonly _extensionUri: vscode.Uri) {}
 
+  // registers the artifact to be added from hover tooltip selection via command
+  public registerHover(context: vscode.ExtensionContext) {
+    // modifying the hover tooltip content
+    context.subscriptions.push(
+      vscode.languages.registerHoverProvider(
+        { scheme: 'vscode-notebook-cell', language: 'python' },
+        {
+          provideHover: (document, position) => {
+            const range = document.getWordRangeAtPosition(position);
+            if (!range) return;
+            const word = document.getText(range);
+            const markdown = new vscode.MarkdownString(
+              `[🤓 Summarize the artifact "${word}"](command:treeview.processVariableNarrative?${encodeURIComponent(JSON.stringify(word))})\n\n` +
+                `[📌 Pin the artifact "${word}"](command:treeview.addVariable?${encodeURIComponent(JSON.stringify(word))})`
+            );
+            markdown.isTrusted = true;
+            return new vscode.Hover(markdown, range);
+          },
+        }
+      )
+    );
+
+    // COMMAND - add artifact to the variable pane
+    context.subscriptions.push(
+      vscode.commands.registerCommand(
+        'treeview.addVariable',
+        (word: string) => {
+          this.handleArtifactSelection(word);
+        }
+      )
+    );
+
+    // // COMMAND - present in line text summary
+    context.subscriptions.push(
+      vscode.commands.registerCommand(
+        'treeview.processVariableNarrative',
+        (word: string) => {
+          const editor = vscode.window.activeNotebookEditor;
+          if (editor) {
+            console.log('processing narrative for:', word);
+            this.processVariableNarrative(editor, word); // LLM or other summary logic
+          }
+        }
+      )
+    );
+  }
+
   // implementing the required method for extesions
   resolveWebviewView(
     webviewView: vscode.WebviewView,
@@ -29,6 +76,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     };
 
     // if any changes are made in the notebook editor
+    // I DON'T THINK THIS WORKS RN 4/2025
     vscode.window.onDidChangeActiveNotebookEditor((editor) => {
       if (editor) {
         this.processVariables(editor);
@@ -37,25 +85,25 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
       }
     });
 
-    vscode.window.onDidChangeTextEditorSelection((e) => {
-      //   console.log('testing!!', e.textEditor.document.languageId);
+    // add the variable when clicked -> EXTRACTED TO WHEN THE USER WANTS TO ADD ON HOVER
+    // vscode.window.onDidChangeTextEditorSelection((e) => {
+    //   //   console.log('testing!!', e.textEditor.document.languageId);
+    //   //   if (e.textEditor.document.languageId === 'notebook') {
+    //   // make sure it's notebook editor
+    //   const word = this.getClickedArtifact(
+    //     e.textEditor,
+    //     e.selections[0].active
+    //   );
+    //   if (word) {
+    //     console.log('got word', word);
+    //     this.handleArtifactSelection(word);
+    //     const editor = vscode.window.activeNotebookEditor;
+    //     this.processVariableNarrative(editor, word);
+    //   }
+    //   //   }
+    // });
 
-      //   if (e.textEditor.document.languageId === 'notebook') {
-      // make sure it's notebook editor
-      const word = this.getClickedArtifact(
-        e.textEditor,
-        e.selections[0].active
-      );
-      if (word) {
-        console.log('got word', word);
-        this.handleArtifactSelection(word);
-        const editor = vscode.window.activeNotebookEditor;
-        this.processVariableNarrative(editor, word);
-      }
-      //   }
-    });
-
-    // initialization : when the extension in first opened
+    /* SCENARIO 1: activate on opening initialization */
     const activeEditor = vscode.window.activeNotebookEditor;
     if (activeEditor) {
       this.processVariables(activeEditor);

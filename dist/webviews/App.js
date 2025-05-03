@@ -70423,13 +70423,40 @@ var convertToTreeViewItems = (json, narrativeMapping, parentId = "") => {
     };
   });
 };
-function BasicRichTreeView({ data, narrativeMapping }) {
+function collectExpandableIds(items) {
+  const parents = /* @__PURE__ */ new Set();
+  function walk(nodes, path) {
+    for (const node2 of nodes) {
+      const myPath = [...path, node2.id];
+      if (node2.isNarrative) {
+        for (let i = 0; i < path.length; i++) {
+          parents.add(path[i]);
+        }
+      }
+      if (node2.children) {
+        walk(node2.children, myPath);
+      }
+    }
+  }
+  walk(items, []);
+  return Array.from(parents);
+}
+function BasicRichTreeView({
+  data,
+  narrativeMapping
+}) {
   console.log("narrative mapping", narrativeMapping);
   const items = React5.useMemo(
     () => convertToTreeViewItems(data, narrativeMapping),
     [data, narrativeMapping]
   );
   console.log("converted items", items);
+  const [expandedIds, setExpandedIds] = React5.useState(
+    () => collectExpandableIds(items)
+  );
+  React5.useEffect(() => {
+    setExpandedIds(collectExpandableIds(items));
+  }, [items]);
   const handleNodeSelect = (event, nodeId) => {
     if (nodeId.includes("narrative")) {
       const match2 = nodeId.match(/-narrative-(\d+)-/);
@@ -70440,10 +70467,15 @@ function BasicRichTreeView({ data, narrativeMapping }) {
       }
     }
   };
+  console.log("expanded", expandedIds);
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_Box.default, { sx: { minWidth: 250 }, children: items.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
     import_RichTreeView.RichTreeView,
     {
       items,
+      expandedItems: expandedIds,
+      onExpandedItemsChange: (event, newIds) => {
+        setExpandedIds(newIds);
+      },
       onItemClick: handleNodeSelect,
       slots: { item: CustomTreeItem },
       sx: {
@@ -70453,7 +70485,7 @@ function BasicRichTreeView({ data, narrativeMapping }) {
         }
       }
     }
-  ) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Loading notebook data..." }) });
+  ) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Loading notebook data\u2026" }) });
 }
 
 // src/Variables.tsx

@@ -17954,6 +17954,48 @@ var TreeViewProvider = class {
   // extension name
   static viewType = "meng-notebook.treeView";
   _view;
+  // registers the artifact to be added from hover tooltip selection via command
+  registerHover(context) {
+    context.subscriptions.push(
+      vscode.languages.registerHoverProvider(
+        { scheme: "vscode-notebook-cell", language: "python" },
+        {
+          provideHover: (document, position) => {
+            const range = document.getWordRangeAtPosition(position);
+            if (!range) return;
+            const word = document.getText(range);
+            const markdown = new vscode.MarkdownString(
+              `[\u{1F913} Summarize the artifact "${word}"](command:treeview.processVariableNarrative?${encodeURIComponent(JSON.stringify(word))})
+
+[\u{1F4CC} Pin the artifact "${word}"](command:treeview.addVariable?${encodeURIComponent(JSON.stringify(word))})`
+            );
+            markdown.isTrusted = true;
+            return new vscode.Hover(markdown, range);
+          }
+        }
+      )
+    );
+    context.subscriptions.push(
+      vscode.commands.registerCommand(
+        "treeview.addVariable",
+        (word) => {
+          this.handleArtifactSelection(word);
+        }
+      )
+    );
+    context.subscriptions.push(
+      vscode.commands.registerCommand(
+        "treeview.processVariableNarrative",
+        (word) => {
+          const editor = vscode.window.activeNotebookEditor;
+          if (editor) {
+            console.log("processing narrative for:", word);
+            this.processVariableNarrative(editor, word);
+          }
+        }
+      )
+    );
+  }
   // implementing the required method for extesions
   resolveWebviewView(webviewView, context, _token) {
     this._view = webviewView;
@@ -17966,18 +18008,6 @@ var TreeViewProvider = class {
         this.processVariables(editor);
         console.log("Calling processTree...");
         this.processTree(editor);
-      }
-    });
-    vscode.window.onDidChangeTextEditorSelection((e2) => {
-      const word = this.getClickedArtifact(
-        e2.textEditor,
-        e2.selections[0].active
-      );
-      if (word) {
-        console.log("got word", word);
-        this.handleArtifactSelection(word);
-        const editor = vscode.window.activeNotebookEditor;
-        this.processVariableNarrative(editor, word);
       }
     });
     const activeEditor = vscode.window.activeNotebookEditor;
@@ -18630,12 +18660,14 @@ ${cell.source.join("\n")}`).join("\n\n")}
 // src/extension.ts
 function activate(context) {
   console.log('Congratulations, your extension "notebook-ext" is now active!');
+  const treeViewProviderInstance = new TreeViewProvider(context.extensionUri);
   context.subscriptions.push(
     vscode2.window.registerWebviewViewProvider(
       TreeViewProvider.viewType,
-      new TreeViewProvider(context.extensionUri)
+      treeViewProviderInstance
     )
   );
+  treeViewProviderInstance.registerHover(context);
 }
 function deactivate() {
 }
