@@ -70490,7 +70490,6 @@ function BasicRichTreeView({
 
 // src/Variables.tsx
 init_define_process_env();
-var import_react4 = __toESM(require_react());
 var import_jsx_runtime2 = __toESM(require_jsx_runtime());
 window.addEventListener("message", (event) => {
   const message = event.data;
@@ -70515,7 +70514,7 @@ function addVariableToList(variable) {
   span.textContent = variable;
   span.className = "variable-tag";
   span.onclick = () => {
-    handleClick(variable.name);
+    handleClick(variable);
     document.querySelectorAll(".variable-tag.selected").forEach((el) => el.classList.remove("selected"));
     span.classList.add("selected");
   };
@@ -70525,12 +70524,6 @@ function addVariableToList(variable) {
 function List({
   data
 }) {
-  const [selectedVariable2, setSelectedVariable] = (0, import_react4.useState)(null);
-  const handleClick2 = (variableName) => {
-    setSelectedVariable(variableName);
-    console.log(variableName);
-    vscodeApi_default?.postMessage({ type: "selectVariable", name: variableName });
-  };
   const allFrequencies = data.flatMap(
     ({ variables }) => variables.map((v) => v.frequency)
   );

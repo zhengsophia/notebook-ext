@@ -17954,6 +17954,7 @@ var TreeViewProvider = class {
   // extension name
   static viewType = "meng-notebook.treeView";
   _view;
+  variableNarrativeCache = /* @__PURE__ */ new Map();
   // registers the artifact to be added from hover tooltip selection via command
   registerHover(context) {
     context.subscriptions.push(
@@ -18065,7 +18066,11 @@ var TreeViewProvider = class {
       const codeCells = this.filterCodeCells(notebookJson);
       const prompt = this.generateNarrativePrompt(variable, codeCells);
       const structuredOutput = await this.getNarrativeOutput(prompt);
-      console.log("LLM response", structuredOutput);
+      console.log("LLM response for in line textual summary", structuredOutput);
+      if (structuredOutput) {
+        this.variableNarrativeCache.set(variable, structuredOutput);
+        console.log("variableNarrativeCache", this.variableNarrativeCache);
+      }
       this.sendNarrativeToWebview(structuredOutput);
     } catch (error) {
       console.error("Error processing notebook:", error);
@@ -18079,7 +18084,16 @@ var TreeViewProvider = class {
         switch (message.type) {
           case "selectVariable":
             const editor = vscode.window.activeNotebookEditor;
-            this.processVariableNarrative(editor, message.name);
+            const variable = message.name;
+            if (this.variableNarrativeCache.has(variable)) {
+              const cachedNarrative = this.variableNarrativeCache.get(variable);
+              console.log("cached", cachedNarrative);
+              this.sendNarrativeToWebview(cachedNarrative);
+            } else {
+              console.log("not cached :(");
+              this.processVariableNarrative(editor, variable);
+            }
+            break;
         }
       });
     }

@@ -11,6 +11,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
   // extension name
   public static readonly viewType = 'meng-notebook.treeView';
   private _view?: vscode.WebviewView;
+  private variableNarrativeCache = new Map<string, string>();
 
   constructor(private readonly _extensionUri: vscode.Uri) {}
 
@@ -172,9 +173,11 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
 
       const prompt = this.generateNarrativePrompt(variable, codeCells);
       const structuredOutput = await this.getNarrativeOutput(prompt);
-
-      console.log('LLM response', structuredOutput);
-
+      console.log('LLM response for in line textual summary', structuredOutput);
+      if (structuredOutput) {
+        this.variableNarrativeCache.set(variable, structuredOutput);
+        console.log('variableNarrativeCache', this.variableNarrativeCache);
+      }
       this.sendNarrativeToWebview(structuredOutput);
     } catch (error) {
       console.error('Error processing notebook:', error);
@@ -189,7 +192,19 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         switch (message.type) {
           case 'selectVariable':
             const editor = vscode.window.activeNotebookEditor;
-            this.processVariableNarrative(editor, message.name);
+            const variable = message.name;
+            // checking cache -> this should never be not true though
+            if (this.variableNarrativeCache.has(variable)) {
+              const cachedNarrative =
+                this.variableNarrativeCache.get(variable)!;
+              console.log('cached', cachedNarrative);
+              // send in line textual summaries to tree
+              this.sendNarrativeToWebview(cachedNarrative);
+            } else {
+              console.log('not cached :(');
+              this.processVariableNarrative(editor, variable);
+            }
+            break;
         }
       });
     }

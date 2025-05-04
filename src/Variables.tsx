@@ -32,7 +32,6 @@ import { useTreeItem2Utils } from '@mui/x-tree-view/hooks';
 
 window.addEventListener('message', (event) => {
   const message = event.data;
-
   if (message.type === 'selectArtifact') {
     const variable = message.name;
     console.log('clicked variable', variable);
@@ -42,7 +41,6 @@ window.addEventListener('message', (event) => {
 
 // keep track of variables already added
 const variablesSet = new Set();
-
 // keep track of the current selected variable
 let selectedVariable: string | null = null;
 
@@ -57,14 +55,13 @@ const handleClick = (variableName: string) => {
 function addVariableToList(variable: any) {
   // console.log('variablesSet', variablesSet);
   if (variablesSet.has(variable)) return;
-
   console.log('clicked artifact name', variable);
   const list = document.getElementById('variables-list');
   const span = document.createElement('span');
   span.textContent = variable;
   span.className = 'variable-tag';
   span.onclick = () => {
-    handleClick(variable.name);
+    handleClick(variable);
     // Remove 'selected' class from all variable spans
     document
       .querySelectorAll('.variable-tag.selected')
@@ -76,59 +73,59 @@ function addVariableToList(variable: any) {
   variablesSet.add(variable);
 }
 
-// Function to calculate background color based on frequency using dynamic 5-bin color scheme
-const getColorForFrequency = (
-  frequency: number,
-  minFreq: number,
-  maxFreq: number
-) => {
-  // Calculate the bin ranges (min-max range divided into 5 bins)
-  const range = maxFreq - minFreq;
-  const binSize = range / 10;
+// // Function to calculate background color based on frequency using dynamic 5-bin color scheme
+// const getColorForFrequency = (
+//   frequency: number,
+//   minFreq: number,
+//   maxFreq: number
+// ) => {
+//   // Calculate the bin ranges (min-max range divided into 5 bins)
+//   const range = maxFreq - minFreq;
+//   const binSize = range / 10;
 
-  // Determine which bin the frequency falls into
-  let binIndex = Math.floor((frequency - minFreq) / binSize);
+//   // Determine which bin the frequency falls into
+//   let binIndex = Math.floor((frequency - minFreq) / binSize);
 
-  binIndex = Math.min(9, Math.max(0, binIndex));
+//   binIndex = Math.min(9, Math.max(0, binIndex));
 
-  const colorScale = [
-    'rgb(255, 255, 255)', // White for very low frequencies
-    'rgb(255, 230, 230)', // Very light red
-    'rgb(255, 204, 204)', // Light red for low frequencies
-    'rgb(255, 179, 128)', // Light orange
-    'rgb(255, 128, 0)', // Orange
-    'rgb(204, 102, 0)', // Dark orange
-    'rgb(255, 76, 76)', // Orange
-    'rgb(255, 51, 51)', // Dark orange
-    'rgb(255, 0, 0)',
-    'rgb(153, 0, 0)', // Dark red for high frequencies
-  ];
+//   const colorScale = [
+//     'rgb(255, 255, 255)', // White for very low frequencies
+//     'rgb(255, 230, 230)', // Very light red
+//     'rgb(255, 204, 204)', // Light red for low frequencies
+//     'rgb(255, 179, 128)', // Light orange
+//     'rgb(255, 128, 0)', // Orange
+//     'rgb(204, 102, 0)', // Dark orange
+//     'rgb(255, 76, 76)', // Orange
+//     'rgb(255, 51, 51)', // Dark orange
+//     'rgb(255, 0, 0)',
+//     'rgb(153, 0, 0)', // Dark red for high frequencies
+//   ];
 
-  return colorScale[binIndex];
-};
+//   return colorScale[binIndex];
+// };
 
-// Helper function to calculate luminance and determine text color
-const getTextColor = (backgroundColor: string) => {
-  // Extract RGB values from the background color (e.g., "rgb(255, 255, 255)")
-  const match = backgroundColor.match(/\d+/g);
-  if (match && match.length === 3) {
-    const [r, g, b] = match.map(Number);
+// // Helper function to calculate luminance and determine text color
+// const getTextColor = (backgroundColor: string) => {
+//   // Extract RGB values from the background color (e.g., "rgb(255, 255, 255)")
+//   const match = backgroundColor.match(/\d+/g);
+//   if (match && match.length === 3) {
+//     const [r, g, b] = match.map(Number);
 
-    // Normalize RGB values to the range [0, 1]
-    const normalizedR = r / 255;
-    const normalizedG = g / 255;
-    const normalizedB = b / 255;
+//     // Normalize RGB values to the range [0, 1]
+//     const normalizedR = r / 255;
+//     const normalizedG = g / 255;
+//     const normalizedB = b / 255;
 
-    // Calculate luminance
-    const luminance =
-      0.2126 * normalizedR + 0.7152 * normalizedG + 0.0722 * normalizedB;
+//     // Calculate luminance
+//     const luminance =
+//       0.2126 * normalizedR + 0.7152 * normalizedG + 0.0722 * normalizedB;
 
-    // Return black text for light backgrounds, white for dark
-    return luminance > 0.5 ? 'black' : 'white';
-  }
-  // Default to black if the color is not in the expected format
-  return 'black';
-};
+//     // Return black text for light backgrounds, white for dark
+//     return luminance > 0.5 ? 'black' : 'white';
+//   }
+//   // Default to black if the color is not in the expected format
+//   return 'black';
+// };
 
 // const CustomTreeItem = React.forwardRef(function CustomTreeItem(
 //   props: TreeItem2Props,
@@ -203,14 +200,6 @@ export default function List({
 }: {
   data: { cluster: string; variables: { name: string; frequency: number }[] }[];
 }) {
-  const [selectedVariable, setSelectedVariable] = useState<string | null>(null);
-
-  const handleClick = (variableName: string) => {
-    setSelectedVariable(variableName);
-    console.log(variableName);
-    vscode?.postMessage({ type: 'selectVariable', name: variableName });
-  };
-
   // Calculate min and max frequencies across all clusters and variables
   const allFrequencies = data.flatMap(({ variables }) =>
     variables.map((v) => v.frequency)
