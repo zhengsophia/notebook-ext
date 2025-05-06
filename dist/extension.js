@@ -17968,7 +17968,7 @@ var TreeViewProvider = class {
             const markdown = new vscode.MarkdownString(
               `[\u{1F913} Summarize the artifact "${word}"](command:treeview.processVariableNarrative?${encodeURIComponent(JSON.stringify(word))})
 
-[\u{1F4CC} Pin the artifact "${word}"](command:treeview.addVariable?${encodeURIComponent(JSON.stringify(word))})`
+              // + `[📌 Pin the artifact "${word}"](command:treeview.addVariable?${encodeURIComponent(JSON.stringify(word))})`
             );
             markdown.isTrusted = true;
             return new vscode.Hover(markdown, range);
@@ -17992,6 +17992,7 @@ var TreeViewProvider = class {
           if (editor) {
             console.log("processing narrative for:", word);
             this.processVariableNarrative(editor, word);
+            this.handleArtifactSelection(word);
           }
         }
       )
@@ -18106,13 +18107,17 @@ var TreeViewProvider = class {
     }));
   }
   // vscode api to get the word that was clicked in notebook editor
-  getClickedArtifact(editor, position) {
-    const wordRange = editor.document.getWordRangeAtPosition(position);
-    if (wordRange) {
-      return editor.document.getText(wordRange);
-    }
-    return null;
-  }
+  // DEPRECATED -> moved to adding via button on hover tooltip
+  // private getClickedArtifact(
+  //   editor: vscode.TextEditor,
+  //   position: vscode.Position
+  // ): string | null {
+  //   const wordRange = editor.document.getWordRangeAtPosition(position);
+  //   if (wordRange) {
+  //     return editor.document.getText(wordRange);
+  //   }
+  //   return null;
+  // }
   // private generatePrompt(codeCells: any[]) {
   //     return `Analyze the following JSON of notebook cells and group the actions conducted on the given variable in terms of patterns of analysis.
   //     ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}

@@ -27,8 +27,8 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
             if (!range) return;
             const word = document.getText(range);
             const markdown = new vscode.MarkdownString(
-              `[🤓 Summarize the artifact "${word}"](command:treeview.processVariableNarrative?${encodeURIComponent(JSON.stringify(word))})\n\n` +
-                `[📌 Pin the artifact "${word}"](command:treeview.addVariable?${encodeURIComponent(JSON.stringify(word))})`
+              `[🤓 Summarize the artifact "${word}"](command:treeview.processVariableNarrative?${encodeURIComponent(JSON.stringify(word))})\n\n`
+              // + `[📌 Pin the artifact "${word}"](command:treeview.addVariable?${encodeURIComponent(JSON.stringify(word))})`
             );
             markdown.isTrusted = true;
             return new vscode.Hover(markdown, range);
@@ -56,6 +56,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
           if (editor) {
             console.log('processing narrative for:', word);
             this.processVariableNarrative(editor, word); // LLM or other summary logic
+            this.handleArtifactSelection(word);
           }
         }
       )
@@ -221,16 +222,17 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
   }
 
   // vscode api to get the word that was clicked in notebook editor
-  private getClickedArtifact(
-    editor: vscode.TextEditor,
-    position: vscode.Position
-  ): string | null {
-    const wordRange = editor.document.getWordRangeAtPosition(position);
-    if (wordRange) {
-      return editor.document.getText(wordRange);
-    }
-    return null;
-  }
+  // DEPRECATED -> moved to adding via button on hover tooltip
+  // private getClickedArtifact(
+  //   editor: vscode.TextEditor,
+  //   position: vscode.Position
+  // ): string | null {
+  //   const wordRange = editor.document.getWordRangeAtPosition(position);
+  //   if (wordRange) {
+  //     return editor.document.getText(wordRange);
+  //   }
+  //   return null;
+  // }
 
   // private generatePrompt(codeCells: any[]) {
   //     return `Analyze the following JSON of notebook cells and group the actions conducted on the given variable in terms of patterns of analysis.

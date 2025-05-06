@@ -1,5 +1,9 @@
 import * as React from 'react';
-import { useState } from 'react';
+import Select from 'react-select';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import Popper, { PopperProps } from '@mui/material/Popper';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
@@ -39,10 +43,69 @@ window.addEventListener('message', (event) => {
   }
 });
 
-// keep track of variables already added
 const variablesSet = new Set();
-// keep track of the current selected variable
 let selectedVariable: string | null = null;
+
+// helper fn to select & clear other selected tags
+function selectTag(tag: HTMLElement, variable: string) {
+  // clear unpinned tags
+  document.querySelectorAll('.variable-tag:not(.pinned)').forEach((el) => {
+    if (el !== tag) {
+      const name = el.querySelector<HTMLElement>('.label')?.textContent;
+      if (name) variablesSet.delete(name);
+      el.remove();
+    }
+  });
+  // clear other selected tags
+  document
+    .querySelectorAll('.variable-tag.selected')
+    .forEach((el) => el.classList.remove('selected'));
+
+  tag.classList.add('selected');
+  handleClick(variable);
+}
+
+// helper fn to make tag
+function initTag(variable: string): HTMLElement {
+  const tag = document.createElement('span');
+  tag.className = 'variable-tag';
+
+  // var name
+  const label = document.createElement('span');
+  label.className = 'label';
+  label.textContent = variable;
+  tag.appendChild(label);
+
+  // pin or X button
+  const btn = document.createElement('button');
+  btn.className = 'pin-btn';
+  btn.textContent = '📌';
+  tag.appendChild(btn);
+
+  // clicking the name selects it
+  label.onclick = () => selectTag(tag, variable);
+
+  // clicking the pin toggles pin/unpin
+  btn.onclick = (e) => {
+    e.stopPropagation();
+
+    if (!tag.classList.contains('pinned')) {
+      // 📌 → ✖ : pin it
+      tag.classList.add('pinned');
+      btn.textContent = '✖';
+    } else {
+      // ✖ → remove : unpin & delete
+      tag.remove();
+
+      // clear selection if it on this tag
+      if (tag.classList.contains('selected')) {
+        tag.classList.remove('selected');
+      }
+    }
+  };
+
+  return tag;
+}
 
 // handle passing the IN LINE TEXTUAL SUMMARIES to the TREE VIEW
 const handleClick = (variableName: string) => {
@@ -55,22 +118,26 @@ const handleClick = (variableName: string) => {
 function addVariableToList(variable: any) {
   // console.log('variablesSet', variablesSet);
   if (variablesSet.has(variable)) return;
-  console.log('clicked artifact name', variable);
-  const list = document.getElementById('variables-list');
-  const span = document.createElement('span');
-  span.textContent = variable;
-  span.className = 'variable-tag';
-  span.onclick = () => {
-    handleClick(variable);
-    // Remove 'selected' class from all variable spans
-    document
-      .querySelectorAll('.variable-tag.selected')
-      .forEach((el) => el.classList.remove('selected'));
-    // Add 'selected' class to the clicked span
-    span.classList.add('selected');
-  };
-  list?.appendChild(span);
-  variablesSet.add(variable);
+
+  const container = document.getElementById('variables-list')!;
+  // remove existing unpinned tags
+  container
+    .querySelectorAll('.variable-tag:not(.pinned)')
+    .forEach((el) => el.remove());
+
+  // init tag
+  const tag = initTag(variable);
+  container.prepend(tag);
+  selectTag(tag, variable);
+
+  // delete any unpinned tags
+  document.querySelectorAll('.variable-tag:not(.pinned)').forEach((el) => {
+    if (el !== tag) {
+      const name = el.querySelector<HTMLElement>('.label')?.textContent;
+      if (name) variablesSet.delete(name);
+      el.remove();
+    }
+  });
 }
 
 // // Function to calculate background color based on frequency using dynamic 5-bin color scheme
@@ -207,8 +274,73 @@ export default function List({
   const minFreq = Math.min(...allFrequencies);
   const maxFreq = Math.max(...allFrequencies);
 
+  // flatten the variables passed in
+  const names = Array.from(
+    new Set(data.flatMap((grp) => grp.variables.map((v) => v.name)))
+  );
+
+  // search functionality for selecting from the dropdown
+  const onPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.trim();
+    if (names.includes(val)) {
+      addVariableToList(val);
+      // clear input so you can pick again
+      e.target.value = '';
+    }
+  };
+
   return (
     <div className="variables-container">
+      <Autocomplete
+        freeSolo
+        options={names}
+        openOnFocus
+        onChange={(_, value) => {
+          if (typeof value === 'string' && value) {
+            addVariableToList(value);
+          }
+        }}
+        sx={{
+          width: 'calc(100% - 1em)',
+          margin: '0.5em',
+          '& .MuiOutlinedInput-root': {
+            maxHeight: 22,
+            backgroundColor: 'white',
+            '& .MuiOutlinedInput-input': {
+              padding: '4px 8px',
+              fontSize: 12,
+              lineHeight: 1.2,
+            },
+          },
+        }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            placeholder="🔎 Search for variables..."
+            size="small"
+            fullWidth
+            variant="outlined"
+          />
+        )}
+        slotProps={{
+          listbox: {
+            sx: {
+              p: 0,
+              maxHeight: 200,
+              overflowY: 'auto',
+              '& .MuiAutocomplete-option': {
+                py: 0, // no top/bottom padding
+                px: 1, // theme.spacing(1) ≈ 8px left/right
+                minHeight: 0, // kill any built-in minimum
+                height: '1.5em',
+                lineHeight: 1.5,
+                fontSize: 12,
+              },
+            },
+          },
+        }}
+      />
+
       <div id="variables-list" />
       {/* <div className="clusters">
         {data.map(({ cluster, variables }) => (
