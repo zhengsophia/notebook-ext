@@ -88,7 +88,7 @@ body {
 
 .variable-tag {
   display: inline-block;
-  background-color: #86bdf4;
+  background-color: #f8d7db;
   color: black;
   padding: 2px 10px;
   border-radius: 15px;
@@ -117,13 +117,13 @@ body {
 }
 
 .variable-tag:hover {
-  background-color: #98a2b0;
-  color: white;
+  background-color: #ddd;
+  color: rgb(0, 0, 0);
 }
 
 .variable-tag.selected {
-  background-color: #98a2b0;
-  color: white;
+  background-color: #ddd;
+  color: rgb(0, 0, 0);
 }
 
 .search-input {

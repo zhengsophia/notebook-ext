@@ -1,10 +1,7 @@
 import * as React from 'react';
-import Select from 'react-select';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import Popper, { PopperProps } from '@mui/material/Popper';
-import { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
+import { useState, useEffect, useMemo } from 'react';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import vscode from './vscodeApi';
@@ -90,11 +87,11 @@ function initTag(variable: string): HTMLElement {
     e.stopPropagation();
 
     if (!tag.classList.contains('pinned')) {
-      // 📌 → ✖ : pin it
+      // 📌 → ✖ to pin it
       tag.classList.add('pinned');
       btn.textContent = '✖';
     } else {
-      // ✖ → remove : unpin & delete
+      // ✖ → remove to unpin & delete
       tag.remove();
 
       // clear selection if it on this tag
@@ -115,7 +112,12 @@ const handleClick = (variableName: string) => {
 };
 
 // adding the variable spans from editor to VARIABLES PANE
-function addVariableToList(variable: any) {
+/**
+ * @param variable      the name
+ * @param pinned        whether to pin immediately
+ * @param narrative  if false, don’t call selectTag (so no inline narrative)
+ */
+function addVariableToList(variable: any, pinned = false, narrative = true) {
   // console.log('variablesSet', variablesSet);
   if (variablesSet.has(variable)) return;
 
@@ -124,12 +126,19 @@ function addVariableToList(variable: any) {
   container
     .querySelectorAll('.variable-tag:not(.pinned)')
     .forEach((el) => el.remove());
-
   // init tag
   const tag = initTag(variable);
   container.prepend(tag);
-  selectTag(tag, variable);
+  // for the 5 prepopulated vars
+  if (pinned) {
+    const btn = tag.querySelector<HTMLButtonElement>('.pin-btn')!;
+    tag.classList.add('pinned');
+    btn.textContent = '✖';
+  }
 
+  if (narrative) {
+    selectTag(tag, variable);
+  }
   // delete any unpinned tags
   document.querySelectorAll('.variable-tag:not(.pinned)').forEach((el) => {
     if (el !== tag) {
@@ -267,27 +276,43 @@ export default function List({
 }: {
   data: { cluster: string; variables: { name: string; frequency: number }[] }[];
 }) {
+  // turn the data.variables into an actual dictionary
+  const freqMap = useMemo(() => {
+    const m = new Map<string, number>();
+    data.forEach(({ variables }) =>
+      variables.forEach(({ name, frequency }) => {
+        m.set(name, (m.get(name) || 0) + frequency);
+      })
+    );
+    return m;
+  }, [data]);
+
+  // grabbing top 5 to prepopulate
+  const top5 = useMemo(
+    () =>
+      Array.from(freqMap.entries())
+        .sort(([, aFreq], [, bFreq]) => bFreq - aFreq)
+        .slice(0, 5)
+        .map(([name]) => name),
+    [freqMap]
+  );
+  useEffect(() => {
+    top5.forEach((name) => addVariableToList(name, true, false));
+  }, [top5]);
+
+  // flattenening names
+  const names = useMemo(
+    () =>
+      Array.from(new Set(data.flatMap((g) => g.variables.map((v) => v.name)))),
+    [data]
+  );
+
   // Calculate min and max frequencies across all clusters and variables
-  const allFrequencies = data.flatMap(({ variables }) =>
-    variables.map((v) => v.frequency)
-  );
-  const minFreq = Math.min(...allFrequencies);
-  const maxFreq = Math.max(...allFrequencies);
-
-  // flatten the variables passed in
-  const names = Array.from(
-    new Set(data.flatMap((grp) => grp.variables.map((v) => v.name)))
-  );
-
-  // search functionality for selecting from the dropdown
-  const onPick = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.trim();
-    if (names.includes(val)) {
-      addVariableToList(val);
-      // clear input so you can pick again
-      e.target.value = '';
-    }
-  };
+  // const allFrequencies = data.flatMap(({ variables }) =>
+  //   variables.map((v) => v.frequency)
+  // );
+  // const minFreq = Math.min(...allFrequencies);
+  // const maxFreq = Math.max(...allFrequencies);
 
   return (
     <div className="variables-container">
@@ -329,9 +354,9 @@ export default function List({
               maxHeight: 200,
               overflowY: 'auto',
               '& .MuiAutocomplete-option': {
-                py: 0, // no top/bottom padding
-                px: 1, // theme.spacing(1) ≈ 8px left/right
-                minHeight: 0, // kill any built-in minimum
+                py: 0,
+                px: 1,
+                minHeight: 0,
                 height: '1.5em',
                 lineHeight: 1.5,
                 fontSize: 12,

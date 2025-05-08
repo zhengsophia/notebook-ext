@@ -27,7 +27,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
             if (!range) return;
             const word = document.getText(range);
             const markdown = new vscode.MarkdownString(
-              `[🤓 Summarize the artifact "${word}"](command:treeview.processVariableNarrative?${encodeURIComponent(JSON.stringify(word))})\n\n`
+              `[🤓 Summarize the variable "${word}"](command:treeview.processVariableSummary?${encodeURIComponent(JSON.stringify(word))})\n\n`
               // + `[📌 Pin the artifact "${word}"](command:treeview.addVariable?${encodeURIComponent(JSON.stringify(word))})`
             );
             markdown.isTrusted = true;
@@ -50,12 +50,12 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     // // COMMAND - present in line text summary
     context.subscriptions.push(
       vscode.commands.registerCommand(
-        'treeview.processVariableNarrative',
+        'treeview.processVariableSummary',
         (word: string) => {
           const editor = vscode.window.activeNotebookEditor;
           if (editor) {
             console.log('processing narrative for:', word);
-            this.processVariableNarrative(editor, word); // LLM or other summary logic
+            this.processVariableSummary(editor, word); // LLM or other summary logic
             this.handleArtifactSelection(word);
           }
         }
@@ -100,7 +100,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     //     console.log('got word', word);
     //     this.handleArtifactSelection(word);
     //     const editor = vscode.window.activeNotebookEditor;
-    //     this.processVariableNarrative(editor, word);
+    //     this.processVariableSummary(editor, word);
     //   }
     //   //   }
     // });
@@ -164,7 +164,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
   }
 
   // process the textual summary
-  private async processVariableNarrative(editor: any, variable: any) {
+  private async processVariableSummary(editor: any, variable: any) {
     try {
       const notebookUri = editor.notebook.uri;
       const doc = await vscode.workspace.openTextDocument(notebookUri);
@@ -203,7 +203,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
               this.sendNarrativeToWebview(cachedNarrative);
             } else {
               console.log('not cached :(');
-              this.processVariableNarrative(editor, variable);
+              this.processVariableSummary(editor, variable);
             }
             break;
         }
