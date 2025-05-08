@@ -4,7 +4,7 @@ import OpenAI from 'openai';
 import { zodResponseFormat } from 'openai/helpers/zod';
 
 const openai = new OpenAI({
-  apiKey: 'key',
+  apiKey: '',
 });
 
 export class TreeViewProvider implements vscode.WebviewViewProvider {

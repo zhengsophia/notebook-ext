@@ -17945,7 +17945,7 @@ function zodResponseFormat(zodObject, name, props) {
 
 // src/webviews/treeViewProvider.tsx
 var openai = new openai_default({
-  apiKey: "key"
+  apiKey: ""
 });
 var TreeViewProvider = class {
   constructor(_extensionUri) {
