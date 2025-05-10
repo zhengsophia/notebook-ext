@@ -69,7 +69,7 @@ function NarrativeLabel({ sentence, className }: NarrativeLabelProps) {
         {index < references.length && (
           <span
             onClick={() => handleCellClick(references[index].cells)}
-            style={{ color: '#4299e1', cursor: 'pointer' }}
+            style={{ color: '#f8d7db', cursor: 'pointer' }}
           >
             {references[index].content.replace(/^['"]|['"]$/g, '')}
           </span>

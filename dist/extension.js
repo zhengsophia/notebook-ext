@@ -17979,14 +17979,6 @@ var TreeViewProvider = class {
     );
     context.subscriptions.push(
       vscode.commands.registerCommand(
-        "treeview.addVariable",
-        (variable) => {
-          this.handleHoveredVariableSelection(variable);
-        }
-      )
-    );
-    context.subscriptions.push(
-      vscode.commands.registerCommand(
         "treeview.processVariableSummary",
         (word) => {
           const editor = vscode.window.activeNotebookEditor;

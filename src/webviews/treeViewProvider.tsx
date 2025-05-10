@@ -100,14 +100,14 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     // );
 
     // COMMAND - add variable to the variables pane
-    context.subscriptions.push(
-      vscode.commands.registerCommand(
-        'treeview.addVariable',
-        (variable: string) => {
-          this.handleHoveredVariableSelection(variable);
-        }
-      )
-    );
+    // context.subscriptions.push(
+    //   vscode.commands.registerCommand(
+    //     'treeview.addVariable',
+    //     (variable: string) => {
+    //       this.handleHoveredVariableSelection(variable);
+    //     }
+    //   )
+    // );
 
     // // COMMAND - present in line text summary
     context.subscriptions.push(

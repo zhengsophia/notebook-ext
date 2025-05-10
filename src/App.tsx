@@ -103,7 +103,7 @@ function App() {
         {variables ? (
           <List data={variables} />
         ) : (
-          <p>Loading notebook data...</p>
+          <p className="loading-text">Loading notebook data…</p>
         )}
       </div>
 
@@ -111,7 +111,7 @@ function App() {
         {tree ? (
           <BasicRichTreeView data={tree} narrativeMapping={narrativeMapping} />
         ) : (
-          <p>Loading notebook data...</p>
+          <p className="loading-text">Loading notebook data…</p>
         )}
       </div>
     </div>
