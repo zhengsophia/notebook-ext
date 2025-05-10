@@ -94,11 +94,11 @@ body {
   padding: 0;
 }
 .variable-tag:hover {
-  background-color: #ddd;
+  background-color: #c9c9c9;
   color: rgb(0, 0, 0);
 }
 .variable-tag.selected {
-  background-color: #ddd;
+  background-color: #c9c9c9;
   color: rgb(0, 0, 0);
 }
 .search-input {

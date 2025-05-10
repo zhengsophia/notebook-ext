@@ -229,17 +229,6 @@ export default function BasicRichTreeView({
           }}
           onItemClick={handleNodeSelect}
           slots={{ item: CustomTreeItem }}
-          // sx={{
-          //   '& .MuiTreeItem-label': {
-          //     fontSize: '12px !important',
-          //     textAlign: 'left',
-          //     transition: 'opacity 150ms ease-in-out',
-          //     opacity: 0.4,
-          //   },
-          //   '& .MuiTreeItem-root.Mui-expanded .MuiTreeItem-label': {
-          //     opacity: 1,
-          //   },
-          // }}
           sx={{
             '& .MuiTreeItem-label': {
               fontSize: '12px !important',

@@ -2,38 +2,11 @@ import * as React from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { useState, useEffect, useMemo } from 'react';
-import { TreeViewBaseItem } from '@mui/x-tree-view/models';
-import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import vscode from './vscodeApi';
-import { TreeItem2, TreeItem2Props } from '@mui/x-tree-view/TreeItem2';
-import Typography from '@mui/material/Typography';
-import { useTreeItem2Utils } from '@mui/x-tree-view/hooks';
-
-// const convertClusterDataToTree = (
-//   data: { cluster: string; variables: { name: string; frequency: number }[] }[],
-//   minFreq: number,
-//   maxFreq: number
-// ): TreeViewBaseItem[] => {
-//   return data.map((clusterItem, clusterIndex) => {
-//     const clusterId = `cluster-${clusterIndex}`;
-//     return {
-//       id: clusterId,
-//       label: clusterItem.cluster,
-//       children: clusterItem.variables.map((variable, varIndex) => {
-//         return {
-//           id: `${clusterId}-var-${varIndex}`,
-//           label: variable.name,
-//           frequency: variable.frequency,
-//           isVariable: true, // For conditional styling or handling
-//         };
-//       }),
-//     };
-//   });
-// };
 
 window.addEventListener('message', (event) => {
   const message = event.data;
-  if (message.type === 'selectArtifact') {
+  if (message.type === 'sendHoveredVariable') {
     const variable = message.name;
     console.log('clicked variable', variable);
     addVariableToList(variable);
@@ -45,14 +18,6 @@ let selectedVariable: string | null = null;
 
 // helper fn to select & clear other selected tags
 function selectTag(tag: HTMLElement, variable: string) {
-  // clear unpinned tags
-  document.querySelectorAll('.variable-tag:not(.pinned)').forEach((el) => {
-    if (el !== tag) {
-      const name = el.querySelector<HTMLElement>('.label')?.textContent;
-      if (name) variablesSet.delete(name);
-      el.remove();
-    }
-  });
   // clear other selected tags
   document
     .querySelectorAll('.variable-tag.selected')
@@ -66,6 +31,7 @@ function selectTag(tag: HTMLElement, variable: string) {
 function initTag(variable: string): HTMLElement {
   const tag = document.createElement('span');
   tag.className = 'variable-tag';
+  tag.dataset.variable = variable;
 
   // var name
   const label = document.createElement('span');
@@ -73,10 +39,10 @@ function initTag(variable: string): HTMLElement {
   label.textContent = variable;
   tag.appendChild(label);
 
-  // pin or X button
+  // x button
   const btn = document.createElement('button');
   btn.className = 'pin-btn';
-  btn.textContent = '📌';
+  btn.textContent = '✖';
   tag.appendChild(btn);
 
   // clicking the name selects it
@@ -85,22 +51,14 @@ function initTag(variable: string): HTMLElement {
   // clicking the pin toggles pin/unpin
   btn.onclick = (e) => {
     e.stopPropagation();
+    // ✖ → remove to unpin & delete
+    tag.remove();
 
-    if (!tag.classList.contains('pinned')) {
-      // 📌 → ✖ to pin it
-      tag.classList.add('pinned');
-      btn.textContent = '✖';
-    } else {
-      // ✖ → remove to unpin & delete
-      tag.remove();
-
-      // clear selection if it on this tag
-      if (tag.classList.contains('selected')) {
-        tag.classList.remove('selected');
-      }
+    // clear selection if it on this tag
+    if (tag.classList.contains('selected')) {
+      tag.classList.remove('selected');
     }
   };
-
   return tag;
 }
 
@@ -108,45 +66,28 @@ function initTag(variable: string): HTMLElement {
 const handleClick = (variableName: string) => {
   selectedVariable = variableName;
   console.log(variableName);
-  vscode?.postMessage({ type: 'selectVariable', name: variableName });
+  vscode?.postMessage({ type: 'getVariableSummary', name: variableName });
 };
 
 // adding the variable spans from editor to VARIABLES PANE
 /**
  * @param variable      the name
- * @param pinned        whether to pin immediately
  * @param narrative  if false, don’t call selectTag (so no inline narrative)
  */
-function addVariableToList(variable: any, pinned = false, narrative = true) {
+function addVariableToList(variable: any, narrative = true) {
   // console.log('variablesSet', variablesSet);
-  if (variablesSet.has(variable)) return;
-
   const container = document.getElementById('variables-list')!;
-  // remove existing unpinned tags
-  container
-    .querySelectorAll('.variable-tag:not(.pinned)')
-    .forEach((el) => el.remove());
-  // init tag
-  const tag = initTag(variable);
-  container.prepend(tag);
-  // for the 5 prepopulated vars
-  if (pinned) {
-    const btn = tag.querySelector<HTMLButtonElement>('.pin-btn')!;
-    tag.classList.add('pinned');
-    btn.textContent = '✖';
+  let tag = container.querySelector<HTMLElement>(
+    `span.variable-tag[data-variable="${variable}"]`
+  );
+  if (!tag) {
+    variablesSet.add(variable);
+    tag = initTag(variable);
+    container.prepend(tag);
   }
-
   if (narrative) {
     selectTag(tag, variable);
   }
-  // delete any unpinned tags
-  document.querySelectorAll('.variable-tag:not(.pinned)').forEach((el) => {
-    if (el !== tag) {
-      const name = el.querySelector<HTMLElement>('.label')?.textContent;
-      if (name) variablesSet.delete(name);
-      el.remove();
-    }
-  });
 }
 
 // // Function to calculate background color based on frequency using dynamic 5-bin color scheme
@@ -254,7 +195,7 @@ function addVariableToList(variable: any, pinned = false, narrative = true) {
 //         .find((v) => v.id === nodeId)?.label;
 
 //       if (variableName) {
-//         vscode?.postMessage({ type: 'selectVariable', name: variableName });
+//         vscode?.postMessage({ type: 'getVariableSummary', name: variableName });
 //       }
 //     }
 //   };
@@ -297,7 +238,7 @@ export default function List({
     [freqMap]
   );
   useEffect(() => {
-    top5.forEach((name) => addVariableToList(name, true, false));
+    top5.forEach((name) => addVariableToList(name, false));
   }, [top5]);
 
   // flattenening names
@@ -306,13 +247,6 @@ export default function List({
       Array.from(new Set(data.flatMap((g) => g.variables.map((v) => v.name)))),
     [data]
   );
-
-  // Calculate min and max frequencies across all clusters and variables
-  // const allFrequencies = data.flatMap(({ variables }) =>
-  //   variables.map((v) => v.frequency)
-  // );
-  // const minFreq = Math.min(...allFrequencies);
-  // const maxFreq = Math.max(...allFrequencies);
 
   return (
     <div className="variables-container">
@@ -365,139 +299,7 @@ export default function List({
           },
         }}
       />
-
       <div id="variables-list" />
-      {/* <div className="clusters">
-        {data.map(({ cluster, variables }) => (
-          <div key={cluster} className="cluster">
-            <span
-              onClick={() => handleClick(cluster)}
-              className={`cluster-tag ${selectedVariable === cluster ? 'selected' : ''}`}
-              style={{
-                backgroundColor: getColorForFrequency(
-                  variables.reduce((acc, v) => acc + v.frequency, 0),
-                  minFreq,
-                  maxFreq
-                ),
-                color: getTextColor(
-                  getColorForFrequency(
-                    variables.reduce((acc, v) => acc + v.frequency, 0),
-                    minFreq,
-                    maxFreq
-                  )
-                ), // Dynamically change text color
-              }}
-            >
-              {cluster}
-            </span>
-            <div className="variables-list">
-              {variables.map(({ name, frequency }, index) => (
-                <span
-                  key={index}
-                  onClick={() => handleClick(name)}
-                  className={`variable-tag ${selectedVariable === name ? 'selected' : ''}`}
-                  style={{
-                    backgroundColor: getColorForFrequency(
-                      frequency,
-                      minFreq,
-                      maxFreq
-                    ), // Apply dynamic color
-                    color: getTextColor(
-                      getColorForFrequency(frequency, minFreq, maxFreq)
-                    ), // Dynamically change text color
-                  }}
-                >
-                  {name}
-                </span>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div> */}
     </div>
   );
 }
-
-// export default function List({ data }: { data: { cluster: string; variables: string[] }[] }) {
-//   const [selectedVariable, setSelectedVariable] = useState<string | null>(null);
-//   const handleClick = (variableName: string) => {
-//     setSelectedVariable(variableName);
-//     console.log(variableName);
-//     vscode?.postMessage({ type: "selectVariable", name: variableName });
-//   };
-
-//   return (
-//     <div className="variables-container">
-//       {/* <h2 className="variables-title">Variables</h2> */}
-//       <div className="clusters">
-//         {data.map(({ cluster, variables }) => (
-//           <div key={cluster} className="cluster">
-//             <span
-//                 onClick={() => handleClick(cluster)}
-//                 className={`cluster-tag ${selectedVariable === cluster ? "selected" : ""}`}
-//               >
-//                 {cluster}
-//               </span>
-//             <div className="variables-list">
-//               {variables.map((variable, index) => (
-//                 <span
-//                   key={index}
-//                   onClick={() => handleClick(variable)}
-//                   className={`variable-tag ${selectedVariable === variable ? "selected" : ""}`}
-//                 >
-//                   {variable}
-//                 </span>
-//               ))}
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-
-//   // return (
-//   //   <div className="variables-container">
-//   //     <h2 className="variables-title">Variables</h2>
-//   //     <div className="variables-list">
-//   //       {data.map((variable, index) => (
-//   //         <span
-//   //           key={index}
-//   //           onClick={() => handleClick(variable)}
-//   //           className={`variable-tag ${selectedVariable === variable ? "selected" : ""}`}
-//   //         >
-//   //           {variable}
-//   //         </span>
-//   //       ))}
-//   //     </div>
-//   //   </div>
-//   // );
-// }
-
-// export default function List({ data }: { data: string[] }) {
-//   const handleClick = (variableName: string) => {
-//     console.log(variableName)
-//     vscode?.postMessage({ type: "selectVariable", name: variableName });
-//   };
-
-//   return (
-//     <div className="variables-container">
-//       <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#2D3748', marginBottom: '1rem' }}>
-//         Variables
-//       </h2>
-//       <ul>
-//         {data.map((variable, index) => (
-//           <li
-//             key={index}
-//             onClick={() => handleClick(variable)}
-//             style={{
-//               width: 'fit-content',
-//               display: 'list-item',
-//             }}
-//           >
-//             {variable}
-//           </li>
-//         ))}
-//       </ul>
-//     </div>
-//   );
-// }

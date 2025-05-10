@@ -86096,7 +86096,7 @@ var import_react4 = __toESM(require_react());
 var import_jsx_runtime2 = __toESM(require_jsx_runtime());
 window.addEventListener("message", (event) => {
   const message = event.data;
-  if (message.type === "selectArtifact") {
+  if (message.type === "sendHoveredVariable") {
     const variable = message.name;
     console.log("clicked variable", variable);
     addVariableToList(variable);
@@ -86105,13 +86105,6 @@ window.addEventListener("message", (event) => {
 var variablesSet = /* @__PURE__ */ new Set();
 var selectedVariable = null;
 function selectTag(tag, variable) {
-  document.querySelectorAll(".variable-tag:not(.pinned)").forEach((el) => {
-    if (el !== tag) {
-      const name = el.querySelector(".label")?.textContent;
-      if (name) variablesSet.delete(name);
-      el.remove();
-    }
-  });
   document.querySelectorAll(".variable-tag.selected").forEach((el) => el.classList.remove("selected"));
   tag.classList.add("selected");
   handleClick(variable);
@@ -86119,25 +86112,21 @@ function selectTag(tag, variable) {
 function initTag(variable) {
   const tag = document.createElement("span");
   tag.className = "variable-tag";
+  tag.dataset.variable = variable;
   const label = document.createElement("span");
   label.className = "label";
   label.textContent = variable;
   tag.appendChild(label);
   const btn = document.createElement("button");
   btn.className = "pin-btn";
-  btn.textContent = "\u{1F4CC}";
+  btn.textContent = "\u2716";
   tag.appendChild(btn);
   label.onclick = () => selectTag(tag, variable);
   btn.onclick = (e) => {
     e.stopPropagation();
-    if (!tag.classList.contains("pinned")) {
-      tag.classList.add("pinned");
-      btn.textContent = "\u2716";
-    } else {
-      tag.remove();
-      if (tag.classList.contains("selected")) {
-        tag.classList.remove("selected");
-      }
+    tag.remove();
+    if (tag.classList.contains("selected")) {
+      tag.classList.remove("selected");
     }
   };
   return tag;
@@ -86145,29 +86134,21 @@ function initTag(variable) {
 var handleClick = (variableName) => {
   selectedVariable = variableName;
   console.log(variableName);
-  vscodeApi_default?.postMessage({ type: "selectVariable", name: variableName });
+  vscodeApi_default?.postMessage({ type: "getVariableSummary", name: variableName });
 };
-function addVariableToList(variable, pinned = false, narrative = true) {
-  if (variablesSet.has(variable)) return;
+function addVariableToList(variable, narrative = true) {
   const container = document.getElementById("variables-list");
-  container.querySelectorAll(".variable-tag:not(.pinned)").forEach((el) => el.remove());
-  const tag = initTag(variable);
-  container.prepend(tag);
-  if (pinned) {
-    const btn = tag.querySelector(".pin-btn");
-    tag.classList.add("pinned");
-    btn.textContent = "\u2716";
+  let tag = container.querySelector(
+    `span.variable-tag[data-variable="${variable}"]`
+  );
+  if (!tag) {
+    variablesSet.add(variable);
+    tag = initTag(variable);
+    container.prepend(tag);
   }
   if (narrative) {
     selectTag(tag, variable);
   }
-  document.querySelectorAll(".variable-tag:not(.pinned)").forEach((el) => {
-    if (el !== tag) {
-      const name = el.querySelector(".label")?.textContent;
-      if (name) variablesSet.delete(name);
-      el.remove();
-    }
-  });
 }
 function List({
   data
@@ -86186,7 +86167,7 @@ function List({
     [freqMap]
   );
   (0, import_react4.useEffect)(() => {
-    top5.forEach((name) => addVariableToList(name, true, false));
+    top5.forEach((name) => addVariableToList(name, false));
   }, [top5]);
   const names = (0, import_react4.useMemo)(
     () => Array.from(new Set(data.flatMap((g) => g.variables.map((v) => v.name)))),

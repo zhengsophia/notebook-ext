@@ -17954,8 +17954,8 @@ var TreeViewProvider = class {
   // extension name
   static viewType = "meng-notebook.treeView";
   _view;
-  variableNarrativeCache = /* @__PURE__ */ new Map();
-  // registers the artifact to be added from hover tooltip selection via command
+  variableSummaryCache = /* @__PURE__ */ new Map();
+  // registers the variable to be added from hover tooltip selection via command
   registerHover(context) {
     context.subscriptions.push(
       vscode.languages.registerHoverProvider(
@@ -17969,7 +17969,7 @@ var TreeViewProvider = class {
               `[\u{1F913} Summarize the variable "${word}"](command:treeview.processVariableSummary?${encodeURIComponent(JSON.stringify(word))})
 
 `
-              // + `[📌 Pin the artifact "${word}"](command:treeview.addVariable?${encodeURIComponent(JSON.stringify(word))})`
+              // + `[📌 Pin the variable "${word}"](command:treeview.addVariable?${encodeURIComponent(JSON.stringify(word))})`
             );
             markdown.isTrusted = true;
             return new vscode.Hover(markdown, range);
@@ -17980,8 +17980,8 @@ var TreeViewProvider = class {
     context.subscriptions.push(
       vscode.commands.registerCommand(
         "treeview.addVariable",
-        (word) => {
-          this.handleArtifactSelection(word);
+        (variable) => {
+          this.handleHoveredVariableSelection(variable);
         }
       )
     );
@@ -17993,26 +17993,19 @@ var TreeViewProvider = class {
           if (editor) {
             console.log("processing narrative for:", word);
             this.processVariableSummary(editor, word);
-            this.handleArtifactSelection(word);
+            this.handleHoveredVariableSelection(word);
           }
         }
       )
     );
   }
-  // implementing the required method for extesions
+  // implementing the required method for extensions
   resolveWebviewView(webviewView, context, _token) {
     this._view = webviewView;
     webviewView.webview.options = {
       enableScripts: true,
       localResourceRoots: [vscode.Uri.joinPath(this._extensionUri)]
     };
-    vscode.window.onDidChangeActiveNotebookEditor((editor) => {
-      if (editor) {
-        this.processVariables(editor);
-        console.log("Calling processTree...");
-        this.processTree(editor);
-      }
-    });
     const activeEditor = vscode.window.activeNotebookEditor;
     if (activeEditor) {
       this.processVariables(activeEditor);
@@ -18039,8 +18032,7 @@ var TreeViewProvider = class {
       vscode.window.showErrorMessage("Failed to process notebook.");
     }
   }
-  // method that combines helper functions to get the LLM response for the notebook
-  // and sends it within the command
+  // method that combines helper functions to get the LLM response for the notebook and sends it within the command
   async processTree(editor) {
     try {
       console.log("beginning tree");
@@ -18051,7 +18043,7 @@ var TreeViewProvider = class {
       const codeCells = this.filterCodeCells(notebookJson);
       const prompt = this.generateTreePrompt(codeCells);
       const structuredOutput = await this.getTreeOutput(prompt);
-      console.log("LLM response", structuredOutput);
+      console.log("LLM response for making tree", structuredOutput);
       this.sendTreeToWebview(structuredOutput);
     } catch (error) {
       console.error("Error processing notebook:", error);
@@ -18070,8 +18062,8 @@ var TreeViewProvider = class {
       const structuredOutput = await this.getNarrativeOutput(prompt);
       console.log("LLM response for in line textual summary", structuredOutput);
       if (structuredOutput) {
-        this.variableNarrativeCache.set(variable, structuredOutput);
-        console.log("variableNarrativeCache", this.variableNarrativeCache);
+        this.variableSummaryCache.set(variable, structuredOutput);
+        console.log("variableSummaryCache", this.variableSummaryCache);
       }
       this.sendNarrativeToWebview(structuredOutput);
     } catch (error) {
@@ -18084,11 +18076,11 @@ var TreeViewProvider = class {
       this._view.webview.onDidReceiveMessage(async (message) => {
         console.log("message", message.type);
         switch (message.type) {
-          case "selectVariable":
+          case "getVariableSummary":
             const editor = vscode.window.activeNotebookEditor;
             const variable = message.name;
-            if (this.variableNarrativeCache.has(variable)) {
-              const cachedNarrative = this.variableNarrativeCache.get(variable);
+            if (this.variableSummaryCache.has(variable)) {
+              const cachedNarrative = this.variableSummaryCache.get(variable);
               console.log("cached", cachedNarrative);
               this.sendNarrativeToWebview(cachedNarrative);
             } else {
@@ -18101,11 +18093,13 @@ var TreeViewProvider = class {
     }
   }
   filterCodeCells(notebook) {
-    return notebook.cells.filter((cell) => cell.cell_type === "code").map((cell) => ({
+    const codeCells = notebook.cells.filter((cell) => cell.cell_type === "code").map((cell) => ({
       execution_count: cell.execution_count,
       outputs: cell.outputs,
       source: cell.source
     }));
+    console.log("codeCells", codeCells);
+    return codeCells;
   }
   // vscode api to get the word that was clicked in notebook editor
   // DEPRECATED -> moved to adding via button on hover tooltip
@@ -18119,14 +18113,15 @@ var TreeViewProvider = class {
   //   }
   //   return null;
   // }
-  // private generatePrompt(codeCells: any[]) {
-  //     return `Analyze the following JSON of notebook cells and group the actions conducted on the given variable in terms of patterns of analysis.
-  //     ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}
-  //     `;
-  // }
   // prompt generation for tree prompting
   generateTreePrompt(codeCells) {
-    return `Analyze the following JSON of notebook cells and group them based on their functionality and/or structural patterns of analysis. Group should be the general pattern label, while subgroups label more specifically. Cell should specify the execution number of the one or more cells described by that subgroup.  
+    return `Analyze the following JSON of notebook cells and group them based on their functionality and/or structural patterns of analysis. 
+            Narrative is a one-sentence overview of the notebook purpose.
+            Group should be the general pattern label, while subgroups label more specifically. 
+            Use as much context from the notebook topic as possible in labelings. 
+            Cell should specify the execution number of the one or more cells described by that subgroup.  
+            Each cell number should only appear once in the most relevant subgroup.
+            All cell numbers must be included once in a grouping.
         
         ${codeCells.map((cell, i2) => `Block ${i2 + 1}:
 ${cell.source.join("\n")}`).join("\n\n")}
@@ -18134,20 +18129,25 @@ ${cell.source.join("\n")}`).join("\n\n")}
   }
   // prompt generation for narrative prompting
   generateNarrativePrompt(variable, codeCells) {
-    return `Please provide a technical summary of the given variable that:
+    return `Provide a technical summary of the given variable that:
 
-        Starts with a one-sentence overview of actions performed on the variable 
-        Uses direct, factual language focused on key analytical decisions
-        References critical steps with cell numbers in this format: {"key phrase"}[cell execution number(s)] where the cell numbers are comma separated
-        Maintains an objective tone (avoid phrases like "this notebook explores...")
-        Prioritizes describing concrete actions performed on the variable
+        Starts with a one-sentence overview of actions performed on the variable.
+
+        In the following sentences:
+        Keeps each sentence concise and short. 
+        Uses direct, factual language focused on key analytical decisions.
+        Maintains an objective tone (avoid phrases like "this notebook explores...").
+        Prioritizes describing concrete actions performed on the variable.
+        Annotates important phrases in the sentence with a cell number like {"initial exploratory analysis"}[cell 2].
+        Each [cell #] only has one cell that is the first cell that the action occurs in.
+        
         The answer should be the summary itself, nothing else outputted.
 
         Here is an example output:
         
         "This variable is a dataframe describing customer churn rates.
         
-        An {"initial exploratory analysis"}[cell 2,cell 3, cell 4] of the customer's {"spending patterns"}[cell 4] and corresponding segments. The data undergoes {"log transformation of numeric features"}[cell 8] followed by {"one-hot encoding of categorical variables"}[cell 9,10]. A {"random forest classifier"}[cell 15] identifies key predictive features, which inform feature selection for the final {"XGBoost model"}[cell 18]..."
+        An {"initial exploratory analysis"}[cell 2] of the customer's {"spending patterns"}[cell 4] and corresponding segments. The data undergoes {"log transformation of numeric features"}[cell 8] followed by {"one-hot encoding of categorical variables"}[cell 9]. A {"random forest classifier"}[cell 15] identifies key predictive features, which inform feature selection for the final {"XGBoost model"}[cell 18]..."
         
         Do this for variable ${variable}.
 
@@ -18163,10 +18163,11 @@ ${cell.source.join("\n")}`).join("\n\n")}
     try {
       const response = await openai.chat.completions.create({
         model: "gpt-4o-2024-11-20",
+        // model: 'o4-mini-2025-04-16',
         messages: [
           {
             role: "system",
-            content: "You are an expert in structured data extraction. Convert the provided notebook JSON into a narrative for the specified variable."
+            content: "You are an expert in structured data extraction. Summarize the specified variable in the provided notebook JSON."
           },
           { role: "user", content: prompt }
         ]
@@ -18188,11 +18189,13 @@ ${cell.source.join("\n")}`).join("\n\n")}
       subgroups: z.array(Subgroup)
     });
     const NotebookSummarization = z.object({
+      narrative: z.string(),
       groups: z.array(Group)
     });
     try {
       const response = await openai.beta.chat.completions.parse({
         model: "gpt-4o-2024-11-20",
+        // model: 'o4-mini-2025-04-16',
         messages: [
           {
             role: "system",
@@ -18225,10 +18228,13 @@ ${cell.source.join("\n")}`).join("\n\n")}
       });
     }
   }
-  // get specific artifact clicked from notebook editor to send to the webview
-  async handleArtifactSelection(word) {
+  // get specific variable clicked from notebook editor to send to the webview
+  async handleHoveredVariableSelection(variable) {
     if (!this._view) return;
-    this._view.webview.postMessage({ type: "selectArtifact", name: word });
+    this._view.webview.postMessage({
+      type: "sendHoveredVariable",
+      name: variable
+    });
   }
   async detectPythonVariables(codeCells) {
     const variableRegex = /\b([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*.*$/;
@@ -18299,272 +18305,6 @@ ${cell.source.join("\n")}`).join("\n\n")}
     }));
     return sortedClusters;
   }
-  // diff grouping methods
-  //   private async groupVariablesParse(codeCells: any, variables: string[]): Promise<{ cluster: string; variables: string[] }[]> {
-  //     const functionClusters: Record<string, Map<string, number>> = {};
-  //     const globalVariables: Map<string, number> = new Map();
-  //     const clusterFrequency: Map<string, number> = new Map();
-  //     const functionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^)]*\)\s*:/;
-  //     const variableRegex = new RegExp(`\\b(${variables.join('|')})\\b`, 'g'); // Track only listed variables
-  //     let currentFunction = "";
-  //     codeCells.forEach((cell: any) => {
-  //         cell.source.forEach((line: string) => {
-  //             const functionMatch = line.match(functionRegex);
-  //             if (functionMatch) {
-  //                 currentFunction = functionMatch[1]; // Set function context
-  //                 if (!functionClusters[currentFunction]) {
-  //                     functionClusters[currentFunction] = new Map();
-  //                 }
-  //             } else if (line.trim() === "") {
-  //                 currentFunction = ""; // Reset function context on empty line
-  //             }
-  //             // Capture occurrences of explicitly listed variables (ignore local assignments)
-  //             const variableMatches = [...line.matchAll(variableRegex)];
-  //             variableMatches.forEach(match => {
-  //                 const variable = match[1];
-  //                 if (currentFunction) {
-  //                     functionClusters[currentFunction].set(variable, (functionClusters[currentFunction].get(variable) || 0) + 1);
-  //                 } else {
-  //                     globalVariables.set(variable, (globalVariables.get(variable) || 0) + 1);
-  //                 }
-  //             });
-  //         });
-  //     });
-  //     // Compute frequency of explicitly listed variables per function
-  //     for (const [func, vars] of Object.entries(functionClusters)) {
-  //         const totalFrequency = Array.from(vars.values()).reduce((acc, count) => acc + count, 0);
-  //         clusterFrequency.set(func, totalFrequency);
-  //     }
-  //     if (globalVariables.size > 0) {
-  //         const totalFrequency = Array.from(globalVariables.values()).reduce((acc, count) => acc + count, 0);
-  //         clusterFrequency.set("Global Variables", totalFrequency);
-  //     }
-  //     // Sort clusters by total variable usage
-  //     const sortedClusters = Array.from(clusterFrequency.entries())
-  //         .sort((a, b) => b[1] - a[1])
-  //         .map(([key]) => ({
-  //             cluster: key,
-  //             variables: key === "Global Variables"
-  //                 ? Array.from(globalVariables.entries()).sort((a, b) => b[1] - a[1]).map(([key]) => key)
-  //                 : Array.from(functionClusters[key].entries()).sort((a, b) => b[1] - a[1]).map(([key]) => key)
-  //         }));
-  //     return sortedClusters;
-  // }
-  // includes function params
-  //   private async groupVariablesParse(codeCells: any, variables: string[]): Promise<{ cluster: string; variables: string[] }[]> {
-  //     const functionClusters: Record<string, Map<string, number>> = {};
-  //     const globalVariables: Map<string, number> = new Map();
-  //     const clusterFrequency: Map<string, number> = new Map();
-  //     const functionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)\s*:/;
-  //     const variableRegex = new RegExp(`\\b(${variables.join('|')})\\b`, 'g');
-  //     let currentFunction = "";
-  //     codeCells.forEach((cell: any) => {
-  //       cell.source.forEach((line: string) => {
-  //         const functionMatch = line.match(functionRegex);
-  //         if (functionMatch) {
-  //           currentFunction = functionMatch[1];
-  //           const params = functionMatch[2]
-  //             .split(',')
-  //             .map(param => param.trim().split('=')[0].trim())
-  //             .filter(param => param !== "");
-  //           if (!functionClusters[currentFunction]) {
-  //             functionClusters[currentFunction] = new Map();
-  //           }
-  //           params.forEach(param => functionClusters[currentFunction].set(param, 1));
-  //         } else if (line.trim() === "") {
-  //           currentFunction = "";
-  //         }
-  //         const variableMatches = [...line.matchAll(variableRegex)];
-  //         variableMatches.forEach(match => {
-  //           const variable = match[1];
-  //           if (currentFunction) {
-  //             const cluster = functionClusters[currentFunction];
-  //             cluster.set(variable, (cluster.get(variable) || 0) + 1);
-  //           } else {
-  //             globalVariables.set(variable, (globalVariables.get(variable) || 0) + 1);
-  //           }
-  //         });
-  //       });
-  //     });
-  //     for (const [func, vars] of Object.entries(functionClusters)) {
-  //       const totalFrequency = Array.from(vars.values()).reduce((acc, count) => acc + count, 0);
-  //       clusterFrequency.set(func, totalFrequency);
-  //     }
-  //     if (globalVariables.size > 0) {
-  //       const totalFrequency = Array.from(globalVariables.values()).reduce((acc, count) => acc + count, 0);
-  //       clusterFrequency.set("Global Variables", totalFrequency);
-  //     }
-  //     // Sort clusters by total variable usage
-  //     const sortedClusters = Array.from(clusterFrequency.entries())
-  //       .sort((a, b) => b[1] - a[1])
-  //       .map(([key]) => ({
-  //         cluster: key,
-  //         variables: key === "Global Variables"
-  //           ? Array.from(globalVariables.entries()).sort((a, b) => b[1] - a[1]).map(([key]) => key)
-  //           : Array.from(functionClusters[key].entries()).sort((a, b) => b[1] - a[1]).map(([key]) => key)
-  //       }));
-  //     return sortedClusters;
-  //   }
-  // FUNCTIONS AND GLOBAL VARS
-  //   private async groupVariablesParse(codeCells: any, variables: string[]): Promise<Record<string, string[]>> {
-  //     const functionClusters: Record<string, Set<string>> = {};
-  //     const globalVariables: Set<string> = new Set();
-  //     // Regex patterns
-  //     const functionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)\s*:/;
-  //     const variableRegex = new RegExp(`\\b(${variables.join('|')})\\b`, 'g');
-  //     let currentFunction = "";
-  //     codeCells.forEach((cell: any) => {
-  //       cell.source.forEach((line: string) => {
-  //         const functionMatch = line.match(functionRegex);
-  //         // If a function is detected, store the function name and parameters
-  //         if (functionMatch) {
-  //           currentFunction = functionMatch[1];
-  //           const params = functionMatch[2]
-  //             .split(',')
-  //             .map(param => param.trim().split('=')[0].trim()) // Remove default values
-  //             .filter(param => param !== "");
-  //           if (!functionClusters[currentFunction]) {
-  //             functionClusters[currentFunction] = new Set(params);
-  //           }
-  //         } else if (line.trim() === "") {
-  //           // Reset function context if an empty line (potential end of function) is detected
-  //           currentFunction = "";
-  //         }
-  //         // Find variables in the line
-  //         const variableMatches = [...line.matchAll(variableRegex)];
-  //         variableMatches.forEach(match => {
-  //           const variable = match[1];
-  //           if (currentFunction) {
-  //             functionClusters[currentFunction].add(variable);
-  //           } else {
-  //             globalVariables.add(variable);
-  //           }
-  //         });
-  //       });
-  //     });
-  //     // Convert to object for easy viewing
-  //     const clusters: Record<string, string[]> = {};
-  //     for (const [func, vars] of Object.entries(functionClusters)) {
-  //       clusters[func] = Array.from(vars);
-  //     }
-  //     // Add global variables as a separate cluster
-  //     if (globalVariables.size > 0) {
-  //       clusters["Global Variables"] = Array.from(globalVariables);
-  //     }
-  //     return clusters;
-  //   }
-  // CO OCCURENCE GROUPING CODE
-  //   private async groupVariablesParse(codeCells: any, variables: string[]): Promise<Record<string, string[]>> {
-  //     const variableUsage: Record<string, Set<string>> = {};
-  //     // Initialize variable tracking
-  //     variables.forEach((variable) => {
-  //       variableUsage[variable] = new Set();
-  //     });
-  //     // Regex patterns
-  //     const functionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(.*\)\s*:/;
-  //     const variableRegex = new RegExp(`\\b(${variables.join('|')})\\b`, 'g');
-  //     let currentFunction = "";
-  //     // Analyze variable usage
-  //     codeCells.forEach((cell: any) => {
-  //       cell.source.forEach((line: string) => {
-  //         const functionMatch = line.match(functionRegex);
-  //         if (functionMatch) {
-  //           currentFunction = functionMatch[1];
-  //         }
-  //         const variableMatches = [...line.matchAll(variableRegex)];
-  //         const matchedVariables = variableMatches.map(match => match[1]);
-  //         // Track co-occurrence of variables
-  //         matchedVariables.forEach((var1) => {
-  //           matchedVariables.forEach((var2) => {
-  //             if (var1 !== var2) {
-  //               variableUsage[var1].add(var2);
-  //               variableUsage[var2].add(var1);
-  //             }
-  //           });
-  //         });
-  //       });
-  //     });
-  //     // Perform greedy clustering
-  //     const clusters: Record<string, string[]> = {};
-  //     const visited = new Set<string>();
-  //     let clusterIndex = 1;
-  //     function bfs(start: string) {
-  //       const queue = [start];
-  //       const cluster: string[] = [];
-  //       while (queue.length > 0) {
-  //         const variable = queue.shift()!;
-  //         if (!visited.has(variable)) {
-  //           visited.add(variable);
-  //           cluster.push(variable);
-  //           // Visit all connected variables
-  //           variableUsage[variable].forEach((neighbor) => {
-  //             if (!visited.has(neighbor)) {
-  //               queue.push(neighbor);
-  //             }
-  //           });
-  //         }
-  //       }
-  //       return cluster;
-  //     }
-  //     // Form clusters
-  //     for (const variable of variables) {
-  //       if (!visited.has(variable)) {
-  //         const newCluster = bfs(variable);
-  //         clusters[`Cluster ${clusterIndex}`] = newCluster;
-  //         clusterIndex++;
-  //       }
-  //     }
-  //     return clusters;
-  //   }
-  // GROUPING CODE
-  //   cosineSimilarity(vecA: number[], vecB: number[]): number {
-  //     if (vecA.length !== vecB.length) {
-  //       throw new Error('Vectors must be the same length');
-  //     }
-  //     let dotProduct = 0;
-  //     let normA = 0;
-  //     let normB = 0;
-  //     for (let i = 0; i < vecA.length; i++) {
-  //       dotProduct += vecA[i] * vecB[i];
-  //       normA += vecA[i] * vecA[i];
-  //       normB += vecB[i] * vecB[i];
-  //     }
-  //     if (normA === 0 || normB === 0) return 0; // Avoid division by zero
-  //     return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
-  //   }
-  //   private async groupVariablesByMeaning(
-  //     variableNames: string[]
-  //   ): Promise<Record<string, string[]>> {
-  //     if (variableNames.length === 0) return {};
-  //     // Get embeddings for each variable name
-  //     const embeddings = await Promise.all(
-  //       variableNames.map(async (name) => {
-  //         const response = await openai.embeddings.create({
-  //           model: 'text-embedding-ada-002',
-  //           input: name,
-  //         });
-  //         return { name, embedding: response.data[0].embedding };
-  //       })
-  //     );
-  //     // Clustering based on cosine similarity
-  //     const groups: Record<string, string[]> = {};
-  //     embeddings.forEach(({ name, embedding }) => {
-  //       let assigned = false;
-  //       for (const key in groups) {
-  //         const sim = this.cosineSimilarity(
-  //           embedding,
-  //           embeddings.find((e) => e.name === key)!.embedding
-  //         );
-  //         if (sim > 0.8) {
-  //           groups[key].push(name);
-  //           assigned = true;
-  //           break;
-  //         }
-  //       }
-  //       if (!assigned) groups[name] = [name];
-  //     });
-  //     return groups;
-  //   }
   // takes selected cell from App
   setupMessageListener() {
     if (this._view) {
@@ -18630,21 +18370,11 @@ ${cell.source.join("\n")}`).join("\n\n")}
     }
   }
   // when called, this function will represent the command
-  // to pass GPT textual summary data  under the command `fetchTree`
+  // to pass GPT textual summary data under the command `fetchTree`
   sendNarrativeToWebview(data) {
     if (this._view) {
       this._view.webview.postMessage({
         command: "fetchNarrative",
-        data
-      });
-    }
-  }
-  // when called, this function will represent the command
-  // to pass GPT textual summary data  under the command `fetchTree`
-  sendTextSelectionToWebview(data) {
-    if (this._view) {
-      this._view.webview.postMessage({
-        command: "fetchTextSelection",
         data
       });
     }
