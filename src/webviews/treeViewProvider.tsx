@@ -139,15 +139,24 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
       localResourceRoots: [vscode.Uri.joinPath(this._extensionUri)],
     };
 
+    /* ENTRY POINT: activate on opening initialization */
     // if any changes are made in the notebook editor
-    // i don't think this works but also it would be annoying to continuously change so tbd...
-    // vscode.window.onDidChangeActiveNotebookEditor((editor) => {
-    //   if (editor) {
-    //     this.processVariables(editor);
-    //     console.log('Calling processTree...');
-    //     this.processTree(editor);
-    //   }
-    // });
+    vscode.window.onDidChangeActiveNotebookEditor((editor) => {
+      if (editor) {
+        this.processVariables(editor);
+        console.log('Calling processTree...');
+        this.processTree(editor);
+      }
+    });
+
+    // for some reason I don't need this one?
+    // I thought this took it on initialization but it doesn't
+    // const activeEditor = vscode.window.activeNotebookEditor;
+    // if (activeEditor) {
+    //   this.processVariables(activeEditor);
+    //   console.log('Calling processTree...');
+    //   this.processTree(activeEditor);
+    // }
 
     // add the variable when clicked -> EXTRACTED TO WHEN THE USER WANTS TO ADD ON HOVER
     // vscode.window.onDidChangeTextEditorSelection((e) => {
@@ -167,13 +176,6 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     //   //   }
     // });
 
-    /* ENTRY POINT 1: activate on opening initialization */
-    const activeEditor = vscode.window.activeNotebookEditor;
-    if (activeEditor) {
-      this.processVariables(activeEditor);
-      console.log('Calling processTree...');
-      this.processTree(activeEditor);
-    }
     this.setupMessageListener();
     this.setupVariableListener();
     // setting the HTML content for the webview

@@ -17998,12 +17998,13 @@ var TreeViewProvider = class {
       enableScripts: true,
       localResourceRoots: [vscode.Uri.joinPath(this._extensionUri)]
     };
-    const activeEditor = vscode.window.activeNotebookEditor;
-    if (activeEditor) {
-      this.processVariables(activeEditor);
-      console.log("Calling processTree...");
-      this.processTree(activeEditor);
-    }
+    vscode.window.onDidChangeActiveNotebookEditor((editor) => {
+      if (editor) {
+        this.processVariables(editor);
+        console.log("Calling processTree...");
+        this.processTree(editor);
+      }
+    });
     this.setupMessageListener();
     this.setupVariableListener();
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
