@@ -129,8 +129,7 @@ const Narrative = ({ data }: any) => {
   const handleNodeSelect = (cellId: string) => {
     const cellIndex = parseFirstCellNumber(cellId);
     console.log('cellIndex', cellIndex, cellId);
-    const payload = { type: 'selectCell', index: cellIndex };
-    vscode?.postMessage(payload);
+    vscode?.postMessage({ type: 'selectCell', index: cellIndex });
   };
 
   return (

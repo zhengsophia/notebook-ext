@@ -279,9 +279,13 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
 
   private filterCodeCells(notebook: any) {
     const codeCells = notebook.cells
-      .filter((cell: any) => cell.cell_type === 'code')
-      .map((cell: any) => ({
-        execution_count: cell.execution_count,
+      .map((cell: any, origIdx: number) => ({ cell, origIdx }))
+      .filter(
+        ({ cell, origIdx }: { cell: any; origIdx: number }) =>
+          cell.cell_type === 'code'
+      )
+      .map(({ cell, origIdx }: { cell: any; origIdx: number }) => ({
+        id: origIdx,
         outputs: cell.outputs,
         source: cell.source,
       }));
@@ -324,7 +328,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
                           subgroups: [
                             {
                               name: string,       // more specific “subgroup” label
-                              cells: number[]     // array of execution counts
+                              cells: number[]     // array of cell ids
                             }
                           ]
                         }
@@ -333,18 +337,16 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
 
                     Rules:
                     1. Use as much context as possible in the code to name each group and subgroup.
-                    2. **Every single cell execution number must appear exactly once** in one—and only one—subgroup's \`cells\` array.
+                    2. **Every single cell id number must appear exactly once** in one—and only one—subgroup's \`cells\` array.
                       - Do not omit any cell.
                       - Do not repeat a cell number in more than one place.
                     3. The order of cells in each subgroup can be ascending or based on logical flow.
 
-                    Here is the input JSON. Label the cells by their \`execution_count\`:
-
+                    Here is the input JSON. Label the cells by their \`id\`:
                     ${codeCells
                       .map(
                         (cell, i) =>
-                          `Block ${cell.execution_count || i + 1}:\n` +
-                          cell.source.join('\n')
+                          `Block ${cell.id}:\n${cell.source.join('\n')}`
                       )
                       .join('\n\n')}
                     `;
@@ -388,8 +390,8 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
                     2. **Details:**
                       - Each sentence must describe discrete action or functionality on \`${variable}\`.
                       - Annotate exactly one cell per sentence using the syntax:
-                        \`{"<phrase>"}[cell N]\` with the most important cell in that sentence. 
-                      - Use the **first** relevant cell execution number if multiple apply.
+                        \`{"<phrase>"}[cell N]\` with the most important cell in that sentence where N is the associated cell id. 
+                      - Use the **first** relevant cell id number if multiple apply.
                       - Keep sentences concise and strictly factual (no “this notebook explores…”).
                       - Uuse contractions like "It's" instead of "It is".
 
@@ -407,7 +409,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
                     ${codeCells
                       .map(
                         (cell, i) =>
-                          `Block ${cell.execution_count || i + 1}:\n${cell.source.join('\n')}`
+                          `Block ${cell.id}:\n${cell.source.join('\n')}`
                       )
                       .join('\n\n')}
                     `;
@@ -466,7 +468,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
           {
             role: 'system',
             content: `You are an expert in structured data extraction. Convert the provided notebook JSON into structured groups and subgroups. 
-                             Cells is the cell execution number as it is in the JSON.`,
+                             Cells is the cell id number as it is in the JSON.`,
           },
           { role: 'user', content: prompt },
         ],
@@ -483,6 +485,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
+  // TODO fix for node cell linking
   private async handleCellSelection(
     event: vscode.NotebookEditorSelectionChangeEvent
   ) {
@@ -617,64 +620,18 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
       this._view.webview.onDidReceiveMessage(async (message) => {
         console.log('message', message.type);
         switch (message.type) {
-          case 'selectCell':
+          case 'selectCell': {
+            const idx = message.index as number;
             const editor = vscode.window.activeNotebookEditor;
-            console.log;
-            if (editor && message.index !== undefined) {
-              // based on index which includes markdown cells
-              // TODO: for this method, need to edit the notebook processing to retain the actual index rather than just
-              //       execution output number -> check original json?
-              // console.log('message index', message.index)
-              //   // Get the cell at the specified index (0-based)
-              // const cell = editor.notebook.cellAt(message.index - 1);
-
-              // // Reveal the cell in the editor
-              // editor.revealRange(
-              //     new vscode.NotebookRange(message.index - 1, message.index),
-              //     vscode.NotebookEditorRevealType.InCenter
-              // );
-
-              // // Select the cell
-              // editor.selection = new vscode.NotebookRange(message.index - 1, message.index - 1);
-
-              // find by execution number from all original cells - def less efficient
-              const cells = editor.notebook.getCells();
-              let targetCellIndex = -1;
-
-              for (let i = 0; i < cells.length; i++) {
-                const cell = cells[i];
-                // if code cell -> check matching execution count
-                if (
-                  cell.kind === vscode.NotebookCellKind.Code &&
-                  cell.executionSummary?.executionOrder === message.index
-                ) {
-                  targetCellIndex = i;
-                  break;
-                }
-              }
-
-              if (targetCellIndex !== -1) {
-                // scroll to the cell in the notebook
-                editor.revealRange(
-                  new vscode.NotebookRange(
-                    targetCellIndex,
-                    targetCellIndex + 1
-                  ),
-                  vscode.NotebookEditorRevealType.InCenter
-                );
-
-                // Select the cell
-                editor.selection = new vscode.NotebookRange(
-                  targetCellIndex,
-                  targetCellIndex + 1
-                );
-              } else {
-                console.log(
-                  'Could not find code cell with execution count:',
-                  message.index
-                );
-              }
-            }
+            if (!editor) break;
+            // directly reveal the cell at that index
+            editor.revealRange(
+              new vscode.NotebookRange(idx, idx + 1),
+              vscode.NotebookEditorRevealType.InCenter
+            );
+            editor.selection = new vscode.NotebookRange(idx, idx + 1);
+            break;
+          }
         }
       });
     }

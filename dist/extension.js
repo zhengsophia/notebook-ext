@@ -18093,8 +18093,10 @@ var TreeViewProvider = class {
     }
   }
   filterCodeCells(notebook) {
-    const codeCells = notebook.cells.filter((cell) => cell.cell_type === "code").map((cell) => ({
-      execution_count: cell.execution_count,
+    const codeCells = notebook.cells.map((cell, origIdx) => ({ cell, origIdx })).filter(
+      ({ cell, origIdx }) => cell.cell_type === "code"
+    ).map(({ cell, origIdx }) => ({
+      id: origIdx,
       outputs: cell.outputs,
       source: cell.source
     }));
@@ -18125,7 +18127,7 @@ var TreeViewProvider = class {
                           subgroups: [
                             {
                               name: string,       // more specific \u201Csubgroup\u201D label
-                              cells: number[]     // array of execution counts
+                              cells: number[]     // array of cell ids
                             }
                           ]
                         }
@@ -18134,16 +18136,15 @@ var TreeViewProvider = class {
 
                     Rules:
                     1. Use as much context as possible in the code to name each group and subgroup.
-                    2. **Every single cell execution number must appear exactly once** in one\u2014and only one\u2014subgroup's \`cells\` array.
+                    2. **Every single cell id number must appear exactly once** in one\u2014and only one\u2014subgroup's \`cells\` array.
                       - Do not omit any cell.
                       - Do not repeat a cell number in more than one place.
                     3. The order of cells in each subgroup can be ascending or based on logical flow.
 
-                    Here is the input JSON. Label the cells by their \`execution_count\`:
-
+                    Here is the input JSON. Label the cells by their \`id\`:
                     ${codeCells.map(
-      (cell, i2) => `Block ${cell.execution_count || i2 + 1}:
-` + cell.source.join("\n")
+      (cell, i2) => `Block ${cell.id}:
+${cell.source.join("\n")}`
     ).join("\n\n")}
                     `;
     return prompt;
@@ -18160,8 +18161,8 @@ var TreeViewProvider = class {
                     2. **Details:**
                       - Each sentence must describe discrete action or functionality on \`${variable}\`.
                       - Annotate exactly one cell per sentence using the syntax:
-                        \`{"<phrase>"}[cell N]\` with the most important cell in that sentence. 
-                      - Use the **first** relevant cell execution number if multiple apply.
+                        \`{"<phrase>"}[cell N]\` with the most important cell in that sentence where N is the associated cell id. 
+                      - Use the **first** relevant cell id number if multiple apply.
                       - Keep sentences concise and strictly factual (no \u201Cthis notebook explores\u2026\u201D).
                       - Uuse contractions like "It's" instead of "It is".
 
@@ -18177,7 +18178,7 @@ var TreeViewProvider = class {
 
                     Notebook code:
                     ${codeCells.map(
-      (cell, i2) => `Block ${cell.execution_count || i2 + 1}:
+      (cell, i2) => `Block ${cell.id}:
 ${cell.source.join("\n")}`
     ).join("\n\n")}
                     `;
@@ -18228,7 +18229,7 @@ ${cell.source.join("\n")}`
           {
             role: "system",
             content: `You are an expert in structured data extraction. Convert the provided notebook JSON into structured groups and subgroups. 
-                             Cells is the cell execution number as it is in the JSON.`
+                             Cells is the cell id number as it is in the JSON.`
           },
           { role: "user", content: prompt }
         ],
@@ -18243,6 +18244,7 @@ ${cell.source.join("\n")}`
       throw error;
     }
   }
+  // TODO fix for node cell linking
   async handleCellSelection(event) {
     if (!this._view) return;
     const selectedCell = event.notebookEditor.notebook.cellAt(
@@ -18336,38 +18338,17 @@ ${cell.source.join("\n")}`
       this._view.webview.onDidReceiveMessage(async (message) => {
         console.log("message", message.type);
         switch (message.type) {
-          case "selectCell":
+          case "selectCell": {
+            const idx = message.index;
             const editor = vscode.window.activeNotebookEditor;
-            console.log;
-            if (editor && message.index !== void 0) {
-              const cells = editor.notebook.getCells();
-              let targetCellIndex = -1;
-              for (let i2 = 0; i2 < cells.length; i2++) {
-                const cell = cells[i2];
-                if (cell.kind === vscode.NotebookCellKind.Code && cell.executionSummary?.executionOrder === message.index) {
-                  targetCellIndex = i2;
-                  break;
-                }
-              }
-              if (targetCellIndex !== -1) {
-                editor.revealRange(
-                  new vscode.NotebookRange(
-                    targetCellIndex,
-                    targetCellIndex + 1
-                  ),
-                  vscode.NotebookEditorRevealType.InCenter
-                );
-                editor.selection = new vscode.NotebookRange(
-                  targetCellIndex,
-                  targetCellIndex + 1
-                );
-              } else {
-                console.log(
-                  "Could not find code cell with execution count:",
-                  message.index
-                );
-              }
-            }
+            if (!editor) break;
+            editor.revealRange(
+              new vscode.NotebookRange(idx, idx + 1),
+              vscode.NotebookEditorRevealType.InCenter
+            );
+            editor.selection = new vscode.NotebookRange(idx, idx + 1);
+            break;
+          }
         }
       });
     }
