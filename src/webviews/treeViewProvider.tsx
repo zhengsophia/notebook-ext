@@ -119,6 +119,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
           return;
         }
         const idx = e.selections[0]?.start;
+        console.log('expandNode idx', idx);
         if (idx !== undefined && this._view) {
           this._view.webview.postMessage({
             type: 'expandNode',
@@ -355,8 +356,10 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
 
                     Rules:
                     1. Use as much context as possible in the code to name each group and subgroup.
-                    2. **Every single cell id number must appear exactly once** in one—and only one—subgroup's \`cells\` array.
-                      - Do not omit any cell.
+                    2. **Every single cell id number must appear exactly once** in one and only one subgroup's \`cells\` array.
+                      - Do not omit any cell id.
+                      - **Every id number from 0 to ${codeCells.length - 1}**, inclusive must be included in the output.
+                      - No cell ID may be skipped, missing, duplicated, or invented.
                       - Do not repeat a cell number in more than one place.
                     3. The order of cells in each subgroup can be ascending or based on logical flow.
 
