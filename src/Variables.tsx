@@ -13,8 +13,8 @@ window.addEventListener('message', (event) => {
   }
 });
 
-const variablesSet = new Set();
-let selectedVariable: string | null = null;
+// const variablesSet = new Set();
+// let selectedVariable: string | null = null;
 
 // helper fn to select & clear other selected tags
 function selectTag(tag: HTMLElement, variable: string) {
@@ -64,7 +64,7 @@ function initTag(variable: string): HTMLElement {
 
 // handle passing the IN LINE TEXTUAL SUMMARIES to the TREE VIEW
 const handleClick = (variableName: string) => {
-  selectedVariable = variableName;
+  // selectedVariable = variableName;
   console.log(variableName);
   vscode?.postMessage({ type: 'getVariableSummary', name: variableName });
 };
@@ -81,7 +81,7 @@ function addVariableToList(variable: any, narrative = true) {
     `span.variable-tag[data-variable="${variable}"]`
   );
   if (!tag) {
-    variablesSet.add(variable);
+    // variablesSet.add(variable);
     tag = initTag(variable);
     container.prepend(tag);
   }
@@ -215,16 +215,15 @@ function addVariableToList(variable: any, narrative = true) {
 export default function List({
   data,
 }: {
-  data: { cluster: string; variables: { name: string; frequency: number }[] }[];
+  data: { name: string; frequency: number }[];
 }) {
+  console.log('data ok', data);
   // turn the data.variables into an actual dictionary
   const freqMap = useMemo(() => {
     const m = new Map<string, number>();
-    data.forEach(({ variables }) =>
-      variables.forEach(({ name, frequency }) => {
-        m.set(name, (m.get(name) || 0) + frequency);
-      })
-    );
+    data.forEach(({ name, frequency }) => {
+      m.set(name, (m.get(name) || 0) + frequency);
+    });
     return m;
   }, [data]);
 
@@ -241,10 +240,8 @@ export default function List({
     top5.forEach((name) => addVariableToList(name, false));
   }, [top5]);
 
-  // flattenening names
   const names = useMemo(
-    () =>
-      Array.from(new Set(data.flatMap((g) => g.variables.map((v) => v.name)))),
+    () => [...new Set(data.map(({ name }) => name))],
     [data]
   );
 

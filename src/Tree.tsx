@@ -28,23 +28,33 @@ function NarrativeLabel({ sentence, className }: NarrativeLabelProps) {
   const parseTechDoc = (text = '') => {
     const references: any[] = [];
     const sections: string[] = [];
-
     let lastIndex = 0;
-    const pattern = /\{([^}]+)\}\[([^\]]+)\]/g;
+
+    // take commas or dashes
+    const pattern = /\{"([^"}]+)"}\[cell\s*(\d+(?:[-,]\d+)*)\]/g;
     let match;
 
     while ((match = pattern.exec(text)) !== null) {
-      // Push text before the match
       sections.push(text.slice(lastIndex, match.index));
-      // Push reference object
+
+      // parse for numbers
+      const rawCells = match[2].trim();
+      let cellList: number[];
+      if (rawCells.includes('-')) {
+        const [start, end] = rawCells.split('-').map(Number);
+        cellList = Array.from({ length: end - start + 1 }, (_, i) => start + i);
+      } else {
+        cellList = rawCells.split(',').map((n) => parseInt(n.trim(), 10));
+      }
+
       references.push({
         content: match[1].trim(),
-        cells: match[2].trim(),
+        cells: cellList,
       });
 
       lastIndex = pattern.lastIndex;
     }
-    // Add remaining text after the last match
+
     sections.push(text.slice(lastIndex));
     return { parts: sections, references };
   };
@@ -69,7 +79,7 @@ function NarrativeLabel({ sentence, className }: NarrativeLabelProps) {
         {index < references.length && (
           <span
             onClick={() => handleCellClick(references[index].cells)}
-            style={{ color: '#f8d7db', cursor: 'pointer' }}
+            style={{ color: '#f0acb4', cursor: 'pointer' }}
           >
             {references[index].content.replace(/^['"]|['"]$/g, '')}
           </span>
@@ -125,6 +135,8 @@ const convertToTreeViewItems = (
   narrativeMapping: { [cell: number]: string[] },
   parentId = ''
 ): TreeViewBaseItem[] => {
+  const seenSentences = new Set<string>();
+
   return json.groups.map((group: any, groupIndex: number) => {
     const groupId = `${parentId}group-${groupIndex}`;
     return {
@@ -134,16 +146,22 @@ const convertToTreeViewItems = (
         const subgroupId = `${groupId}-subgroup-${subgroupIndex}`;
         // Create narrative items with custom data
         const subgroupSentences: (TreeViewBaseItem & CustomItemData)[] =
-          subgroup.cells.flatMap((cell: number) =>
-            (narrativeMapping[cell] || []).map((sentence, i) => ({
-              id: `${subgroupId}-narrative-${cell}-${i}`,
-              label: sentence, // This is still needed but won't be directly displayed
-              cellIndex: cell, // Store the cell index for click handler
-              // Add custom data for the Narrative component
-              isNarrative: true,
-              sentence: sentence,
-            }))
-          );
+          subgroup.cells.flatMap((cell: number) => {
+            return (narrativeMapping[cell] || [])
+              .filter((sentence) => {
+                if (seenSentences.has(sentence)) return false;
+                seenSentences.add(sentence);
+                return true;
+              })
+              .map((sentence, i) => ({
+                id: `${subgroupId}-narrative-${cell}-${i}`,
+                label: sentence,
+                cellIndex: cell,
+                isNarrative: true,
+                sentence,
+              }));
+          });
+
         return {
           id: subgroupId,
           label: subgroup.name,
@@ -237,155 +255,11 @@ export default function BasicRichTreeView({
           }}
         />
       ) : (
-        <p>Loading notebook data…</p>
+        <p className="loading-text">Loading notebook data…</p>
       )}
     </Box>
   );
 }
-
-// TRY 1
-// interface NarrativeLabelProps {
-//   sentence: string;
-//   className: string;
-// }
-
-// function NarrativeLabel({ sentence, className }: NarrativeLabelProps) {
-//   return (
-//     <div className={className}>
-//       <Narrative>{sentence}</Narrative>
-//     </div>
-//   );
-// }
-
-// const convertToTreeViewItems = (
-//   json: any,
-//   narrativeMapping: { [cell: number]: string[] },
-//   parentId = ""
-// ): TreeViewBaseItem[] => {
-//   return json.groups.map((group: any, groupIndex: number) => {
-//     const groupId = `${parentId}group-${groupIndex}`;
-//     return {
-//       id: groupId,
-//       label: group.name, // Basic string label for groups
-//       children: group.subgroups.map((subgroup: any, subgroupIndex: number) => {
-//         const subgroupId = `${groupId}-subgroup-${subgroupIndex}`;
-
-//         // Collect sentences as label components
-//         const subgroupSentences: TreeViewBaseItem[] = subgroup.cells.flatMap((cell: number) =>
-//           (narrativeMapping[cell] || []).map((sentence, i) => ({
-//             id: `${subgroupId}-narrative-${cell}-${i}`,
-//             // label: `${sentence}`,
-//             labelComponent: (
-//               <NarrativeLabel
-//                 sentence={sentence}
-//                 className="custom-narrative-label"
-//               />
-//             ),
-//           }))
-//         );
-
-//         return {
-//           id: subgroupId,
-//           label: subgroup.name,
-//           children: subgroupSentences,
-//         };
-//       }),
-//     };
-//   });
-// };
-
-// export default function BasicRichTreeView({ data, narrativeMapping }: { data: any; narrativeMapping: { [cell: number]: string[] } }) {
-//   console.log('narrative mapping', narrativeMapping)
-//   const labels = React.useMemo(() => convertToTreeViewItems(data, narrativeMapping), [data, narrativeMapping]);
-//   console.log('converted items', labels)
-//   const handleNodeSelect = (event: React.SyntheticEvent, nodeId: string) => {
-//     if (nodeId.includes('cell')) {
-//       const cellIndex = nodeId.split("-cell-").pop();
-//       console.log('node id', nodeId)
-//       if (cellIndex) {
-//         console.log('current cell index', cellIndex)
-//         // Post the selected cell index to the VSCode extension
-//         vscode?.postMessage({ type: "selectCell", index: parseInt(cellIndex, 10) });
-//       }
-//     }
-//   };
-
-//   return (
-//     <Box sx={{ minWidth: 250 }}>
-//       {labels.length > 0 ? (
-//         <RichTreeView
-//         items={labels}
-//         onItemClick={handleNodeSelect}
-//         // slots={{ item: CustomTreeItem }}
-//         sx={{
-//           '& .MuiTreeItem-label': {
-//             fontSize: '12px !important',
-//             textAlign: 'left',
-//           },
-//         }}
-//       />
-//       ) : (
-//         <p>Loading notebook data...</p>
-//       )}
-//     </Box>
-//   );
-// }
-
-// const convertToTreeViewItems = (json: any, parentId = ""): TreeViewBaseItem[] => {
-//   return json.groups.map((group: any, groupIndex: number) => {
-//     const groupId = `${parentId}group-${groupIndex}`;
-//     return {
-//       id: groupId,
-//       label: group.name,
-//       children: group.subgroups.map((subgroup: any, subgroupIndex: number) => {
-//         const subgroupId = `${groupId}-subgroup-${subgroupIndex}`;
-//         return {
-//           id: subgroupId,
-//           label: subgroup.name,
-//           children: subgroup.cells.map((cell: number) => ({
-//             id: `${subgroupId}-cell-${cell}`,
-//             label: <Narrative data={`Content for Cell ${cell}`} />,
-//             index: cell,
-//           })),
-//         };
-//       }),
-//     };
-//   });
-// };
-
-// export default function BasicRichTreeView({ data }: { data: any }) {
-//   const labels = React.useMemo(() => convertToTreeViewItems(data), [data]);
-
-//   const handleNodeSelect = (event: React.SyntheticEvent, nodeId: string) => {
-//     if (nodeId.includes('cell')) {
-//       const cellIndex = nodeId.split("-cell-").pop();
-//       console.log('node id', nodeId);
-//       if (cellIndex) {
-//         console.log('current cell index', cellIndex);
-//         vscode?.postMessage({ type: "selectCell", index: parseInt(cellIndex, 10) });
-//       }
-//     }
-//   };
-
-//   return (
-//     <Box sx={{ minWidth: 250 }}>
-//       {labels.length > 0 ? (
-//         <RichTreeView
-//           items={labels}
-//           onItemClick={handleNodeSelect}
-//           sx={{
-//             '& .MuiTreeItem-label': {
-//               fontSize: '12px !important',
-//               textAlign: 'left',
-//             },
-//           }}
-//         />
-//       ) : (
-//         <p>Loading notebook data...</p>
-//       )}
-//     </Box>
-//   );
-// }
 
 // const MUI_X_PRODUCTS: TreeViewBaseItem[] = [
 //   {

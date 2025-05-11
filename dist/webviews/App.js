@@ -85934,13 +85934,21 @@ function NarrativeLabel({ sentence, className }) {
     const references = [];
     const sections = [];
     let lastIndex = 0;
-    const pattern = /\{([^}]+)\}\[([^\]]+)\]/g;
+    const pattern = /\{"([^"}]+)"}\[cell\s*(\d+(?:[-,]\d+)*)\]/g;
     let match2;
     while ((match2 = pattern.exec(text)) !== null) {
       sections.push(text.slice(lastIndex, match2.index));
+      const rawCells = match2[2].trim();
+      let cellList;
+      if (rawCells.includes("-")) {
+        const [start, end] = rawCells.split("-").map(Number);
+        cellList = Array.from({ length: end - start + 1 }, (_, i) => start + i);
+      } else {
+        cellList = rawCells.split(",").map((n) => parseInt(n.trim(), 10));
+      }
       references.push({
         content: match2[1].trim(),
-        cells: match2[2].trim()
+        cells: cellList
       });
       lastIndex = pattern.lastIndex;
     }
@@ -85962,7 +85970,7 @@ function NarrativeLabel({ sentence, className }) {
         "span",
         {
           onClick: () => handleCellClick(references[index].cells),
-          style: { color: "#f8d7db", cursor: "pointer" },
+          style: { color: "#f0acb4", cursor: "pointer" },
           children: references[index].content.replace(/^['"]|['"]$/g, "")
         }
       )
@@ -85994,6 +86002,7 @@ var CustomTreeItem = React5.forwardRef(function CustomTreeItem2(props, ref) {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_TreeItem2.TreeItem2, { ...props, ref });
 });
 var convertToTreeViewItems = (json, narrativeMapping, parentId = "") => {
+  const seenSentences = /* @__PURE__ */ new Set();
   return json.groups.map((group, groupIndex) => {
     const groupId = `${parentId}group-${groupIndex}`;
     return {
@@ -86002,18 +86011,19 @@ var convertToTreeViewItems = (json, narrativeMapping, parentId = "") => {
       // Basic string label for groups
       children: group.subgroups.map((subgroup, subgroupIndex) => {
         const subgroupId = `${groupId}-subgroup-${subgroupIndex}`;
-        const subgroupSentences = subgroup.cells.flatMap(
-          (cell) => (narrativeMapping[cell] || []).map((sentence, i) => ({
+        const subgroupSentences = subgroup.cells.flatMap((cell) => {
+          return (narrativeMapping[cell] || []).filter((sentence) => {
+            if (seenSentences.has(sentence)) return false;
+            seenSentences.add(sentence);
+            return true;
+          }).map((sentence, i) => ({
             id: `${subgroupId}-narrative-${cell}-${i}`,
             label: sentence,
-            // This is still needed but won't be directly displayed
             cellIndex: cell,
-            // Store the cell index for click handler
-            // Add custom data for the Narrative component
             isNarrative: true,
             sentence
-          }))
-        );
+          }));
+        });
         return {
           id: subgroupId,
           label: subgroup.name,
@@ -86085,7 +86095,7 @@ function BasicRichTreeView({
         }
       }
     }
-  ) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Loading notebook data\u2026" }) });
+  ) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "loading-text", children: "Loading notebook data\u2026" }) });
 }
 
 // src/Variables.tsx
@@ -86102,8 +86112,6 @@ window.addEventListener("message", (event) => {
     addVariableToList(variable);
   }
 });
-var variablesSet = /* @__PURE__ */ new Set();
-var selectedVariable = null;
 function selectTag(tag, variable) {
   document.querySelectorAll(".variable-tag.selected").forEach((el) => el.classList.remove("selected"));
   tag.classList.add("selected");
@@ -86132,7 +86140,6 @@ function initTag(variable) {
   return tag;
 }
 var handleClick = (variableName) => {
-  selectedVariable = variableName;
   console.log(variableName);
   vscodeApi_default?.postMessage({ type: "getVariableSummary", name: variableName });
 };
@@ -86142,7 +86149,6 @@ function addVariableToList(variable, narrative = true) {
     `span.variable-tag[data-variable="${variable}"]`
   );
   if (!tag) {
-    variablesSet.add(variable);
     tag = initTag(variable);
     container.prepend(tag);
   }
@@ -86153,13 +86159,12 @@ function addVariableToList(variable, narrative = true) {
 function List({
   data
 }) {
+  console.log("data ok", data);
   const freqMap = (0, import_react4.useMemo)(() => {
     const m = /* @__PURE__ */ new Map();
-    data.forEach(
-      ({ variables }) => variables.forEach(({ name, frequency }) => {
-        m.set(name, (m.get(name) || 0) + frequency);
-      })
-    );
+    data.forEach(({ name, frequency }) => {
+      m.set(name, (m.get(name) || 0) + frequency);
+    });
     return m;
   }, [data]);
   const top5 = (0, import_react4.useMemo)(
@@ -86170,7 +86175,7 @@ function List({
     top5.forEach((name) => addVariableToList(name, false));
   }, [top5]);
   const names = (0, import_react4.useMemo)(
-    () => Array.from(new Set(data.flatMap((g) => g.variables.map((v) => v.name)))),
+    () => [...new Set(data.map(({ name }) => name))],
     [data]
   );
   return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "variables-container", children: [
@@ -86269,7 +86274,6 @@ function extractCellReferences(text) {
 function App() {
   const [variables, setVariables] = React6.useState(null);
   const [tree, setTree] = React6.useState(null);
-  const [narrative, setNarrative] = React6.useState(null);
   const [narrativeMapping, setNarrativeMapping] = React6.useState({});
   React6.useEffect(() => {
     const handleMessage = (event) => {
@@ -86284,7 +86288,6 @@ function App() {
       }
       if (message.command === "fetchNarrative") {
         console.log("Received data from TreeViewProvider:", message.data);
-        setNarrative(message.data);
         setNarrativeMapping(extractCellReferences(message.data));
       }
     };

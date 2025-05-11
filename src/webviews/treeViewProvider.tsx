@@ -117,7 +117,6 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
           const editor = vscode.window.activeNotebookEditor;
           if (editor) {
             console.log('processing narrative for:', word);
-            this.processVariableSummary(editor, word); // LLM or other summary logic
             this.handleHoveredVariableSelection(word);
           }
         }
@@ -192,9 +191,9 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
 
       const codeCells = this.filterCodeCells(notebookJson);
       const variables = await this.detectPythonVariables(codeCells);
-      const groupedVars = await this.groupVariablesParse(codeCells, variables);
-      // console.log('variables', variables)
-      this.sendVariablesToWebview(groupedVars);
+      // const groupedVars = await this.groupVariablesParse(codeCells, variables);
+      console.log('sending variables', variables);
+      this.sendVariablesToWebview(variables);
     } catch (error) {
       console.error('Error processing notebook:', error);
       vscode.window.showErrorMessage('Failed to process notebook.');
@@ -297,44 +296,114 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
 
   // prompt generation for tree prompting
   private generateTreePrompt(codeCells: any[]) {
-    return `Analyze the following JSON of notebook cells and group them based on their functionality and/or structural patterns of analysis. 
-            Narrative is a one-sentence overview of the notebook purpose.
-            Group should be the general pattern label, while subgroups label more specifically. 
-            Use as much context from the notebook topic as possible in labelings. 
-            Cell should specify the execution number of the one or more cells described by that subgroup.  
-            Each cell number should only appear once in the most relevant subgroup.
-            All cell numbers must be included once in a grouping.
-        
-        ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}
-        `;
+    // return `Analyze the following JSON of notebook cells and group them based on their functionality and/or structural patterns of analysis.
+    //         Narrative is a one-sentence overview of the notebook purpose.
+    //         Group should be the general pattern label, while subgroups label more specifically.
+    //         Use as much context from the notebook topic as possible in labelings.
+    //         Cell should specify the execution number of the one or more cells described by that subgroup.
+    //         Each cell number should only appear once in the most relevant subgroup.
+    //         All cell numbers must be included.
+
+    //     ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}
+    //     `;
+    const prompt = `You're given a JSON array of notebook code cells. Produce a JSON output with this structure:
+
+                    {
+                      narrative: string,          // one-sentence summary of the notebook's overall purpose
+                      groups: [
+                        {
+                          name: string,           // broad functional “group” label
+                          subgroups: [
+                            {
+                              name: string,       // more specific “subgroup” label
+                              cells: number[]     // array of execution counts
+                            }
+                          ]
+                        }
+                      ]
+                    }
+
+                    Rules:
+                    1. Use as much context as possible in the code to name each group and subgroup.
+                    2. **Every single cell execution number must appear exactly once** in one—and only one—subgroup's \`cells\` array.
+                      - Do not omit any cell.
+                      - Do not repeat a cell number in more than one place.
+                    3. The order of cells in each subgroup can be ascending or based on logical flow.
+
+                    Here is the input JSON. Label the cells by their \`execution_count\`:
+
+                    ${codeCells
+                      .map(
+                        (cell, i) =>
+                          `Block ${cell.execution_count || i + 1}:\n` +
+                          cell.source.join('\n')
+                      )
+                      .join('\n\n')}
+                    `;
+    return prompt;
   }
 
   // prompt generation for narrative prompting
   private generateNarrativePrompt(variable: any, codeCells: any[]) {
-    return `Provide a technical summary of the given variable that:
+    // return `Provide a technical summary of the given variable that:
 
-        Starts with a one-sentence overview of actions performed on the variable.
+    //     Starts with a one-sentence overview of actions performed on the variable.
 
-        In the following sentences:
-        Keeps each sentence concise and short. 
-        Uses direct, factual language focused on key analytical decisions.
-        Maintains an objective tone (avoid phrases like "this notebook explores...").
-        Prioritizes describing concrete actions performed on the variable.
-        Annotates important phrases in the sentence with a cell number like {"initial exploratory analysis"}[cell 2].
-        Each [cell #] only has one cell that is the first cell that the action occurs in.
-        
-        The answer should be the summary itself, nothing else outputted.
+    //     In the following sentences:
+    //     Keeps each sentence concise and short.
+    //     Uses direct, factual language focused on key analytical decisions.
+    //     Maintains an objective tone (avoid phrases like "this notebook explores...").
+    //     Prioritizes describing concrete actions performed on the variable.
+    //     Annotates important phrases in the sentence in the format {"phrase"}[cell 1].
+    //     Each annotation must start with 'cell ' and only include one cell determined by the first cell that functionality occurs.
+    //     Split sentence so that one sentence only describes one cell.
 
-        Here is an example output:
-        
-        "This variable is a dataframe describing customer churn rates.
-        
-        An {"initial exploratory analysis"}[cell 2] of the customer's {"spending patterns"}[cell 4] and corresponding segments. The data undergoes {"log transformation of numeric features"}[cell 8] followed by {"one-hot encoding of categorical variables"}[cell 9]. A {"random forest classifier"}[cell 15] identifies key predictive features, which inform feature selection for the final {"XGBoost model"}[cell 18]..."
-        
-        Do this for variable ${variable}.
+    //     The answer should be the summary itself, nothing else outputted.
 
-        Here is the code: ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}
-    `;
+    //     Here is an example output:
+
+    //     "This variable is a dataframe describing customer churn rates.
+
+    //     An {"initial exploratory analysis"}[cell 2] of the customer's spending patterns and corresponding segments. The data undergoes {"log transformation of numeric features"}[cell 8]. This is followed by {"one-hot encoding of categorical variables"}[cell 9]. A {"random forest classifier"}[cell 15] identifies key predictive features. These inform feature selection for the final {"XGBoost model"}[cell 18]..."
+
+    //     Do this for variable ${variable}.
+
+    //     Here is the code: ${codeCells.map((cell, i) => `Block ${i + 1}:\n${cell.source.join('\n')}`).join('\n\n')}
+    // `;
+    const prompt = `You are an expert at writing concise, factual variable summaries.
+
+                    **Output**
+                    Return **only** the summary as plain text, with one sentence per line. Do **not** include any explanations, bullet points, or extra commentary.
+
+                    **Structure**
+                    1. **Overview (1 sentence):** A short, high-level statement of what happens to \`${variable}\`.
+                    2. **Details:**
+                      - Each sentence must describe discrete action or functionality on \`${variable}\`.
+                      - Annotate exactly one cell per sentence using the syntax:
+                        \`{"<phrase>"}[cell N]\` with the most important cell in that sentence. 
+                      - Use the **first** relevant cell execution number if multiple apply.
+                      - Keep sentences concise and strictly factual (no “this notebook explores…”).
+                      - Uuse contractions like "It's" instead of "It is".
+
+                    **Example**
+                    This variable is a dataframe describing customer churn rates.
+                    An {"initial exploratory analysis"}[cell 2] of the customer's spending patterns and corresponding segments.
+                    The data undergoes {"log transformation of numeric features"}[cell 8].
+                    This is followed by {"one-hot encoding of categorical variables"}[cell 9].
+                    A {"random forest classifier"}[cell 15] identifies key predictive features.
+                    These inform feature selection for the final {"XGBoost model"}[cell 18].
+
+                    **Write the summary for variable** \`${variable}\`:
+
+                    Notebook code:
+                    ${codeCells
+                      .map(
+                        (cell, i) =>
+                          `Block ${cell.execution_count || i + 1}:\n${cell.source.join('\n')}`
+                      )
+                      .join('\n\n')}
+                    `;
+    return prompt;
   }
 
   // LLM prompting for narrative
@@ -440,108 +509,62 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     });
   }
 
-  private async detectPythonVariables(codeCells: any) {
-    // Regular expression to match variable assignments in Python (e.g., x = 10)
+  private async detectPythonVariables(
+    codeCells: any
+  ): Promise<{ name: string; frequency: number }[]> {
+    // Regex to match Python assignments: variable = …
     const variableRegex = /\b([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*.*$/;
 
-    // Extract variable names from the source code
-    const variables: Set<string> = new Set();
+    // Map to accumulate frequencies
+    const freqMap: Map<string, number> = new Map();
 
     codeCells.forEach((cell: any) => {
       cell.source.forEach((line: string) => {
         const match = line.trim().match(variableRegex);
         if (match) {
-          variables.add(match[1]); // Add the variable name to the set
+          const name = match[1];
+          freqMap.set(name, (freqMap.get(name) || 0) + 1);
         }
       });
     });
 
-    // console.log('variables', Array.from(variables))
-
-    return Array.from(variables); // Convert Set to Array
+    // SORT BY DESCENDING FREQUENCY
+    return Array.from(freqMap.entries())
+      .sort(([, a], [, b]) => b - a)
+      .map(([name, frequency]) => ({ name, frequency }));
   }
 
-  // return freq too
-  private async groupVariablesParse(
-    codeCells: any,
-    variables: string[]
-  ): Promise<
-    { cluster: string; variables: { name: string; frequency: number }[] }[]
-  > {
-    const functionClusters: Record<string, Map<string, number>> = {};
-    const globalVariables: Map<string, number> = new Map();
-    const clusterFrequency: Map<string, number> = new Map();
-
-    const functionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^)]*\)\s*:/;
-    const variableRegex = new RegExp(`\\b(${variables.join('|')})\\b`, 'g'); // Track only listed variables
-
-    let currentFunction = '';
-
-    codeCells.forEach((cell: any) => {
-      cell.source.forEach((line: string) => {
-        const functionMatch = line.match(functionRegex);
-
-        if (functionMatch) {
-          currentFunction = functionMatch[1]; // Set function context
-          if (!functionClusters[currentFunction]) {
-            functionClusters[currentFunction] = new Map();
-          }
-        } else if (line.trim() === '') {
-          currentFunction = ''; // Reset function context on empty line
-        }
-
-        // Capture occurrences of explicitly listed variables (ignore local assignments)
-        const variableMatches = [...line.matchAll(variableRegex)];
-        variableMatches.forEach((match) => {
-          const variable = match[1];
-          if (currentFunction) {
-            functionClusters[currentFunction].set(
-              variable,
-              (functionClusters[currentFunction].get(variable) || 0) + 1
-            );
-          } else {
-            globalVariables.set(
-              variable,
-              (globalVariables.get(variable) || 0) + 1
-            );
-          }
-        });
+  // when called, this function will represent the command
+  // to pass variable data under the command `fetchVariables`
+  private sendVariablesToWebview(data: any) {
+    if (this._view) {
+      this._view.webview.postMessage({
+        command: 'fetchVariables',
+        data: data,
       });
-    });
-
-    // Compute frequency of explicitly listed variables per function
-    for (const [func, vars] of Object.entries(functionClusters)) {
-      const totalFrequency = Array.from(vars.values()).reduce(
-        (acc, count) => acc + count,
-        0
-      );
-      clusterFrequency.set(func, totalFrequency);
     }
+  }
 
-    if (globalVariables.size > 0) {
-      const totalFrequency = Array.from(globalVariables.values()).reduce(
-        (acc, count) => acc + count,
-        0
-      );
-      clusterFrequency.set('Global Variables', totalFrequency);
+  // when called, this function will represent the command
+  // to pass GPT tree data  under the command `fetchTree`
+  private sendTreeToWebview(data: any) {
+    if (this._view) {
+      this._view.webview.postMessage({
+        command: 'fetchTree',
+        data: data,
+      });
     }
+  }
 
-    // Sort clusters by total variable usage
-    const sortedClusters = Array.from(clusterFrequency.entries())
-      .sort((a, b) => b[1] - a[1])
-      .map(([key]) => ({
-        cluster: key,
-        variables:
-          key === 'Global Variables'
-            ? Array.from(globalVariables.entries())
-                .sort((a, b) => b[1] - a[1])
-                .map(([key, freq]) => ({ name: key, frequency: freq }))
-            : Array.from(functionClusters[key].entries())
-                .sort((a, b) => b[1] - a[1])
-                .map(([key, freq]) => ({ name: key, frequency: freq })),
-      }));
-
-    return sortedClusters;
+  // when called, this function will represent the command
+  // to pass GPT textual summary data under the command `fetchTree`
+  private sendNarrativeToWebview(data: any) {
+    if (this._view) {
+      this._view.webview.postMessage({
+        command: 'fetchNarrative',
+        data: data,
+      });
+    }
   }
 
   // takes selected cell from App
@@ -608,42 +631,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
                 );
               }
             }
-          case 'selectCell': {
-          }
         }
-      });
-    }
-  }
-
-  // when called, this function will represent the command
-  // to pass variable data under the command `fetchVariables`
-  private sendVariablesToWebview(data: any) {
-    if (this._view) {
-      this._view.webview.postMessage({
-        command: 'fetchVariables',
-        data: data,
-      });
-    }
-  }
-
-  // when called, this function will represent the command
-  // to pass GPT tree data  under the command `fetchTree`
-  private sendTreeToWebview(data: any) {
-    if (this._view) {
-      this._view.webview.postMessage({
-        command: 'fetchTree',
-        data: data,
-      });
-    }
-  }
-
-  // when called, this function will represent the command
-  // to pass GPT textual summary data under the command `fetchTree`
-  private sendNarrativeToWebview(data: any) {
-    if (this._view) {
-      this._view.webview.postMessage({
-        command: 'fetchNarrative',
-        data: data,
       });
     }
   }
@@ -677,6 +665,90 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         `;
   }
 }
+
+// code purgatory lolz
+// // return freq too
+// private async groupVariablesParse(
+//   codeCells: any,
+//   variables: string[]
+// ): Promise<
+//   { cluster: string; variables: { name: string; frequency: number }[] }[]
+// > {
+//   const functionClusters: Record<string, Map<string, number>> = {};
+//   const globalVariables: Map<string, number> = new Map();
+//   const clusterFrequency: Map<string, number> = new Map();
+
+//   const functionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^)]*\)\s*:/;
+//   const variableRegex = new RegExp(`\\b(${variables.join('|')})\\b`, 'g'); // Track only listed variables
+
+//   let currentFunction = '';
+
+//   codeCells.forEach((cell: any) => {
+//     cell.source.forEach((line: string) => {
+//       const functionMatch = line.match(functionRegex);
+
+//       if (functionMatch) {
+//         currentFunction = functionMatch[1]; // Set function context
+//         if (!functionClusters[currentFunction]) {
+//           functionClusters[currentFunction] = new Map();
+//         }
+//       } else if (line.trim() === '') {
+//         currentFunction = ''; // Reset function context on empty line
+//       }
+
+//       // Capture occurrences of explicitly listed variables (ignore local assignments)
+//       const variableMatches = [...line.matchAll(variableRegex)];
+//       variableMatches.forEach((match) => {
+//         const variable = match[1];
+//         if (currentFunction) {
+//           functionClusters[currentFunction].set(
+//             variable,
+//             (functionClusters[currentFunction].get(variable) || 0) + 1
+//           );
+//         } else {
+//           globalVariables.set(
+//             variable,
+//             (globalVariables.get(variable) || 0) + 1
+//           );
+//         }
+//       });
+//     });
+//   });
+
+//   // Compute frequency of explicitly listed variables per function
+//   for (const [func, vars] of Object.entries(functionClusters)) {
+//     const totalFrequency = Array.from(vars.values()).reduce(
+//       (acc, count) => acc + count,
+//       0
+//     );
+//     clusterFrequency.set(func, totalFrequency);
+//   }
+
+//   if (globalVariables.size > 0) {
+//     const totalFrequency = Array.from(globalVariables.values()).reduce(
+//       (acc, count) => acc + count,
+//       0
+//     );
+//     clusterFrequency.set('Global Variables', totalFrequency);
+//   }
+
+//   // Sort clusters by total variable usage
+//   const sortedClusters = Array.from(clusterFrequency.entries())
+//     .sort((a, b) => b[1] - a[1])
+//     .map(([key]) => ({
+//       cluster: key,
+//       variables:
+//         key === 'Global Variables'
+//           ? Array.from(globalVariables.entries())
+//               .sort((a, b) => b[1] - a[1])
+//               .map(([key, freq]) => ({ name: key, frequency: freq }))
+//           : Array.from(functionClusters[key].entries())
+//               .sort((a, b) => b[1] - a[1])
+//               .map(([key, freq]) => ({ name: key, frequency: freq })),
+//     }));
+
+//   return sortedClusters;
+// }
 
 // diff grouping methods
 //   private async groupVariablesParse(codeCells: any, variables: string[]): Promise<{ cluster: string; variables: string[] }[]> {

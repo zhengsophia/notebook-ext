@@ -64,7 +64,7 @@ function extractCellReferences(text: string): { [cell: number]: string[] } {
 function App() {
   const [variables, setVariables] = React.useState<any>(null);
   const [tree, setTree] = React.useState<any>(null);
-  const [narrative, setNarrative] = React.useState<any>(null);
+  // const [narrative, setNarrative] = React.useState<any>(null);
   const [narrativeMapping, setNarrativeMapping] = React.useState<{
     [cell: number]: string[];
   }>({});
@@ -77,15 +77,13 @@ function App() {
         console.log('Received data from TreeViewProvider:', message.data);
         setVariables(message.data);
       }
-
       if (message.command === 'fetchTree') {
         console.log('Received data from TreeViewProvider:', message.data);
         setTree(message.data);
       }
-
       if (message.command === 'fetchNarrative') {
         console.log('Received data from TreeViewProvider:', message.data);
-        setNarrative(message.data);
+        // setNarrative(message.data);
         setNarrativeMapping(extractCellReferences(message.data));
       }
     };
