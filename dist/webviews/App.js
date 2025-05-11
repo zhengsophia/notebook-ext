@@ -86335,36 +86335,44 @@ var CustomTreeItem = React5.forwardRef(function CustomTreeItem2(props, ref) {
   }
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_TreeItem2.TreeItem2, { ...props, ref });
 });
+var treeItemMap = /* @__PURE__ */ new Map();
 var convertToTreeViewItems = (json, narrativeMapping, parentId = "") => {
   const seenSentences = /* @__PURE__ */ new Set();
   return json.groups.map((group, groupIndex) => {
     const groupId = `${parentId}group-${groupIndex}`;
-    return {
+    const groupNode = {
       id: groupId,
       label: group.name,
-      // Basic string label for groups
       children: group.subgroups.map((subgroup, subgroupIndex) => {
         const subgroupId = `${groupId}-subgroup-${subgroupIndex}`;
-        const subgroupSentences = subgroup.cells.flatMap((cell) => {
-          return (narrativeMapping[cell] || []).filter((sentence) => {
+        const subgroupSentences = subgroup.cells.flatMap(
+          (cell) => (narrativeMapping[cell] || []).filter((sentence) => {
             if (seenSentences.has(sentence)) return false;
             seenSentences.add(sentence);
             return true;
-          }).map((sentence, i) => ({
-            id: `${subgroupId}-narrative-${cell}-${i}`,
-            label: sentence,
-            cellIndex: cell,
-            isNarrative: true,
-            sentence
-          }));
-        });
-        return {
+          }).map((sentence, i) => {
+            const node2 = {
+              id: `${subgroupId}-narrative-${cell}-${i}`,
+              label: sentence,
+              cellIndex: cell,
+              isNarrative: true,
+              sentence
+            };
+            treeItemMap.set(node2.id, node2);
+            return node2;
+          })
+        );
+        const subgroupNode = {
           id: subgroupId,
           label: subgroup.name,
           children: subgroupSentences
         };
+        treeItemMap.set(subgroupId, subgroupNode);
+        return subgroupNode;
       })
     };
+    treeItemMap.set(groupId, groupNode);
+    return groupNode;
   });
 };
 function collectExpandableIds(items) {
@@ -86404,18 +86412,12 @@ function BasicRichTreeView({
     setExpandedIds(collectExpandableIds(items));
   }, [items]);
   const handleNodeSelect = (event, nodeId) => {
-    if (nodeId.includes("-narrative-")) {
+    if (nodeId.includes("-narrative-")) return;
+    const node2 = treeItemMap.get(nodeId);
+    if (!node2 || Array.isArray(node2.children) && node2.children.length > 0)
       return;
-    }
-    let cellIndex;
-    const subMatch = nodeId.match(/^group-(\d+)-subgroup-(\d+)/);
-    if (subMatch) {
-      const [, g, s] = subMatch.map(Number);
-      const cells = data.groups[g].subgroups[s].cells;
-      if (cells.length > 0) cellIndex = cells[0];
-    }
-    if (cellIndex !== void 0) {
-      vscodeApi_default?.postMessage({ type: "selectCell", index: cellIndex });
+    if ("cellIndex" in node2 && typeof node2.cellIndex === "number") {
+      vscodeApi_default?.postMessage({ type: "selectCell", index: node2.cellIndex });
     }
   };
   React5.useEffect(() => {

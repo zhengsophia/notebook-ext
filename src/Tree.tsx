@@ -130,6 +130,8 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
   return <TreeItem2 {...props} ref={ref} />;
 });
 
+const treeItemMap = new Map<string, TreeViewBaseItem>();
+
 // helper conversion function to map LLM generated groups to tree items
 // with custom conversion for the in line textual summaries as optional leaf nodes
 const convertToTreeViewItems = (
@@ -141,37 +143,77 @@ const convertToTreeViewItems = (
 
   return json.groups.map((group: any, groupIndex: number) => {
     const groupId = `${parentId}group-${groupIndex}`;
-    return {
+    const groupNode = {
       id: groupId,
-      label: group.name, // Basic string label for groups
+      label: group.name,
       children: group.subgroups.map((subgroup: any, subgroupIndex: number) => {
         const subgroupId = `${groupId}-subgroup-${subgroupIndex}`;
-        // Create narrative items with custom data
-        const subgroupSentences: (TreeViewBaseItem & CustomItemData)[] =
-          subgroup.cells.flatMap((cell: number) => {
-            return (narrativeMapping[cell] || [])
-              .filter((sentence) => {
-                if (seenSentences.has(sentence)) return false;
-                seenSentences.add(sentence);
-                return true;
-              })
-              .map((sentence, i) => ({
+        const subgroupSentences = subgroup.cells.flatMap((cell: number) =>
+          (narrativeMapping[cell] || [])
+            .filter((sentence) => {
+              if (seenSentences.has(sentence)) return false;
+              seenSentences.add(sentence);
+              return true;
+            })
+            .map((sentence, i) => {
+              const node = {
                 id: `${subgroupId}-narrative-${cell}-${i}`,
                 label: sentence,
                 cellIndex: cell,
                 isNarrative: true,
                 sentence,
-              }));
-          });
+              };
+              treeItemMap.set(node.id, node);
+              return node;
+            })
+        );
 
-        return {
+        const subgroupNode = {
           id: subgroupId,
           label: subgroup.name,
           children: subgroupSentences,
         };
+        treeItemMap.set(subgroupId, subgroupNode);
+        return subgroupNode;
       }),
     };
+    treeItemMap.set(groupId, groupNode);
+    return groupNode;
   });
+
+  // return json.groups.map((group: any, groupIndex: number) => {
+  //   const groupId = `${parentId}group-${groupIndex}`;
+  //   return {
+  //     id: groupId,
+  //     label: group.name, // Basic string label for groups
+  //     children: group.subgroups.map((subgroup: any, subgroupIndex: number) => {
+  //       const subgroupId = `${groupId}-subgroup-${subgroupIndex}`;
+  //       // Create narrative items with custom data
+  //       const subgroupSentences: (TreeViewBaseItem & CustomItemData)[] =
+  //         subgroup.cells.flatMap((cell: number) => {
+  //           return (narrativeMapping[cell] || [])
+  //             .filter((sentence) => {
+  //               if (seenSentences.has(sentence)) return false;
+  //               seenSentences.add(sentence);
+  //               return true;
+  //             })
+  //             .map((sentence, i) => ({
+  //               id: `${subgroupId}-narrative-${cell}-${i}`,
+  //               label: sentence,
+  //               cellIndex: cell,
+  //               isNarrative: true,
+  //               sentence,
+  //             }));
+  //         });
+
+  //       return {
+  //         id: subgroupId,
+  //         label: subgroup.name,
+  //         children: subgroupSentences,
+  //       };
+  //     }),
+  //   };
+  // });
 };
 
 // helper function to grab every node that's a narrative + their parents
@@ -229,38 +271,15 @@ export default function BasicRichTreeView({
 
   // tree -> cell direction
   const handleNodeSelect = (event: React.SyntheticEvent, nodeId: string) => {
-    if (nodeId.includes('-narrative-')) {
-      return;
-    }
-    let cellIndex: number | undefined;
+    if (nodeId.includes('-narrative-')) return;
 
-    // // SUMMARY
-    // const narrativeMatch = nodeId.match(/-narrative-(\d+)-/);
-    // if (narrativeMatch) {
-    //   cellIndex = parseInt(narrativeMatch[1], 10);
-    // }
-    // SUBGROUP
-    // else {
-    const subMatch = nodeId.match(/^group-(\d+)-subgroup-(\d+)/);
-    if (subMatch) {
-      const [, g, s] = subMatch.map(Number);
-      const cells = data.groups[g].subgroups[s].cells;
-      if (cells.length > 0) cellIndex = cells[0];
-      // }
-      // GROUP
-      // else {
-      //   const grpMatch = nodeId.match(/^group-(\d+)$/);
-      //   if (grpMatch) {
-      //     const g = parseInt(grpMatch[1], 10);
-      //     const firstSub = data.groups[g].subgroups[0];
-      //     if (firstSub && firstSub.cells.length > 0) {
-      //       cellIndex = firstSub.cells[0];
-      //     }
-      //   }
-      // }
-    }
-    if (cellIndex !== undefined) {
-      vscode?.postMessage({ type: 'selectCell', index: cellIndex });
+    const node = treeItemMap.get(nodeId);
+    // if node is undefined or has children, skip jumping
+    if (!node || (Array.isArray(node.children) && node.children.length > 0))
+      return;
+    // check if it's a leaf narrative or variable node
+    if ('cellIndex' in node && typeof node.cellIndex === 'number') {
+      vscode?.postMessage({ type: 'selectCell', index: node.cellIndex });
     }
   };
 
