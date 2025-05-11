@@ -86265,6 +86265,7 @@ var import_TreeItem2 = __toESM(require_TreeItem23());
 var import_Typography = __toESM(require_Typography2());
 var import_hooks = __toESM(require_hooks());
 var import_jsx_runtime = __toESM(require_jsx_runtime());
+var treeNodeRefs = /* @__PURE__ */ new Map();
 function NarrativeLabel({ sentence, className }) {
   const parseTechDoc = (text = "") => {
     const references = [];
@@ -86313,27 +86314,39 @@ function NarrativeLabel({ sentence, className }) {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className, children: renderContent() });
 }
 var CustomTreeItem = React5.forwardRef(function CustomTreeItem2(props, ref) {
+  const innerRef = React5.useRef(null);
+  React5.useEffect(() => {
+    if (innerRef.current) {
+      treeNodeRefs.set(props.itemId, innerRef.current);
+    }
+    return () => {
+      treeNodeRefs.delete(props.itemId);
+    };
+  }, [props.itemId]);
   const { publicAPI } = (0, import_hooks.useTreeItem2Utils)({
     itemId: props.itemId,
     children: props.children
   });
   const item = publicAPI.getItem(props.itemId);
+  const finalRef = (el) => {
+    innerRef.current = el;
+    if (typeof ref === "function") ref(el);
+    else if (ref) ref.current = el;
+  };
   if (item?.isNarrative) {
     return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
       import_TreeItem2.TreeItem2,
       {
         ...props,
-        ref,
-        slots: {
-          label: NarrativeLabel
-        },
+        ref: finalRef,
+        slots: { label: NarrativeLabel },
         slotProps: {
           label: { sentence: item.sentence || "" }
         }
       }
     );
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_TreeItem2.TreeItem2, { ...props, ref });
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_TreeItem2.TreeItem2, { ...props, ref: finalRef });
 });
 var treeItemMap = /* @__PURE__ */ new Map();
 var convertToTreeViewItems = (json, narrativeMapping, parentId = "") => {
@@ -86411,6 +86424,12 @@ function BasicRichTreeView({
   React5.useEffect(() => {
     setExpandedIds(collectExpandableIds(items));
   }, [items]);
+  React5.useEffect(() => {
+    if (selectedId && treeNodeRefs.has(selectedId)) {
+      const el = treeNodeRefs.get(selectedId);
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [selectedId]);
   const handleNodeSelect = (event, nodeId) => {
     if (nodeId.includes("-narrative-")) return;
     const node2 = treeItemMap.get(nodeId);
@@ -86445,13 +86464,13 @@ function BasicRichTreeView({
           if (subgroupId) break;
         }
         if (groupId && subgroupId) {
-          const hasNarrative = narrativeMapping[idx] && narrativeMapping[idx].length > 0;
-          if (hasNarrative) {
-            setSelectedId(subgroupId);
-          } else {
-            setExpandedIds([groupId, subgroupId]);
-            setSelectedId(subgroupId);
-          }
+          setExpandedIds((prev2) => {
+            const newIds = new Set(prev2);
+            newIds.add(groupId);
+            newIds.add(subgroupId);
+            return Array.from(newIds);
+          });
+          setSelectedId(subgroupId);
         }
       }
     };

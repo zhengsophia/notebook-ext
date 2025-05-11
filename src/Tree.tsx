@@ -18,6 +18,8 @@ import { useTreeItem2Utils } from '@mui/x-tree-view/hooks';
 //   return null;
 // }
 
+const treeNodeRefs = new Map<string, HTMLLIElement>();
+
 // custom NarrativeLabel component with formatted links
 interface NarrativeLabelProps {
   sentence: string;
@@ -99,11 +101,21 @@ interface CustomItemData {
   sentence?: string;
 }
 
-// Custom TreeItem component that conditionally renders different label types
 const CustomTreeItem = React.forwardRef(function CustomTreeItem(
   props: TreeItem2Props,
   ref: React.Ref<HTMLLIElement>
 ) {
+  const innerRef = React.useRef<HTMLLIElement>(null);
+
+  React.useEffect(() => {
+    if (innerRef.current) {
+      treeNodeRefs.set(props.itemId, innerRef.current);
+    }
+    return () => {
+      treeNodeRefs.delete(props.itemId);
+    };
+  }, [props.itemId]);
+
   const { publicAPI } = useTreeItem2Utils({
     itemId: props.itemId,
     children: props.children,
@@ -111,24 +123,59 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
 
   const item = publicAPI.getItem(props.itemId) as TreeViewBaseItem &
     CustomItemData;
-  // if narrative node, use custom NarrativeLabel component for the label
+
+  const finalRef = (el: HTMLLIElement) => {
+    innerRef.current = el;
+    if (typeof ref === 'function') ref(el);
+    else if (ref) (ref as React.MutableRefObject<HTMLLIElement>).current = el;
+  };
+
   if (item?.isNarrative) {
     return (
       <TreeItem2
         {...props}
-        ref={ref}
-        slots={{
-          label: NarrativeLabel,
-        }}
+        ref={finalRef}
+        slots={{ label: NarrativeLabel }}
         slotProps={{
           label: { sentence: item.sentence || '' } as NarrativeLabelProps,
         }}
       />
     );
   }
-  // else use the default label rendering
-  return <TreeItem2 {...props} ref={ref} />;
+
+  return <TreeItem2 {...props} ref={finalRef} />;
 });
+
+// Custom TreeItem component that conditionally renders different label types
+// const CustomTreeItem = React.forwardRef(function CustomTreeItem(
+//   props: TreeItem2Props,
+//   ref: React.Ref<HTMLLIElement>
+// ) {
+//   const { publicAPI } = useTreeItem2Utils({
+//     itemId: props.itemId,
+//     children: props.children,
+//   });
+
+//   const item = publicAPI.getItem(props.itemId) as TreeViewBaseItem &
+//     CustomItemData;
+//   // if narrative node, use custom NarrativeLabel component for the label
+//   if (item?.isNarrative) {
+//     return (
+//       <TreeItem2
+//         {...props}
+//         ref={ref}
+//         slots={{
+//           label: NarrativeLabel,
+//         }}
+//         slotProps={{
+//           label: { sentence: item.sentence || '' } as NarrativeLabelProps,
+//         }}
+//       />
+//     );
+//   }
+//   // else use the default label rendering
+//   return <TreeItem2 {...props} ref={ref} />;
+// });
 
 const treeItemMap = new Map<string, TreeViewBaseItem>();
 
@@ -269,6 +316,13 @@ export default function BasicRichTreeView({
     setExpandedIds(collectExpandableIds(items));
   }, [items]);
 
+  React.useEffect(() => {
+    if (selectedId && treeNodeRefs.has(selectedId)) {
+      const el = treeNodeRefs.get(selectedId)!;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [selectedId]);
+
   // tree -> cell direction
   const handleNodeSelect = (event: React.SyntheticEvent, nodeId: string) => {
     if (nodeId.includes('-narrative-')) return;
@@ -313,17 +367,13 @@ export default function BasicRichTreeView({
         }
         // expand the ids
         if (groupId && subgroupId) {
-          const hasNarrative =
-            narrativeMapping[idx] && narrativeMapping[idx].length > 0;
-
-          if (hasNarrative) {
-            // highlight the subgroup but preserve all currently expanded nodes
-            setSelectedId(subgroupId);
-          } else {
-            // collapse to just relevant group/subgroup
-            setExpandedIds([groupId, subgroupId]);
-            setSelectedId(subgroupId);
-          }
+          setExpandedIds((prev) => {
+            const newIds = new Set(prev);
+            newIds.add(groupId);
+            newIds.add(subgroupId);
+            return Array.from(newIds);
+          });
+          setSelectedId(subgroupId);
         }
       }
     };
