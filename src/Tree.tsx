@@ -226,15 +226,35 @@ export default function BasicRichTreeView({
   }, [items]);
 
   const handleNodeSelect = (event: React.SyntheticEvent, nodeId: string) => {
-    if (nodeId.includes('narrative')) {
-      // Extract the cell index from the nodeId
-      const match = nodeId.match(/-narrative-(\d+)-/);
-      if (match && match[1]) {
-        const cellIndex = parseInt(match[1], 10);
-        console.log('selected cell index', cellIndex);
-        // Post the selected cell index to the VSCode extension
-        vscode?.postMessage({ type: 'selectCell', index: cellIndex });
+    let cellIndex: number | undefined;
+
+    // SUMMARY
+    const narrativeMatch = nodeId.match(/-narrative-(\d+)-/);
+    if (narrativeMatch) {
+      cellIndex = parseInt(narrativeMatch[1], 10);
+    }
+    // SUBGROUP
+    else {
+      const subMatch = nodeId.match(/^group-(\d+)-subgroup-(\d+)/);
+      if (subMatch) {
+        const [, g, s] = subMatch.map(Number);
+        const cells = data.groups[g].subgroups[s].cells;
+        if (cells.length > 0) cellIndex = cells[0];
       }
+      // GROUP
+      // else {
+      //   const grpMatch = nodeId.match(/^group-(\d+)$/);
+      //   if (grpMatch) {
+      //     const g = parseInt(grpMatch[1], 10);
+      //     const firstSub = data.groups[g].subgroups[0];
+      //     if (firstSub && firstSub.cells.length > 0) {
+      //       cellIndex = firstSub.cells[0];
+      //     }
+      //   }
+      // }
+    }
+    if (cellIndex !== undefined) {
+      vscode?.postMessage({ type: 'selectCell', index: cellIndex });
     }
   };
 

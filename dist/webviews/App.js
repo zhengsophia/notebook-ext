@@ -86403,13 +86403,20 @@ function BasicRichTreeView({
     setExpandedIds(collectExpandableIds(items));
   }, [items]);
   const handleNodeSelect = (event, nodeId) => {
-    if (nodeId.includes("narrative")) {
-      const match2 = nodeId.match(/-narrative-(\d+)-/);
-      if (match2 && match2[1]) {
-        const cellIndex = parseInt(match2[1], 10);
-        console.log("selected cell index", cellIndex);
-        vscodeApi_default?.postMessage({ type: "selectCell", index: cellIndex });
+    let cellIndex;
+    const narrativeMatch = nodeId.match(/-narrative-(\d+)-/);
+    if (narrativeMatch) {
+      cellIndex = parseInt(narrativeMatch[1], 10);
+    } else {
+      const subMatch = nodeId.match(/^group-(\d+)-subgroup-(\d+)/);
+      if (subMatch) {
+        const [, g, s] = subMatch.map(Number);
+        const cells = data.groups[g].subgroups[s].cells;
+        if (cells.length > 0) cellIndex = cells[0];
       }
+    }
+    if (cellIndex !== void 0) {
+      vscodeApi_default?.postMessage({ type: "selectCell", index: cellIndex });
     }
   };
   console.log("expanded", expandedIds);
