@@ -4,6 +4,7 @@ import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import vscode from './vscodeApi';
 import { TreeItem2, TreeItem2Props } from '@mui/x-tree-view/TreeItem2';
+import Typography from '@mui/material/Typography';
 // import Narrative from './Narrative';
 import { useTreeItem2Utils } from '@mui/x-tree-view/hooks';
 
@@ -199,9 +200,11 @@ function collectExpandableIds(
 export default function BasicRichTreeView({
   data,
   narrativeMapping,
+  variableSummary,
 }: {
   data: any;
   narrativeMapping: { [cell: number]: string[] };
+  variableSummary: string | null;
 }) {
   console.log('narrative mapping', narrativeMapping);
 
@@ -237,8 +240,24 @@ export default function BasicRichTreeView({
 
   console.log('expanded', expandedIds);
 
+  const headingText = variableSummary || data.narrative;
+
   return (
     <Box sx={{ minWidth: 250 }}>
+      {/* one sentence summary */}
+      <Typography
+        variant="body2"
+        sx={{
+          px: '12px',
+          py: '4px',
+          fontStyle: 'italic',
+          color: 'white',
+          fontSize: '12px !important',
+        }}
+      >
+        {headingText}
+      </Typography>
+      {/* tree */}
       {items.length > 0 ? (
         <RichTreeView
           items={items}

@@ -61,6 +61,14 @@ function extractCellReferences(text: string): { [cell: number]: string[] } {
   return extracted;
 }
 
+function extractFirstSentence(text: string): string {
+  const match = text.match(/.*?[.?!](\s|$)/);
+  if (match) {
+    return match[0].trim();
+  }
+  return text.trim();
+}
+
 function App() {
   const [variables, setVariables] = React.useState<any>(null);
   const [tree, setTree] = React.useState<any>(null);
@@ -68,6 +76,9 @@ function App() {
   const [narrativeMapping, setNarrativeMapping] = React.useState<{
     [cell: number]: string[];
   }>({});
+  const [variableSummary, setVariableSummary] = React.useState<string | null>(
+    ''
+  );
 
   React.useEffect(() => {
     // listening for messages from the extension via TreeViewProvider
@@ -81,11 +92,13 @@ function App() {
         console.log('Received data from TreeViewProvider:', message.data);
         setTree(message.data);
         setNarrativeMapping({});
+        setVariableSummary(null);
       }
       if (message.command === 'fetchNarrative') {
         console.log('Received data from TreeViewProvider:', message.data);
         // setNarrative(message.data);
         setNarrativeMapping(extractCellReferences(message.data));
+        setVariableSummary(extractFirstSentence(message.data));
       }
     };
 
@@ -108,7 +121,11 @@ function App() {
 
       <div className="bottom-section">
         {tree ? (
-          <BasicRichTreeView data={tree} narrativeMapping={narrativeMapping} />
+          <BasicRichTreeView
+            data={tree}
+            narrativeMapping={narrativeMapping}
+            variableSummary={variableSummary}
+          />
         ) : (
           <p className="loading-text">Loading notebook data…</p>
         )}
