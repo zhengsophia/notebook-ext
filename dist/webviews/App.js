@@ -86416,8 +86416,15 @@ function BasicRichTreeView({
     const node2 = treeItemMap.get(nodeId);
     if (!node2 || Array.isArray(node2.children) && node2.children.length > 0)
       return;
-    if ("cellIndex" in node2 && typeof node2.cellIndex === "number") {
-      vscodeApi_default?.postMessage({ type: "selectCell", index: node2.cellIndex });
+    let cellIndex;
+    const subMatch = nodeId.match(/^group-(\d+)-subgroup-(\d+)/);
+    if (subMatch) {
+      const [, g, s] = subMatch.map(Number);
+      const cells = data.groups[g].subgroups[s].cells;
+      if (cells.length > 0) cellIndex = cells[0];
+    }
+    if (cellIndex !== void 0) {
+      vscodeApi_default?.postMessage({ type: "selectCell", index: cellIndex });
     }
   };
   React5.useEffect(() => {
@@ -86438,8 +86445,13 @@ function BasicRichTreeView({
           if (subgroupId) break;
         }
         if (groupId && subgroupId) {
-          setExpandedIds([groupId, subgroupId]);
-          setSelectedId(subgroupId);
+          const hasNarrative = narrativeMapping[idx] && narrativeMapping[idx].length > 0;
+          if (hasNarrative) {
+            setSelectedId(subgroupId);
+          } else {
+            setExpandedIds([groupId, subgroupId]);
+            setSelectedId(subgroupId);
+          }
         }
       }
     };

@@ -277,9 +277,17 @@ export default function BasicRichTreeView({
     // if node is undefined or has children, skip jumping
     if (!node || (Array.isArray(node.children) && node.children.length > 0))
       return;
-    // check if it's a leaf narrative or variable node
-    if ('cellIndex' in node && typeof node.cellIndex === 'number') {
-      vscode?.postMessage({ type: 'selectCell', index: node.cellIndex });
+
+    let cellIndex: number | undefined;
+    const subMatch = nodeId.match(/^group-(\d+)-subgroup-(\d+)/);
+    if (subMatch) {
+      const [, g, s] = subMatch.map(Number);
+      const cells = data.groups[g].subgroups[s].cells;
+      if (cells.length > 0) cellIndex = cells[0];
+    }
+
+    if (cellIndex !== undefined) {
+      vscode?.postMessage({ type: 'selectCell', index: cellIndex });
     }
   };
 
@@ -305,8 +313,17 @@ export default function BasicRichTreeView({
         }
         // expand the ids
         if (groupId && subgroupId) {
-          setExpandedIds([groupId, subgroupId]);
-          setSelectedId(subgroupId);
+          const hasNarrative =
+            narrativeMapping[idx] && narrativeMapping[idx].length > 0;
+
+          if (hasNarrative) {
+            // highlight the subgroup but preserve all currently expanded nodes
+            setSelectedId(subgroupId);
+          } else {
+            // collapse to just relevant group/subgroup
+            setExpandedIds([groupId, subgroupId]);
+            setSelectedId(subgroupId);
+          }
         }
       }
     };
