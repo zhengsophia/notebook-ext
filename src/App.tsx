@@ -80,6 +80,7 @@ function App() {
       if (message.command === 'fetchTree') {
         console.log('Received data from TreeViewProvider:', message.data);
         setTree(message.data);
+        setNarrativeMapping({});
       }
       if (message.command === 'fetchNarrative') {
         console.log('Received data from TreeViewProvider:', message.data);

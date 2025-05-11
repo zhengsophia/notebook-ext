@@ -68109,7 +68109,7 @@ var require_TreeItemContent = __commonJS({
           onMouseDown(event);
         }
       };
-      const handleClick2 = (event) => {
+      const handleClick = (event) => {
         handleContentClick?.(event, itemId);
         if (checkboxRef.current?.contains(event.target)) {
           return;
@@ -68134,7 +68134,7 @@ var require_TreeItemContent = __commonJS({
         /* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions -- Key event is handled by the TreeView */
         /* @__PURE__ */ (0, _jsxRuntime.jsxs)("div", (0, _extends2.default)({}, other, {
           className: (0, _clsx.default)(classes.root, className, expanded && classes.expanded, selected && classes.selected, focused && classes.focused, disabled && classes.disabled, editing && classes.editing, editable && classes.editable),
-          onClick: handleClick2,
+          onClick: handleClick,
           onMouseDown: handleMouseDown,
           ref,
           children: [/* @__PURE__ */ (0, _jsxRuntime.jsx)("div", {
@@ -71068,7 +71068,7 @@ var require_useAutocomplete = __commonJS({
           event.preventDefault();
         }
       };
-      const handleClick2 = (event) => {
+      const handleClick = (event) => {
         if (!event.currentTarget.contains(event.target)) {
           return;
         }
@@ -71119,7 +71119,7 @@ var require_useAutocomplete = __commonJS({
           ...other,
           onKeyDown: handleKeyDown(other),
           onMouseDown: handleMouseDown,
-          onClick: handleClick2
+          onClick: handleClick
         }),
         getInputLabelProps: () => ({
           id: `${id}-label`,
@@ -75963,7 +75963,7 @@ var require_InputBase = __commonJS({
       React7.useEffect(() => {
         checkDirty(inputRef.current);
       }, []);
-      const handleClick2 = (event) => {
+      const handleClick = (event) => {
         if (inputRef.current && event.currentTarget === event.target) {
           inputRef.current.focus();
         }
@@ -76035,7 +76035,7 @@ var require_InputBase = __commonJS({
         (_InputGlobalStyles || (_InputGlobalStyles = /* @__PURE__ */ (0, _jsxRuntime.jsx)(InputGlobalStyles, {}))), /* @__PURE__ */ (0, _jsxRuntime.jsxs)(Root, {
           ...rootProps,
           ref,
-          onClick: handleClick2,
+          onClick: handleClick,
           ...other,
           ...!(0, _isHostComponent.default)(Root) && {
             ownerState: {
@@ -85922,13 +85922,6 @@ var vscodeApi_default = vscode;
 var import_TreeItem2 = __toESM(require_TreeItem23());
 var import_hooks = __toESM(require_hooks());
 var import_jsx_runtime = __toESM(require_jsx_runtime());
-function parseFirstCellNumber(cellsString) {
-  const match2 = cellsString.match(/\d+/);
-  if (match2) {
-    return parseInt(match2[0], 10);
-  }
-  return null;
-}
 function NarrativeLabel({ sentence, className }) {
   const parseTechDoc = (text = "") => {
     const references = [];
@@ -85946,21 +85939,19 @@ function NarrativeLabel({ sentence, className }) {
       } else {
         cellList = rawCells.split(",").map((n) => parseInt(n.trim(), 10));
       }
+      const firstCell = cellList[0];
       references.push({
         content: match2[1].trim(),
-        cells: cellList
+        cell: firstCell
       });
       lastIndex = pattern.lastIndex;
     }
     sections.push(text.slice(lastIndex));
     return { parts: sections, references };
   };
-  const handleCellClick = (cellsInfo) => {
-    const cellIndex = parseFirstCellNumber(cellsInfo);
-    if (cellIndex !== null) {
-      console.log("Cell reference clicked:", cellIndex);
-      vscodeApi_default?.postMessage({ type: "selectCell", index: cellIndex });
-    }
+  const handleCellClick = (cellIndex) => {
+    console.log("Cell reference clicked:", cellIndex);
+    vscodeApi_default?.postMessage({ type: "selectCell", index: cellIndex });
   };
   const renderContent = () => {
     const { parts, references } = parseTechDoc(sentence);
@@ -85969,7 +85960,7 @@ function NarrativeLabel({ sentence, className }) {
       index < references.length && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
         "span",
         {
-          onClick: () => handleCellClick(references[index].cells),
+          onClick: () => handleCellClick(references[index].cell),
           style: { color: "#f0acb4", cursor: "pointer" },
           children: references[index].content.replace(/^['"]|['"]$/g, "")
         }
@@ -86112,10 +86103,17 @@ window.addEventListener("message", (event) => {
     addVariableToList(variable);
   }
 });
-function selectTag(tag, variable) {
+function toggleTag(tag, variable) {
+  const selected = tag.classList.contains("selected");
   document.querySelectorAll(".variable-tag.selected").forEach((el) => el.classList.remove("selected"));
-  tag.classList.add("selected");
-  handleClick(variable);
+  if (!selected) {
+    tag.classList.add("selected");
+    console.log(variable);
+    vscodeApi_default?.postMessage({ type: "getVariableSummary", name: variable });
+  } else {
+    tag.classList.remove("selected");
+    vscodeApi_default?.postMessage({ type: "clearTree" });
+  }
 }
 function initTag(variable) {
   const tag = document.createElement("span");
@@ -86129,7 +86127,7 @@ function initTag(variable) {
   btn.className = "pin-btn";
   btn.textContent = "\u2716";
   tag.appendChild(btn);
-  label.onclick = () => selectTag(tag, variable);
+  label.onclick = () => toggleTag(tag, variable);
   btn.onclick = (e) => {
     e.stopPropagation();
     tag.remove();
@@ -86139,10 +86137,6 @@ function initTag(variable) {
   };
   return tag;
 }
-var handleClick = (variableName) => {
-  console.log(variableName);
-  vscodeApi_default?.postMessage({ type: "getVariableSummary", name: variableName });
-};
 function addVariableToList(variable, narrative = true) {
   const container = document.getElementById("variables-list");
   let tag = container.querySelector(
@@ -86153,7 +86147,7 @@ function addVariableToList(variable, narrative = true) {
     container.prepend(tag);
   }
   if (narrative) {
-    selectTag(tag, variable);
+    toggleTag(tag, variable);
   }
 }
 function List({
@@ -86172,6 +86166,10 @@ function List({
     [freqMap]
   );
   (0, import_react4.useEffect)(() => {
+    const container = document.getElementById("variables-list");
+    if (container) {
+      container.innerHTML = "";
+    }
     top5.forEach((name) => addVariableToList(name, false));
   }, [top5]);
   const names = (0, import_react4.useMemo)(
@@ -86285,6 +86283,7 @@ function App() {
       if (message.command === "fetchTree") {
         console.log("Received data from TreeViewProvider:", message.data);
         setTree(message.data);
+        setNarrativeMapping({});
       }
       if (message.command === "fetchNarrative") {
         console.log("Received data from TreeViewProvider:", message.data);

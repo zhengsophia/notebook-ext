@@ -17955,6 +17955,7 @@ var TreeViewProvider = class {
   static viewType = "meng-notebook.treeView";
   _view;
   variableSummaryCache = /* @__PURE__ */ new Map();
+  treeCache;
   // registers the variable to be added from hover tooltip selection via command
   registerHover(context) {
     context.subscriptions.push(
@@ -18036,6 +18037,9 @@ var TreeViewProvider = class {
       const prompt = this.generateTreePrompt(codeCells);
       const structuredOutput = await this.getTreeOutput(prompt);
       console.log("LLM response for making tree", structuredOutput);
+      if (structuredOutput) {
+        this.treeCache = structuredOutput;
+      }
       this.sendTreeToWebview(structuredOutput);
     } catch (error) {
       console.error("Error processing notebook:", error);
@@ -18079,6 +18083,10 @@ var TreeViewProvider = class {
               console.log("not cached :(");
               this.processVariableSummary(editor, variable);
             }
+            break;
+          case "clearTree":
+            console.log("reached webview clearing tree", this.treeCache);
+            this.sendTreeToWebview(this.treeCache);
             break;
         }
       });
@@ -18362,7 +18370,7 @@ ${cell.source.join("\n")}`
                 <title>Tree View</title>
             </head>
             <body>
-                <div id="app">Tree View Content</div>
+                <div id="app"></div>
                 <script src="${scriptUri}"></script>
             </body>
             </html>

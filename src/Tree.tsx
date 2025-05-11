@@ -8,14 +8,14 @@ import { TreeItem2, TreeItem2Props } from '@mui/x-tree-view/TreeItem2';
 import { useTreeItem2Utils } from '@mui/x-tree-view/hooks';
 
 // Parse the first cell number from a cell reference string
-export function parseFirstCellNumber(cellsString: string): number | null {
-  // Use regex to find the first number in the string
-  const match = cellsString.match(/\d+/);
-  if (match) {
-    return parseInt(match[0], 10);
-  }
-  return null;
-}
+// export function parseFirstCellNumber(cellsString: string): number | null {
+//   // Use regex to find the first number in the string
+//   const match = cellsString.match(/\d+/);
+//   if (match) {
+//     return parseInt(match[0], 10);
+//   }
+//   return null;
+// }
 
 // custom NarrativeLabel component with formatted links
 interface NarrativeLabelProps {
@@ -47,9 +47,10 @@ function NarrativeLabel({ sentence, className }: NarrativeLabelProps) {
         cellList = rawCells.split(',').map((n) => parseInt(n.trim(), 10));
       }
 
+      const firstCell = cellList[0];
       references.push({
         content: match[1].trim(),
-        cells: cellList,
+        cell: firstCell,
       });
 
       lastIndex = pattern.lastIndex;
@@ -61,12 +62,12 @@ function NarrativeLabel({ sentence, className }: NarrativeLabelProps) {
 
   // handle cell reference click for direct manipulation
   // under command `selectCell`
-  const handleCellClick = (cellsInfo: string) => {
-    const cellIndex = parseFirstCellNumber(cellsInfo);
-    if (cellIndex !== null) {
-      console.log('Cell reference clicked:', cellIndex);
-      vscode?.postMessage({ type: 'selectCell', index: cellIndex });
-    }
+  const handleCellClick = (cellIndex: number) => {
+    // const cellIndex = parseFirstCellNumber(cellsInfo);
+    // if (cellIndex !== null) {
+    console.log('Cell reference clicked:', cellIndex);
+    vscode?.postMessage({ type: 'selectCell', index: cellIndex });
+    // }
   };
 
   // Render the content with formatted links
@@ -78,7 +79,7 @@ function NarrativeLabel({ sentence, className }: NarrativeLabelProps) {
         {section}
         {index < references.length && (
           <span
-            onClick={() => handleCellClick(references[index].cells)}
+            onClick={() => handleCellClick(references[index].cell)}
             style={{ color: '#f0acb4', cursor: 'pointer' }}
           >
             {references[index].content.replace(/^['"]|['"]$/g, '')}

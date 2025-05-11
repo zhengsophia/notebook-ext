@@ -12,6 +12,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'meng-notebook.treeView';
   private _view?: vscode.WebviewView;
   private variableSummaryCache = new Map<string, string>();
+  private treeCache: any;
 
   constructor(private readonly _extensionUri: vscode.Uri) {}
 
@@ -214,7 +215,9 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
       const structuredOutput = await this.getTreeOutput(prompt);
 
       console.log('LLM response for making tree', structuredOutput);
-
+      if (structuredOutput) {
+        this.treeCache = structuredOutput;
+      }
       this.sendTreeToWebview(structuredOutput);
     } catch (error) {
       console.error('Error processing notebook:', error);
@@ -263,6 +266,11 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
               console.log('not cached :(');
               this.processVariableSummary(editor, variable);
             }
+            break;
+          case 'clearTree':
+            // re-send just the tree (no narrativeMapping)
+            console.log('reached webview clearing tree', this.treeCache);
+            this.sendTreeToWebview(this.treeCache);
             break;
         }
       });
@@ -658,7 +666,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
                 <title>Tree View</title>
             </head>
             <body>
-                <div id="app">Tree View Content</div>
+                <div id="app"></div>
                 <script src="${scriptUri}"></script>
             </body>
             </html>

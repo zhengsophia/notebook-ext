@@ -17,14 +17,25 @@ window.addEventListener('message', (event) => {
 // let selectedVariable: string | null = null;
 
 // helper fn to select & clear other selected tags
-function selectTag(tag: HTMLElement, variable: string) {
+function toggleTag(tag: HTMLElement, variable: string) {
+  const selected = tag.classList.contains('selected');
+
   // clear other selected tags
   document
     .querySelectorAll('.variable-tag.selected')
     .forEach((el) => el.classList.remove('selected'));
 
-  tag.classList.add('selected');
-  handleClick(variable);
+  if (!selected) {
+    // select tag -> it and request summary
+    tag.classList.add('selected');
+    console.log(variable);
+    // handle passing the IN LINE TEXTUAL SUMMARIES to the TREE VIEW
+    vscode?.postMessage({ type: 'getVariableSummary', name: variable });
+  } else {
+    // deselect tag -> ask tree to clear narratives
+    tag.classList.remove('selected');
+    vscode?.postMessage({ type: 'clearTree' });
+  }
 }
 
 // helper fn to make tag
@@ -45,8 +56,8 @@ function initTag(variable: string): HTMLElement {
   btn.textContent = '✖';
   tag.appendChild(btn);
 
-  // clicking the name selects it
-  label.onclick = () => selectTag(tag, variable);
+  // clicking the name selects/deselects it
+  label.onclick = () => toggleTag(tag, variable);
 
   // clicking the pin toggles pin/unpin
   btn.onclick = (e) => {
@@ -63,11 +74,11 @@ function initTag(variable: string): HTMLElement {
 }
 
 // handle passing the IN LINE TEXTUAL SUMMARIES to the TREE VIEW
-const handleClick = (variableName: string) => {
-  // selectedVariable = variableName;
-  console.log(variableName);
-  vscode?.postMessage({ type: 'getVariableSummary', name: variableName });
-};
+// const handleClick = (variableName: string) => {
+//   // selectedVariable = variableName;
+//   console.log(variableName);
+//   vscode?.postMessage({ type: 'getVariableSummary', name: variableName });
+// };
 
 // adding the variable spans from editor to VARIABLES PANE
 /**
@@ -86,7 +97,7 @@ function addVariableToList(variable: any, narrative = true) {
     container.prepend(tag);
   }
   if (narrative) {
-    selectTag(tag, variable);
+    toggleTag(tag, variable);
   }
 }
 
@@ -237,6 +248,10 @@ export default function List({
     [freqMap]
   );
   useEffect(() => {
+    const container = document.getElementById('variables-list');
+    if (container) {
+      container.innerHTML = ''; // remove all old tags
+    }
     top5.forEach((name) => addVariableToList(name, false));
   }, [top5]);
 
