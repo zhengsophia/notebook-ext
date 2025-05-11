@@ -517,26 +517,62 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     });
   }
 
+  private stripStrings(line: string): string {
+    return line.replace(/(["'])(?:\\.|(?!\1).)*\1/g, '');
+  }
+
   private async detectPythonVariables(
     codeCells: any
   ): Promise<{ name: string; frequency: number }[]> {
-    // Regex to match Python assignments: variable = …
-    const variableRegex = /\b([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*.*$/;
+    // Only match assignments at zero indent: `var = …`
+    const assignRe = /^([A-Za-z_]\w*)\s*=/;
+    // Only match function defs at zero indent: `def foo(...):`
+    const defRe = /^def\s+([A-Za-z_]\w*)\s*\(/;
 
-    // Map to accumulate frequencies
     const freqMap: Map<string, number> = new Map();
 
-    codeCells.forEach((cell: any) => {
-      cell.source.forEach((line: string) => {
-        const match = line.trim().match(variableRegex);
-        if (match) {
-          const name = match[1];
-          freqMap.set(name, (freqMap.get(name) || 0) + 1);
-        }
-      });
-    });
+    // 1st pass: grab all variables or functions declared at the top-most level
+    const names = new Set<string>();
+    codeCells.forEach((cell: any) =>
+      cell.source.forEach((rawLine: string) => {
+        const indent = rawLine.match(/^[ \t]*/)![0].length;
+        if (indent > 1) return; // still only top‐level
+        const line = rawLine.trim();
+        let m = assignRe.exec(line) || defRe.exec(line);
+        if (m) names.add(m[1]);
+      })
+    );
 
-    // SORT BY DESCENDING FREQUENCY
+    names.forEach((n) => freqMap.set(n, 0));
+
+    // 2nd pass: count occurrences for frequency
+    codeCells.forEach((cell: any) =>
+      cell.source.forEach((rawLine: string) => {
+        // strip strings first
+        const noStrings = rawLine.replace(/(["'])(?:\\.|(?!\1).)*\1/g, '');
+
+        names.forEach((name) => {
+          const line = noStrings.trim();
+
+          // skip if it's the declaration
+          if (
+            new RegExp(`^${name}\\s*=`).test(line) ||
+            new RegExp(`^def\\s+${name}\\s*\\(`).test(line)
+          ) {
+            return;
+          }
+
+          // count every other occurence -> not the most robust but it's ok
+          const usageRe = new RegExp(`\\b${name}\\b`, 'g');
+          const matches = noStrings.match(usageRe);
+          if (matches) {
+            freqMap.set(name, freqMap.get(name)! + matches.length);
+          }
+        });
+      })
+    );
+
+    // descending frequency
     return Array.from(freqMap.entries())
       .sort(([, a], [, b]) => b - a)
       .map(([name, frequency]) => ({ name, frequency }));

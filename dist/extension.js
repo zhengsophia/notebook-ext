@@ -18264,18 +18264,40 @@ ${cell.source.join("\n")}`
       name: variable
     });
   }
+  stripStrings(line) {
+    return line.replace(/(["'])(?:\\.|(?!\1).)*\1/g, "");
+  }
   async detectPythonVariables(codeCells) {
-    const variableRegex = /\b([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*.*$/;
+    const assignRe = /^([A-Za-z_]\w*)\s*=/;
+    const defRe = /^def\s+([A-Za-z_]\w*)\s*\(/;
     const freqMap = /* @__PURE__ */ new Map();
-    codeCells.forEach((cell) => {
-      cell.source.forEach((line) => {
-        const match = line.trim().match(variableRegex);
-        if (match) {
-          const name = match[1];
-          freqMap.set(name, (freqMap.get(name) || 0) + 1);
-        }
-      });
-    });
+    const names = /* @__PURE__ */ new Set();
+    codeCells.forEach(
+      (cell) => cell.source.forEach((rawLine) => {
+        const indent = rawLine.match(/^[ \t]*/)[0].length;
+        if (indent > 1) return;
+        const line = rawLine.trim();
+        let m2 = assignRe.exec(line) || defRe.exec(line);
+        if (m2) names.add(m2[1]);
+      })
+    );
+    names.forEach((n2) => freqMap.set(n2, 0));
+    codeCells.forEach(
+      (cell) => cell.source.forEach((rawLine) => {
+        const noStrings = rawLine.replace(/(["'])(?:\\.|(?!\1).)*\1/g, "");
+        names.forEach((name) => {
+          const line = noStrings.trim();
+          if (new RegExp(`^${name}\\s*=`).test(line) || new RegExp(`^def\\s+${name}\\s*\\(`).test(line)) {
+            return;
+          }
+          const usageRe = new RegExp(`\\b${name}\\b`, "g");
+          const matches = noStrings.match(usageRe);
+          if (matches) {
+            freqMap.set(name, freqMap.get(name) + matches.length);
+          }
+        });
+      })
+    );
     return Array.from(freqMap.entries()).sort(([, a2], [, b2]) => b2 - a2).map(([name, frequency]) => ({ name, frequency }));
   }
   // when called, this function will represent the command
