@@ -62,9 +62,12 @@ function initTag(variable: string): HTMLElement {
   // clicking the pin toggles pin/unpin
   btn.onclick = (e) => {
     e.stopPropagation();
+    const selected = tag.classList.contains('selected');
+    if (selected) {
+      vscode?.postMessage({ type: 'clearTree' });
+    }
     // ✖ → remove to unpin & delete
     tag.remove();
-
     // clear selection if it on this tag
     if (tag.classList.contains('selected')) {
       tag.classList.remove('selected');

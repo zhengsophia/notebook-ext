@@ -5,6 +5,26 @@ import BasicRichTreeView from './Tree';
 import List from './Variables';
 import Narrative from './Narrative';
 import { split } from 'sentence-splitter';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+// at the root of your React app
+const theme = createTheme({
+  typography: {
+    fontFamily: `'sofia-pro-soft', 'Quicksand', 'Helvetica Neue', sans-serif`,
+    fontWeightLight: 300,
+    fontWeightRegular: 300,
+    fontWeightMedium: 300,
+  },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          fontWeight: 300,
+        },
+      },
+    },
+  },
+});
 
 function extractCellReferences(text: string): { [cell: number]: string[] } {
   // Split text into sentences, handling periods in cell references
@@ -38,7 +58,7 @@ function extractCellReferences(text: string): { [cell: number]: string[] } {
   const extracted: { [cell: number]: string[] } = {};
 
   // Cell regex that can handle multiple cell numbers
-  const cellRegex = /\{"([^"}]+)"}\[cell\s*(\d+(?:\s*,\s*\d+)*)\]/g;
+  const cellRegex = /\{"([^"}]+)"}\[cell\s*(\d+(?:[-,]\d+)*)\]/g;
 
   for (const sentence of sentences) {
     let match;
@@ -110,27 +130,29 @@ function App() {
   }, []);
 
   return (
-    <div className="notebook-container">
-      <div className="top-section">
-        {variables ? (
-          <List data={variables} />
-        ) : (
-          <p className="loading-text">Loading notebook data…</p>
-        )}
-      </div>
+    <ThemeProvider theme={theme}>
+      <div className="notebook-container">
+        <div className="top-section">
+          {variables ? (
+            <List data={variables} />
+          ) : (
+            <p className="loading-text">Loading notebook data…</p>
+          )}
+        </div>
 
-      <div className="bottom-section">
-        {tree ? (
-          <BasicRichTreeView
-            data={tree}
-            narrativeMapping={narrativeMapping}
-            variableSummary={variableSummary}
-          />
-        ) : (
-          <p className="loading-text">Loading notebook data…</p>
-        )}
+        <div className="bottom-section">
+          {tree ? (
+            <BasicRichTreeView
+              data={tree}
+              narrativeMapping={narrativeMapping}
+              variableSummary={variableSummary}
+            />
+          ) : (
+            <p className="loading-text">Loading notebook data…</p>
+          )}
+        </div>
       </div>
-    </div>
+    </ThemeProvider>
   );
 }
 

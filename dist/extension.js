@@ -17956,6 +17956,7 @@ var TreeViewProvider = class {
   _view;
   variableSummaryCache = /* @__PURE__ */ new Map();
   treeCache;
+  _suppressNextRevealCount = 0;
   // registers the variable to be added from hover tooltip selection via command
   registerHover(context) {
     context.subscriptions.push(
@@ -17977,6 +17978,21 @@ var TreeViewProvider = class {
           }
         }
       )
+    );
+    context.subscriptions.push(
+      vscode.window.onDidChangeNotebookEditorSelection((e2) => {
+        if (this._suppressNextRevealCount > 0) {
+          this._suppressNextRevealCount--;
+          return;
+        }
+        const idx = e2.selections[0]?.start;
+        if (idx !== void 0 && this._view) {
+          this._view.webview.postMessage({
+            type: "expandNode",
+            index: idx
+          });
+        }
+      })
     );
     context.subscriptions.push(
       vscode.commands.registerCommand(
@@ -18244,20 +18260,6 @@ ${cell.source.join("\n")}`
       throw error;
     }
   }
-  // TODO fix for node cell linking
-  async handleCellSelection(event) {
-    if (!this._view) return;
-    const selectedCell = event.notebookEditor.notebook.cellAt(
-      event.selections[0].start
-    );
-    if (selectedCell.kind === vscode.NotebookCellKind.Code && selectedCell.executionSummary?.executionOrder) {
-      const executionCount = selectedCell.executionSummary.executionOrder;
-      await this._view.webview.postMessage({
-        type: "expandNode",
-        executionCount
-      });
-    }
-  }
   // get specific variable clicked from notebook editor to send to the webview
   async handleHoveredVariableSelection(variable) {
     if (!this._view) return;
@@ -18339,6 +18341,7 @@ ${cell.source.join("\n")}`
         console.log("message", message.type);
         switch (message.type) {
           case "selectCell": {
+            this._suppressNextRevealCount = 2;
             const idx = message.index;
             const editor = vscode.window.activeNotebookEditor;
             if (!editor) break;
@@ -18369,6 +18372,14 @@ ${cell.source.join("\n")}`
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link 
+                  href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" 
+                  rel="stylesheet"
+                >
+                  <link rel="stylesheet" href="https://use.typekit.net/yai8rmw.css">
                 <link rel="stylesheet" href="${styleUri}">
                 <title>Tree View</title>
             </head>

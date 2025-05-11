@@ -13,6 +13,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
   private _view?: vscode.WebviewView;
   private variableSummaryCache = new Map<string, string>();
   private treeCache: any;
+  private _suppressNextRevealCount = 0;
 
   constructor(private readonly _extensionUri: vscode.Uri) {}
 
@@ -109,6 +110,23 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     //     }
     //   )
     // );
+
+    // testing cell -> tree directionality
+    context.subscriptions.push(
+      vscode.window.onDidChangeNotebookEditorSelection((e) => {
+        if (this._suppressNextRevealCount > 0) {
+          this._suppressNextRevealCount--;
+          return;
+        }
+        const idx = e.selections[0]?.start;
+        if (idx !== undefined && this._view) {
+          this._view.webview.postMessage({
+            type: 'expandNode',
+            index: idx,
+          });
+        }
+      })
+    );
 
     // // COMMAND - present in line text summary
     context.subscriptions.push(
@@ -485,31 +503,6 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
-  // TODO fix for node cell linking
-  private async handleCellSelection(
-    event: vscode.NotebookEditorSelectionChangeEvent
-  ) {
-    if (!this._view) return;
-
-    const selectedCell = event.notebookEditor.notebook.cellAt(
-      event.selections[0].start
-    );
-
-    // for code cells, get the execution order
-    if (
-      selectedCell.kind === vscode.NotebookCellKind.Code &&
-      selectedCell.executionSummary?.executionOrder
-    ) {
-      const executionCount = selectedCell.executionSummary.executionOrder;
-
-      // Send message to webview to expand the corresponding tree node
-      await this._view.webview.postMessage({
-        type: 'expandNode',
-        executionCount: executionCount,
-      });
-    }
-  }
-
   // get specific variable clicked from notebook editor to send to the webview
   private async handleHoveredVariableSelection(variable: string) {
     if (!this._view) return;
@@ -621,6 +614,7 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
         console.log('message', message.type);
         switch (message.type) {
           case 'selectCell': {
+            this._suppressNextRevealCount = 2;
             const idx = message.index as number;
             const editor = vscode.window.activeNotebookEditor;
             if (!editor) break;
@@ -655,6 +649,14 @@ export class TreeViewProvider implements vscode.WebviewViewProvider {
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link 
+                  href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" 
+                  rel="stylesheet"
+                >
+                  <link rel="stylesheet" href="https://use.typekit.net/yai8rmw.css">
                 <link rel="stylesheet" href="${styleUri}">
                 <title>Tree View</title>
             </head>

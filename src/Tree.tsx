@@ -219,28 +219,34 @@ export default function BasicRichTreeView({
   const [expandedIds, setExpandedIds] = React.useState<string[]>(() =>
     collectExpandableIds(items)
   );
+  // selected items for highlighting UI
+  const [selectedId, setSelectedId] = React.useState<string>('');
 
   // 2.3. dynamically recomputing changes in tree nodes for auto-expansion
   React.useEffect(() => {
     setExpandedIds(collectExpandableIds(items));
   }, [items]);
 
+  // tree -> cell direction
   const handleNodeSelect = (event: React.SyntheticEvent, nodeId: string) => {
+    if (nodeId.includes('-narrative-')) {
+      return;
+    }
     let cellIndex: number | undefined;
 
-    // SUMMARY
-    const narrativeMatch = nodeId.match(/-narrative-(\d+)-/);
-    if (narrativeMatch) {
-      cellIndex = parseInt(narrativeMatch[1], 10);
-    }
+    // // SUMMARY
+    // const narrativeMatch = nodeId.match(/-narrative-(\d+)-/);
+    // if (narrativeMatch) {
+    //   cellIndex = parseInt(narrativeMatch[1], 10);
+    // }
     // SUBGROUP
-    else {
-      const subMatch = nodeId.match(/^group-(\d+)-subgroup-(\d+)/);
-      if (subMatch) {
-        const [, g, s] = subMatch.map(Number);
-        const cells = data.groups[g].subgroups[s].cells;
-        if (cells.length > 0) cellIndex = cells[0];
-      }
+    // else {
+    const subMatch = nodeId.match(/^group-(\d+)-subgroup-(\d+)/);
+    if (subMatch) {
+      const [, g, s] = subMatch.map(Number);
+      const cells = data.groups[g].subgroups[s].cells;
+      if (cells.length > 0) cellIndex = cells[0];
+      // }
       // GROUP
       // else {
       //   const grpMatch = nodeId.match(/^group-(\d+)$/);
@@ -257,6 +263,38 @@ export default function BasicRichTreeView({
       vscode?.postMessage({ type: 'selectCell', index: cellIndex });
     }
   };
+
+  // cell -> tree direction
+  React.useEffect(() => {
+    const handler = (event: MessageEvent) => {
+      const msg = event.data;
+      if (msg.type === 'expandNode') {
+        const idx: number = msg.index;
+
+        // find the associated group + subgroup
+        let groupId: string | undefined;
+        let subgroupId: string | undefined;
+        for (let g = 0; g < data.groups.length; g++) {
+          for (let s = 0; s < data.groups[g].subgroups.length; s++) {
+            if (data.groups[g].subgroups[s].cells.includes(idx)) {
+              groupId = `group-${g}`;
+              subgroupId = `group-${g}-subgroup-${s}`;
+              break;
+            }
+          }
+          if (subgroupId) break;
+        }
+        // expand the ids
+        if (groupId && subgroupId) {
+          setExpandedIds([groupId, subgroupId]);
+          setSelectedId(subgroupId);
+        }
+      }
+    };
+
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, [data.groups]);
 
   console.log('expanded', expandedIds);
 
@@ -285,9 +323,18 @@ export default function BasicRichTreeView({
           onExpandedItemsChange={(event, newIds) => {
             setExpandedIds(newIds);
           }}
+          selectedItems={selectedId ?? ''}
+          onSelectedItemsChange={(e, newSel) => setSelectedId(newSel ?? '')}
           onItemClick={handleNodeSelect}
           slots={{ item: CustomTreeItem }}
           sx={{
+            '& .MuiTreeItem-content.Mui-selected': {
+              backgroundColor: 'rgba(135, 135, 135, 0.3)',
+              // color: 'rgba(0,0,0,0.87)',
+            },
+            '& .MuiTreeItem-content.Mui-selected:hover': {
+              backgroundColor: 'rgba(135, 135, 135, 0.25)',
+            },
             '& .MuiTreeItem-label': {
               fontSize: '12px !important',
               textAlign: 'left',

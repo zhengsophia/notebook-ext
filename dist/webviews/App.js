@@ -33309,9 +33309,9 @@ var init_emotion_use_insertion_effect_with_fallbacks_esm = __esm({
 function withTheme(Component) {
   var componentName = Component.displayName || Component.name || "Component";
   var WithTheme = /* @__PURE__ */ React2.forwardRef(function render(props, ref) {
-    var theme = React2.useContext(ThemeContext);
+    var theme2 = React2.useContext(ThemeContext);
     return /* @__PURE__ */ React2.createElement(Component, _extends({
-      theme,
+      theme: theme2,
       ref
     }, props));
   });
@@ -33375,25 +33375,25 @@ var init_emotion_element_d59e098f_esm = __esm({
     useTheme = function useTheme2() {
       return React2.useContext(ThemeContext);
     };
-    getTheme = function getTheme2(outerTheme, theme) {
-      if (typeof theme === "function") {
-        var mergedTheme = theme(outerTheme);
+    getTheme = function getTheme2(outerTheme, theme2) {
+      if (typeof theme2 === "function") {
+        var mergedTheme = theme2(outerTheme);
         return mergedTheme;
       }
-      return _extends({}, outerTheme, theme);
+      return _extends({}, outerTheme, theme2);
     };
     createCacheWithTheme = /* @__PURE__ */ weakMemoize(function(outerTheme) {
-      return weakMemoize(function(theme) {
-        return getTheme(outerTheme, theme);
+      return weakMemoize(function(theme2) {
+        return getTheme(outerTheme, theme2);
       });
     });
     ThemeProvider = function ThemeProvider2(props) {
-      var theme = React2.useContext(ThemeContext);
-      if (props.theme !== theme) {
-        theme = createCacheWithTheme(theme)(props.theme);
+      var theme2 = React2.useContext(ThemeContext);
+      if (props.theme !== theme2) {
+        theme2 = createCacheWithTheme(theme2)(props.theme);
       }
       return /* @__PURE__ */ React2.createElement(ThemeContext.Provider, {
-        value: theme
+        value: theme2
       }, props.children);
     };
     hasOwn = {}.hasOwnProperty;
@@ -35995,8 +35995,8 @@ var require_cssContainerQueries = __commonJS({
     exports2.isCqShorthand = isCqShorthand;
     exports2.sortContainerQueries = sortContainerQueries;
     var _formatMuiErrorMessage2 = _interopRequireDefault(require_formatMuiErrorMessage2());
-    function sortContainerQueries(theme, css2) {
-      if (!theme.containerQueries) {
+    function sortContainerQueries(theme2, css2) {
+      if (!theme2.containerQueries) {
         return css2;
       }
       const sorted = Object.keys(css2).filter((key) => key.startsWith("@container")).sort((a, b) => {
@@ -36018,7 +36018,7 @@ var require_cssContainerQueries = __commonJS({
     function isCqShorthand(breakpointKeys, value) {
       return value === "@" || value.startsWith("@") && (breakpointKeys.some((key) => value.startsWith(`@${key}`)) || !!value.match(/^@\d/));
     }
-    function getContainerQuery(theme, shorthand) {
+    function getContainerQuery(theme2, shorthand) {
       const matches = shorthand.match(/^@([^/]+)?\/?(.+)?$/);
       if (!matches) {
         if (define_process_env_default.NODE_ENV !== "production") {
@@ -36029,7 +36029,7 @@ For example, \`@sm\` or \`@600\` or \`@40rem/sidebar\`.` : (0, _formatMuiErrorMe
       }
       const [, containerQuery, containerName] = matches;
       const value = Number.isNaN(+containerQuery) ? containerQuery || 0 : +containerQuery;
-      return theme.containerQueries(containerName).up(value);
+      return theme2.containerQueries(containerName).up(value);
     }
     function cssContainerQueries(themeInput) {
       const toContainerQuery = (mediaQuery, name) => mediaQuery.replace("@media", name ? `@container ${name}` : "@container");
@@ -36242,19 +36242,19 @@ var require_breakpoints = __commonJS({
       })
     };
     function handleBreakpoints(props, propValue, styleFromPropValue) {
-      const theme = props.theme || {};
+      const theme2 = props.theme || {};
       if (Array.isArray(propValue)) {
-        const themeBreakpoints = theme.breakpoints || defaultBreakpoints;
+        const themeBreakpoints = theme2.breakpoints || defaultBreakpoints;
         return propValue.reduce((acc, item, index) => {
           acc[themeBreakpoints.up(themeBreakpoints.keys[index])] = styleFromPropValue(propValue[index]);
           return acc;
         }, {});
       }
       if (typeof propValue === "object") {
-        const themeBreakpoints = theme.breakpoints || defaultBreakpoints;
+        const themeBreakpoints = theme2.breakpoints || defaultBreakpoints;
         return Object.keys(propValue).reduce((acc, breakpoint) => {
           if ((0, _cssContainerQueries.isCqShorthand)(themeBreakpoints.keys, breakpoint)) {
-            const containerKey = (0, _cssContainerQueries.getContainerQuery)(theme.containerQueries ? theme : defaultContainerQueries, breakpoint);
+            const containerKey = (0, _cssContainerQueries.getContainerQuery)(theme2.containerQueries ? theme2 : defaultContainerQueries, breakpoint);
             if (containerKey) {
               acc[containerKey] = styleFromPropValue(propValue[breakpoint], breakpoint);
             }
@@ -36273,14 +36273,14 @@ var require_breakpoints = __commonJS({
     }
     function breakpoints(styleFunction) {
       const newStyleFunction = (props) => {
-        const theme = props.theme || {};
+        const theme2 = props.theme || {};
         const base = styleFunction(props);
-        const themeBreakpoints = theme.breakpoints || defaultBreakpoints;
+        const themeBreakpoints = theme2.breakpoints || defaultBreakpoints;
         const extended = themeBreakpoints.keys.reduce((acc, key) => {
           if (props[key]) {
             acc = acc || {};
             acc[themeBreakpoints.up(key)] = styleFunction({
-              theme,
+              theme: theme2,
               ...props[key]
             });
           }
@@ -36499,8 +36499,8 @@ var require_style = __commonJS({
           return null;
         }
         const propValue = props[prop];
-        const theme = props.theme;
-        const themeMapping = getPath(theme, themeKey) || {};
+        const theme2 = props.theme;
+        const themeMapping = getPath(theme2, themeKey) || {};
         const styleFromPropValue = (propValueFinal) => {
           let value = getStyleValue(themeMapping, transform, propValueFinal);
           if (propValueFinal === value && typeof propValueFinal === "string") {
@@ -36653,8 +36653,8 @@ var require_spacing = __commonJS({
     var marginKeys = exports2.marginKeys = ["m", "mt", "mr", "mb", "ml", "mx", "my", "margin", "marginTop", "marginRight", "marginBottom", "marginLeft", "marginX", "marginY", "marginInline", "marginInlineStart", "marginInlineEnd", "marginBlock", "marginBlockStart", "marginBlockEnd"];
     var paddingKeys = exports2.paddingKeys = ["p", "pt", "pr", "pb", "pl", "px", "py", "padding", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft", "paddingX", "paddingY", "paddingInline", "paddingInlineStart", "paddingInlineEnd", "paddingBlock", "paddingBlockStart", "paddingBlockEnd"];
     var spacingKeys = [...marginKeys, ...paddingKeys];
-    function createUnaryUnit(theme, themeKey, defaultValue, propName) {
-      const themeSpacing = (0, _style.getPath)(theme, themeKey, true) ?? defaultValue;
+    function createUnaryUnit(theme2, themeKey, defaultValue, propName) {
+      const themeSpacing = (0, _style.getPath)(theme2, themeKey, true) ?? defaultValue;
       if (typeof themeSpacing === "number" || typeof themeSpacing === "string") {
         return (val) => {
           if (typeof val === "string") {
@@ -36702,8 +36702,8 @@ var require_spacing = __commonJS({
       }
       return () => void 0;
     }
-    function createUnarySpacing(theme) {
-      return createUnaryUnit(theme, "spacing", 8, "spacing");
+    function createUnarySpacing(theme2) {
+      return createUnaryUnit(theme2, "spacing", 8, "spacing");
     }
     function getValue(transformer, propValue) {
       if (typeof propValue === "string" || propValue == null) {
@@ -37606,10 +37606,10 @@ var require_styleFunctionSx = __commonJS({
       return typeof maybeFn === "function" ? maybeFn(arg) : maybeFn;
     }
     function unstable_createStyleFunctionSx() {
-      function getThemeValue(prop, val, theme, config) {
+      function getThemeValue(prop, val, theme2, config) {
         const props = {
           [prop]: val,
-          theme
+          theme: theme2
         };
         const options = config[prop];
         if (!options) {
@@ -37631,7 +37631,7 @@ var require_styleFunctionSx = __commonJS({
             [prop]: val
           };
         }
-        const themeMapping = (0, _style.getPath)(theme, themeKey) || {};
+        const themeMapping = (0, _style.getPath)(theme2, themeKey) || {};
         if (style) {
           return style(props);
         }
@@ -37652,52 +37652,52 @@ var require_styleFunctionSx = __commonJS({
       function styleFunctionSx2(props) {
         const {
           sx,
-          theme = {}
+          theme: theme2 = {}
         } = props || {};
         if (!sx) {
           return null;
         }
-        const config = theme.unstable_sxConfig ?? _defaultSxConfig.default;
+        const config = theme2.unstable_sxConfig ?? _defaultSxConfig.default;
         function traverse(sxInput) {
           let sxObject = sxInput;
           if (typeof sxInput === "function") {
-            sxObject = sxInput(theme);
+            sxObject = sxInput(theme2);
           } else if (typeof sxInput !== "object") {
             return sxInput;
           }
           if (!sxObject) {
             return null;
           }
-          const emptyBreakpoints = (0, _breakpoints.createEmptyBreakpointObject)(theme.breakpoints);
+          const emptyBreakpoints = (0, _breakpoints.createEmptyBreakpointObject)(theme2.breakpoints);
           const breakpointsKeys = Object.keys(emptyBreakpoints);
           let css2 = emptyBreakpoints;
           Object.keys(sxObject).forEach((styleKey) => {
-            const value = callIfFn(sxObject[styleKey], theme);
+            const value = callIfFn(sxObject[styleKey], theme2);
             if (value !== null && value !== void 0) {
               if (typeof value === "object") {
                 if (config[styleKey]) {
-                  css2 = (0, _merge.default)(css2, getThemeValue(styleKey, value, theme, config));
+                  css2 = (0, _merge.default)(css2, getThemeValue(styleKey, value, theme2, config));
                 } else {
                   const breakpointsValues = (0, _breakpoints.handleBreakpoints)({
-                    theme
+                    theme: theme2
                   }, value, (x) => ({
                     [styleKey]: x
                   }));
                   if (objectsHaveSameKeys(breakpointsValues, value)) {
                     css2[styleKey] = styleFunctionSx2({
                       sx: value,
-                      theme
+                      theme: theme2
                     });
                   } else {
                     css2 = (0, _merge.default)(css2, breakpointsValues);
                   }
                 }
               } else {
-                css2 = (0, _merge.default)(css2, getThemeValue(styleKey, value, theme, config));
+                css2 = (0, _merge.default)(css2, getThemeValue(styleKey, value, theme2, config));
               }
             }
           });
-          return (0, _cssContainerQueries.sortContainerQueries)(theme, (0, _breakpoints.removeUnusedBreakpoints)(breakpointsKeys, css2));
+          return (0, _cssContainerQueries.sortContainerQueries)(theme2, (0, _breakpoints.removeUnusedBreakpoints)(breakpointsKeys, css2));
         }
         return Array.isArray(sx) ? sx.map(traverse) : traverse(sx);
       }
@@ -37719,12 +37719,12 @@ var require_applyStyles = __commonJS({
     });
     exports2.default = applyStyles;
     function applyStyles(key, styles) {
-      const theme = this;
-      if (theme.vars) {
-        if (!theme.colorSchemes?.[key] || typeof theme.getColorSchemeSelector !== "function") {
+      const theme2 = this;
+      if (theme2.vars) {
+        if (!theme2.colorSchemes?.[key] || typeof theme2.getColorSchemeSelector !== "function") {
           return {};
         }
-        let selector = theme.getColorSchemeSelector(key);
+        let selector = theme2.getColorSchemeSelector(key);
         if (selector === "&") {
           return styles;
         }
@@ -37735,7 +37735,7 @@ var require_applyStyles = __commonJS({
           [selector]: styles
         };
       }
-      if (theme.palette.mode === key) {
+      if (theme2.palette.mode === key) {
         return styles;
       }
       return {};
@@ -37761,7 +37761,7 @@ var require_createTheme = __commonJS({
     var _styleFunctionSx = _interopRequireDefault(require_styleFunctionSx());
     var _defaultSxConfig = _interopRequireDefault(require_defaultSxConfig());
     var _applyStyles = _interopRequireDefault(require_applyStyles());
-    function createTheme(options = {}, ...args) {
+    function createTheme2(options = {}, ...args) {
       const {
         breakpoints: breakpointsInput = {},
         palette: paletteInput = {},
@@ -37801,7 +37801,7 @@ var require_createTheme = __commonJS({
       };
       return muiTheme;
     }
-    var _default = exports2.default = createTheme;
+    var _default = exports2.default = createTheme2;
   }
 });
 
@@ -38511,10 +38511,10 @@ var require_getThemeValue = __commonJS({
       });
       return acc;
     }, {});
-    function getThemeValue(prop, value, theme) {
+    function getThemeValue(prop, value, theme2) {
       const inputProps = {
         [prop]: value,
-        theme
+        theme: theme2
       };
       const styleFunction = propToStyleFunction[prop];
       return styleFunction ? styleFunction(inputProps) : {
@@ -38654,7 +38654,7 @@ var require_createBox = __commonJS({
         shouldForwardProp: (prop) => prop !== "theme" && prop !== "sx" && prop !== "as"
       })(_styleFunctionSx.default);
       const Box2 = /* @__PURE__ */ React7.forwardRef(function Box3(inProps, ref) {
-        const theme = (0, _useTheme.default)(defaultTheme);
+        const theme2 = (0, _useTheme.default)(defaultTheme);
         const {
           className,
           component = "div",
@@ -38664,7 +38664,7 @@ var require_createBox = __commonJS({
           as: component,
           ref,
           className: (0, _clsx.default)(className, generateClassName ? generateClassName(defaultClassName) : defaultClassName),
-          theme: themeId ? theme[themeId] || theme : theme,
+          theme: themeId ? theme2[themeId] || theme2 : theme2,
           ...other
         });
       });
@@ -39149,8 +39149,8 @@ var require_createStyled = __commonJS({
           expressionsHead.push(styleAttachTheme);
           if (componentName && overridesResolver) {
             expressionsTail.push(function styleThemeOverrides(props) {
-              const theme = props.theme;
-              const styleOverrides = theme.components?.[componentName]?.styleOverrides;
+              const theme2 = props.theme;
+              const styleOverrides = theme2.components?.[componentName]?.styleOverrides;
               if (!styleOverrides) {
                 return null;
               }
@@ -39163,8 +39163,8 @@ var require_createStyled = __commonJS({
           }
           if (componentName && !skipVariantsResolver) {
             expressionsTail.push(function styleThemeVariants(props) {
-              const theme = props.theme;
-              const themeVariants = theme?.components?.[componentName]?.variants;
+              const theme2 = props.theme;
+              const themeVariants = theme2?.components?.[componentName]?.variants;
               if (!themeVariants) {
                 return null;
               }
@@ -39385,14 +39385,14 @@ var require_getThemeProps = __commonJS({
     var _resolveProps = _interopRequireDefault(require_resolveProps2());
     function getThemeProps(params) {
       const {
-        theme,
+        theme: theme2,
         name,
         props
       } = params;
-      if (!theme || !theme.components || !theme.components[name] || !theme.components[name].defaultProps) {
+      if (!theme2 || !theme2.components || !theme2.components[name] || !theme2.components[name].defaultProps) {
         return props;
       }
-      return (0, _resolveProps.default)(theme.components[name].defaultProps, props);
+      return (0, _resolveProps.default)(theme2.components[name].defaultProps, props);
     }
   }
 });
@@ -39416,12 +39416,12 @@ var require_useThemeProps = __commonJS({
       defaultTheme,
       themeId
     }) {
-      let theme = (0, _useTheme.default)(defaultTheme);
+      let theme2 = (0, _useTheme.default)(defaultTheme);
       if (themeId) {
-        theme = theme[themeId] || theme;
+        theme2 = theme2[themeId] || theme2;
       }
       return (0, _getThemeProps.default)({
-        theme,
+        theme: theme2,
         name,
         props
       });
@@ -39573,9 +39573,9 @@ var require_useMediaQuery = __commonJS({
         themeId
       } = params;
       return function useMediaQuery2(queryInput, options = {}) {
-        let theme = (0, _useThemeWithoutDefault.default)();
-        if (theme && themeId) {
-          theme = theme[themeId] || theme;
+        let theme2 = (0, _useThemeWithoutDefault.default)();
+        if (theme2 && themeId) {
+          theme2 = theme2[themeId] || theme2;
         }
         const supportMatchMedia = typeof window !== "undefined" && typeof window.matchMedia !== "undefined";
         const {
@@ -39586,14 +39586,14 @@ var require_useMediaQuery = __commonJS({
         } = (0, _useThemeProps.getThemeProps)({
           name: "MuiUseMediaQuery",
           props: options,
-          theme
+          theme: theme2
         });
         if (define_process_env_default.NODE_ENV !== "production") {
-          if (typeof queryInput === "function" && theme === null) {
+          if (typeof queryInput === "function" && theme2 === null) {
             console.error(["MUI: The `query` argument provided is invalid.", "You are providing a function without a theme in the context.", "One of the parent elements needs to use a ThemeProvider."].join("\n"));
           }
         }
-        let query = typeof queryInput === "function" ? queryInput(theme) : queryInput;
+        let query = typeof queryInput === "function" ? queryInput(theme2) : queryInput;
         query = query.replace(/^@media( ?)/m, "");
         const useMediaQueryImplementation = maybeReactUseSyncExternalStore !== void 0 ? useMediaQueryNew : useMediaQueryOld;
         const match2 = useMediaQueryImplementation(query, defaultMatches, matchMedia2, ssrMatchMedia, noSsr);
@@ -42484,11 +42484,11 @@ var require_useTheme3 = __commonJS({
     var React7 = _interopRequireWildcard(require_react());
     var _ThemeContext = _interopRequireDefault(require_ThemeContext());
     function useTheme3() {
-      const theme = React7.useContext(_ThemeContext.default);
+      const theme2 = React7.useContext(_ThemeContext.default);
       if (define_process_env_default.NODE_ENV !== "production") {
-        React7.useDebugValue(theme);
+        React7.useDebugValue(theme2);
       }
-      return theme;
+      return theme2;
     }
   }
 });
@@ -42559,7 +42559,7 @@ var require_ThemeProvider = __commonJS({
         ...localTheme
       };
     }
-    function ThemeProvider3(props) {
+    function ThemeProvider4(props) {
       const {
         children,
         theme: localTheme
@@ -42570,7 +42570,7 @@ var require_ThemeProvider = __commonJS({
           console.error(["MUI: You are providing a theme function prop to the ThemeProvider component:", "<ThemeProvider theme={outerTheme => outerTheme} />", "", "However, no outer theme is present.", "Make sure a theme is already injected higher in the React tree or provide a theme object."].join("\n"));
         }
       }
-      const theme = React7.useMemo(() => {
+      const theme2 = React7.useMemo(() => {
         const output = outerTheme === null ? {
           ...localTheme
         } : mergeOuterLocalTheme(outerTheme, localTheme);
@@ -42580,11 +42580,11 @@ var require_ThemeProvider = __commonJS({
         return output;
       }, [localTheme, outerTheme]);
       return /* @__PURE__ */ (0, _jsxRuntime.jsx)(_ThemeContext.default.Provider, {
-        value: theme,
+        value: theme2,
         children
       });
     }
-    define_process_env_default.NODE_ENV !== "production" ? ThemeProvider3.propTypes = {
+    define_process_env_default.NODE_ENV !== "production" ? ThemeProvider4.propTypes = {
       /**
        * Your component tree.
        */
@@ -42595,9 +42595,9 @@ var require_ThemeProvider = __commonJS({
       theme: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func]).isRequired
     } : void 0;
     if (define_process_env_default.NODE_ENV !== "production") {
-      define_process_env_default.NODE_ENV !== "production" ? ThemeProvider3.propTypes = (0, _utils.exactProp)(ThemeProvider3.propTypes) : void 0;
+      define_process_env_default.NODE_ENV !== "production" ? ThemeProvider4.propTypes = (0, _utils.exactProp)(ThemeProvider4.propTypes) : void 0;
     }
-    var _default = exports2.default = ThemeProvider3;
+    var _default = exports2.default = ThemeProvider4;
   }
 });
 
@@ -42750,14 +42750,14 @@ var require_DefaultPropsProvider = __commonJS({
     } : void 0;
     function getThemeProps(params) {
       const {
-        theme,
+        theme: theme2,
         name,
         props
       } = params;
-      if (!theme || !theme.components || !theme.components[name]) {
+      if (!theme2 || !theme2.components || !theme2.components[name]) {
         return props;
       }
-      const config = theme.components[name];
+      const config = theme2.components[name];
       if (config.defaultProps) {
         return (0, _resolveProps.default)(config.defaultProps, props);
       }
@@ -42853,7 +42853,7 @@ var require_ThemeProvider3 = __commonJS({
         };
       }, [themeId, upperTheme, localTheme, isPrivate]);
     }
-    function ThemeProvider3(props) {
+    function ThemeProvider4(props) {
       const {
         children,
         theme: localTheme,
@@ -42883,7 +42883,7 @@ var require_ThemeProvider3 = __commonJS({
         })
       });
     }
-    define_process_env_default.NODE_ENV !== "production" ? ThemeProvider3.propTypes = {
+    define_process_env_default.NODE_ENV !== "production" ? ThemeProvider4.propTypes = {
       // ┌────────────────────────────── Warning ──────────────────────────────┐
       // │ These PropTypes are generated from the TypeScript type definitions. │
       // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
@@ -42902,9 +42902,9 @@ var require_ThemeProvider3 = __commonJS({
       themeId: _propTypes.default.string
     } : void 0;
     if (define_process_env_default.NODE_ENV !== "production") {
-      define_process_env_default.NODE_ENV !== "production" ? ThemeProvider3.propTypes = (0, _exactProp.default)(ThemeProvider3.propTypes) : void 0;
+      define_process_env_default.NODE_ENV !== "production" ? ThemeProvider4.propTypes = (0, _exactProp.default)(ThemeProvider4.propTypes) : void 0;
     }
-    var _default = exports2.default = ThemeProvider3;
+    var _default = exports2.default = ThemeProvider4;
   }
 });
 
@@ -43464,32 +43464,32 @@ var require_createCssVarsProvider = __commonJS({
         const memoTheme = React7.useMemo(() => {
           const calculatedColorScheme = colorScheme || restThemeProp.defaultColorScheme;
           const themeVars = restThemeProp.generateThemeVars?.() || restThemeProp.vars;
-          const theme = {
+          const theme2 = {
             ...restThemeProp,
             components,
             colorSchemes,
             cssVarPrefix,
             vars: themeVars
           };
-          if (typeof theme.generateSpacing === "function") {
-            theme.spacing = theme.generateSpacing();
+          if (typeof theme2.generateSpacing === "function") {
+            theme2.spacing = theme2.generateSpacing();
           }
           if (calculatedColorScheme) {
             const scheme = colorSchemes[calculatedColorScheme];
             if (scheme && typeof scheme === "object") {
               Object.keys(scheme).forEach((schemeKey) => {
                 if (scheme[schemeKey] && typeof scheme[schemeKey] === "object") {
-                  theme[schemeKey] = {
-                    ...theme[schemeKey],
+                  theme2[schemeKey] = {
+                    ...theme2[schemeKey],
                     ...scheme[schemeKey]
                   };
                 } else {
-                  theme[schemeKey] = scheme[schemeKey];
+                  theme2[schemeKey] = scheme[schemeKey];
                 }
               });
             }
           }
-          return resolveTheme ? resolveTheme(theme) : theme;
+          return resolveTheme ? resolveTheme(theme2) : theme2;
         }, [restThemeProp, colorScheme, components, colorSchemes, cssVarPrefix]);
         const colorSchemeSelector = restThemeProp.colorSchemeSelector;
         (0, _useEnhancedEffect.default)(() => {
@@ -43746,7 +43746,7 @@ var require_cssVarsParser = __commonJS({
       }
       return value;
     };
-    function cssVarsParser(theme, options) {
+    function cssVarsParser(theme2, options) {
       const {
         prefix: prefix2,
         shouldSkipGeneratingVar
@@ -43755,7 +43755,7 @@ var require_cssVarsParser = __commonJS({
       const vars = {};
       const varsWithDefaults = {};
       walkObjectDeep(
-        theme,
+        theme2,
         (keys, value, arrayKeys) => {
           if (typeof value === "string" || typeof value === "number") {
             if (!shouldSkipGeneratingVar || !shouldSkipGeneratingVar(keys, value)) {
@@ -43793,7 +43793,7 @@ var require_prepareCssVars = __commonJS({
     exports2.default = void 0;
     var _deepmerge = _interopRequireDefault(require_deepmerge2());
     var _cssVarsParser = _interopRequireDefault(require_cssVarsParser());
-    function prepareCssVars(theme, parserConfig = {}) {
+    function prepareCssVars(theme2, parserConfig = {}) {
       const {
         getSelector = defaultGetSelector,
         disableCssColorScheme,
@@ -43804,7 +43804,7 @@ var require_prepareCssVars = __commonJS({
         components,
         defaultColorScheme = "light",
         ...otherTheme
-      } = theme;
+      } = theme2;
       const {
         vars: rootVars,
         css: rootCss,
@@ -43853,7 +43853,7 @@ var require_prepareCssVars = __commonJS({
         }
         if (colorScheme) {
           if (rule === "media") {
-            if (theme.defaultColorScheme === colorScheme) {
+            if (theme2.defaultColorScheme === colorScheme) {
               return ":root";
             }
             const mode = colorSchemes[colorScheme]?.palette?.mode || colorScheme;
@@ -43864,7 +43864,7 @@ var require_prepareCssVars = __commonJS({
             };
           }
           if (rule) {
-            if (theme.defaultColorScheme === colorScheme) {
+            if (theme2.defaultColorScheme === colorScheme) {
               return `:root, ${rule.replace("%s", String(colorScheme))}`;
             }
             return rule.replace("%s", String(colorScheme));
@@ -43885,7 +43885,7 @@ var require_prepareCssVars = __commonJS({
       };
       const generateStyleSheets = () => {
         const stylesheets = [];
-        const colorScheme = theme.defaultColorScheme || "light";
+        const colorScheme = theme2.defaultColorScheme || "light";
         function insertStyleSheet(key, css2) {
           if (Object.keys(css2).length) {
             stylesheets.push(typeof key === "string" ? {
@@ -43995,12 +43995,12 @@ var require_createCssVarsTheme = __commonJS({
     var _InitColorSchemeScript = require_InitColorSchemeScript();
     function createCssVarsTheme({
       colorSchemeSelector = `[${_InitColorSchemeScript.DEFAULT_ATTRIBUTE}="%s"]`,
-      ...theme
+      ...theme2
     }) {
-      const output = theme;
+      const output = theme2;
       const result = (0, _prepareCssVars.default)(output, {
-        ...theme,
-        prefix: theme.cssVarPrefix,
+        ...theme2,
+        prefix: theme2.cssVarPrefix,
         colorSchemeSelector
       });
       output.vars = result.vars;
@@ -44092,7 +44092,7 @@ var require_createContainer = __commonJS({
         componentName = "MuiContainer"
       } = options;
       const ContainerRoot = createStyledComponent(({
-        theme,
+        theme: theme2,
         ownerState
       }) => ({
         width: "100%",
@@ -44100,44 +44100,44 @@ var require_createContainer = __commonJS({
         boxSizing: "border-box",
         marginRight: "auto",
         ...!ownerState.disableGutters && {
-          paddingLeft: theme.spacing(2),
-          paddingRight: theme.spacing(2),
+          paddingLeft: theme2.spacing(2),
+          paddingRight: theme2.spacing(2),
           // @ts-ignore module augmentation fails if custom breakpoints are used
-          [theme.breakpoints.up("sm")]: {
-            paddingLeft: theme.spacing(3),
-            paddingRight: theme.spacing(3)
+          [theme2.breakpoints.up("sm")]: {
+            paddingLeft: theme2.spacing(3),
+            paddingRight: theme2.spacing(3)
           }
         }
       }), ({
-        theme,
+        theme: theme2,
         ownerState
-      }) => ownerState.fixed && Object.keys(theme.breakpoints.values).reduce((acc, breakpointValueKey) => {
+      }) => ownerState.fixed && Object.keys(theme2.breakpoints.values).reduce((acc, breakpointValueKey) => {
         const breakpoint = breakpointValueKey;
-        const value = theme.breakpoints.values[breakpoint];
+        const value = theme2.breakpoints.values[breakpoint];
         if (value !== 0) {
-          acc[theme.breakpoints.up(breakpoint)] = {
-            maxWidth: `${value}${theme.breakpoints.unit}`
+          acc[theme2.breakpoints.up(breakpoint)] = {
+            maxWidth: `${value}${theme2.breakpoints.unit}`
           };
         }
         return acc;
       }, {}), ({
-        theme,
+        theme: theme2,
         ownerState
       }) => ({
         // @ts-ignore module augmentation fails if custom breakpoints are used
         ...ownerState.maxWidth === "xs" && {
           // @ts-ignore module augmentation fails if custom breakpoints are used
-          [theme.breakpoints.up("xs")]: {
+          [theme2.breakpoints.up("xs")]: {
             // @ts-ignore module augmentation fails if custom breakpoints are used
-            maxWidth: Math.max(theme.breakpoints.values.xs, 444)
+            maxWidth: Math.max(theme2.breakpoints.values.xs, 444)
           }
         },
         ...ownerState.maxWidth && // @ts-ignore module augmentation fails if custom breakpoints are used
         ownerState.maxWidth !== "xs" && {
           // @ts-ignore module augmentation fails if custom breakpoints are used
-          [theme.breakpoints.up(ownerState.maxWidth)]: {
+          [theme2.breakpoints.up(ownerState.maxWidth)]: {
             // @ts-ignore module augmentation fails if custom breakpoints are used
-            maxWidth: `${theme.breakpoints.values[ownerState.maxWidth]}${theme.breakpoints.unit}`
+            maxWidth: `${theme2.breakpoints.values[ownerState.maxWidth]}${theme2.breakpoints.unit}`
           }
         }
       }));
@@ -44379,11 +44379,11 @@ var require_gridGenerator = __commonJS({
     var selfColumnsVar = "--Grid-columns";
     var parentColumnsVar = "--Grid-parent-columns";
     var generateGridSizeStyles = ({
-      theme,
+      theme: theme2,
       ownerState
     }) => {
       const styles = {};
-      (0, _traverseBreakpoints.traverseBreakpoints)(theme.breakpoints, ownerState.size, (appendStyle, value) => {
+      (0, _traverseBreakpoints.traverseBreakpoints)(theme2.breakpoints, ownerState.size, (appendStyle, value) => {
         let style = {};
         if (value === "grow") {
           style = {
@@ -44414,11 +44414,11 @@ var require_gridGenerator = __commonJS({
     };
     exports2.generateGridSizeStyles = generateGridSizeStyles;
     var generateGridOffsetStyles = ({
-      theme,
+      theme: theme2,
       ownerState
     }) => {
       const styles = {};
-      (0, _traverseBreakpoints.traverseBreakpoints)(theme.breakpoints, ownerState.offset, (appendStyle, value) => {
+      (0, _traverseBreakpoints.traverseBreakpoints)(theme2.breakpoints, ownerState.offset, (appendStyle, value) => {
         let style = {};
         if (value === "auto") {
           style = {
@@ -44436,7 +44436,7 @@ var require_gridGenerator = __commonJS({
     };
     exports2.generateGridOffsetStyles = generateGridOffsetStyles;
     var generateGridColumnsStyles = ({
-      theme,
+      theme: theme2,
       ownerState
     }) => {
       if (!ownerState.container) {
@@ -44445,7 +44445,7 @@ var require_gridGenerator = __commonJS({
       const styles = {
         [selfColumnsVar]: 12
       };
-      (0, _traverseBreakpoints.traverseBreakpoints)(theme.breakpoints, ownerState.columns, (appendStyle, value) => {
+      (0, _traverseBreakpoints.traverseBreakpoints)(theme2.breakpoints, ownerState.columns, (appendStyle, value) => {
         const columns = value ?? 12;
         appendStyle(styles, {
           [selfColumnsVar]: columns,
@@ -44458,15 +44458,15 @@ var require_gridGenerator = __commonJS({
     };
     exports2.generateGridColumnsStyles = generateGridColumnsStyles;
     var generateGridRowSpacingStyles = ({
-      theme,
+      theme: theme2,
       ownerState
     }) => {
       if (!ownerState.container) {
         return {};
       }
       const styles = {};
-      (0, _traverseBreakpoints.traverseBreakpoints)(theme.breakpoints, ownerState.rowSpacing, (appendStyle, value) => {
-        const spacing = typeof value === "string" ? value : theme.spacing?.(value);
+      (0, _traverseBreakpoints.traverseBreakpoints)(theme2.breakpoints, ownerState.rowSpacing, (appendStyle, value) => {
+        const spacing = typeof value === "string" ? value : theme2.spacing?.(value);
         appendStyle(styles, {
           [getSelfSpacingVar("row")]: spacing,
           "> *": {
@@ -44478,15 +44478,15 @@ var require_gridGenerator = __commonJS({
     };
     exports2.generateGridRowSpacingStyles = generateGridRowSpacingStyles;
     var generateGridColumnSpacingStyles = ({
-      theme,
+      theme: theme2,
       ownerState
     }) => {
       if (!ownerState.container) {
         return {};
       }
       const styles = {};
-      (0, _traverseBreakpoints.traverseBreakpoints)(theme.breakpoints, ownerState.columnSpacing, (appendStyle, value) => {
-        const spacing = typeof value === "string" ? value : theme.spacing?.(value);
+      (0, _traverseBreakpoints.traverseBreakpoints)(theme2.breakpoints, ownerState.columnSpacing, (appendStyle, value) => {
+        const spacing = typeof value === "string" ? value : theme2.spacing?.(value);
         appendStyle(styles, {
           [getSelfSpacingVar("column")]: spacing,
           "> *": {
@@ -44498,14 +44498,14 @@ var require_gridGenerator = __commonJS({
     };
     exports2.generateGridColumnSpacingStyles = generateGridColumnSpacingStyles;
     var generateGridDirectionStyles = ({
-      theme,
+      theme: theme2,
       ownerState
     }) => {
       if (!ownerState.container) {
         return {};
       }
       const styles = {};
-      (0, _traverseBreakpoints.traverseBreakpoints)(theme.breakpoints, ownerState.direction, (appendStyle, value) => {
+      (0, _traverseBreakpoints.traverseBreakpoints)(theme2.breakpoints, ownerState.direction, (appendStyle, value) => {
         appendStyle(styles, {
           flexDirection: value
         });
@@ -44666,7 +44666,7 @@ var require_createGrid = __commonJS({
         useTheme: useTheme3 = _useTheme.default,
         componentName = "MuiGrid"
       } = options;
-      const useUtilityClasses = (ownerState, theme) => {
+      const useUtilityClasses = (ownerState, theme2) => {
         const {
           container,
           direction,
@@ -44675,7 +44675,7 @@ var require_createGrid = __commonJS({
           size
         } = ownerState;
         const slots = {
-          root: ["root", container && "container", wrap !== "wrap" && `wrap-xs-${String(wrap)}`, ...(0, _gridGenerator.generateDirectionClasses)(direction), ...(0, _gridGenerator.generateSizeClassNames)(size), ...container ? (0, _gridGenerator.generateSpacingClassNames)(spacing, theme.breakpoints.keys[0]) : []]
+          root: ["root", container && "container", wrap !== "wrap" && `wrap-xs-${String(wrap)}`, ...(0, _gridGenerator.generateDirectionClasses)(direction), ...(0, _gridGenerator.generateSizeClassNames)(size), ...container ? (0, _gridGenerator.generateSpacingClassNames)(spacing, theme2.breakpoints.keys[0]) : []]
         };
         return (0, _composeClasses.default)(slots, (slot) => (0, _generateUtilityClass.default)(componentName, slot), {});
       };
@@ -44704,10 +44704,10 @@ var require_createGrid = __commonJS({
       }
       const GridRoot = createStyledComponent(_gridGenerator.generateGridColumnsStyles, _gridGenerator.generateGridColumnSpacingStyles, _gridGenerator.generateGridRowSpacingStyles, _gridGenerator.generateGridSizeStyles, _gridGenerator.generateGridDirectionStyles, _gridGenerator.generateGridStyles, _gridGenerator.generateGridOffsetStyles);
       const Grid = /* @__PURE__ */ React7.forwardRef(function Grid2(inProps, ref) {
-        const theme = useTheme3();
+        const theme2 = useTheme3();
         const themeProps = useThemeProps(inProps);
         const props = (0, _styleFunctionSx.extendSxProp)(themeProps);
-        (0, _deleteLegacyGridProps.default)(props, theme.breakpoints);
+        (0, _deleteLegacyGridProps.default)(props, theme2.breakpoints);
         const {
           className,
           children,
@@ -44724,8 +44724,8 @@ var require_createGrid = __commonJS({
           unstable_level: level = 0,
           ...other
         } = props;
-        const size = parseResponsiveProp(sizeProp, theme.breakpoints, (val) => val !== false);
-        const offset = parseResponsiveProp(offsetProp, theme.breakpoints);
+        const size = parseResponsiveProp(sizeProp, theme2.breakpoints, (val) => val !== false);
+        const offset = parseResponsiveProp(offsetProp, theme2.breakpoints);
         const columns = inProps.columns ?? (level ? void 0 : columnsProp);
         const spacing = inProps.spacing ?? (level ? void 0 : spacingProp);
         const rowSpacing = inProps.rowSpacing ?? inProps.spacing ?? (level ? void 0 : rowSpacingProp);
@@ -44743,7 +44743,7 @@ var require_createGrid = __commonJS({
           size,
           offset
         };
-        const classes = useUtilityClasses(ownerState, theme);
+        const classes = useUtilityClasses(ownerState, theme2);
         return /* @__PURE__ */ (0, _jsxRuntime.jsx)(GridRoot, {
           ref,
           as: component,
@@ -45091,23 +45091,23 @@ var require_createStack = __commonJS({
     };
     var style = ({
       ownerState,
-      theme
+      theme: theme2
     }) => {
       let styles = {
         display: "flex",
         flexDirection: "column",
         ...(0, _breakpoints.handleBreakpoints)({
-          theme
+          theme: theme2
         }, (0, _breakpoints.resolveBreakpointValues)({
           values: ownerState.direction,
-          breakpoints: theme.breakpoints.values
+          breakpoints: theme2.breakpoints.values
         }), (propValue) => ({
           flexDirection: propValue
         }))
       };
       if (ownerState.spacing) {
-        const transformer = (0, _spacing.createUnarySpacing)(theme);
-        const base = Object.keys(theme.breakpoints.values).reduce((acc, breakpoint) => {
+        const transformer = (0, _spacing.createUnarySpacing)(theme2);
+        const base = Object.keys(theme2.breakpoints.values).reduce((acc, breakpoint) => {
           if (typeof ownerState.spacing === "object" && ownerState.spacing[breakpoint] != null || typeof ownerState.direction === "object" && ownerState.direction[breakpoint] != null) {
             acc[breakpoint] = true;
           }
@@ -45148,10 +45148,10 @@ var require_createStack = __commonJS({
           };
         };
         styles = (0, _deepmerge.default)(styles, (0, _breakpoints.handleBreakpoints)({
-          theme
+          theme: theme2
         }, spacingValues, styleFromPropValue));
       }
-      styles = (0, _breakpoints.mergeBreakpointsInOrder)(theme.breakpoints, styles);
+      styles = (0, _breakpoints.mergeBreakpointsInOrder)(theme2.breakpoints, styles);
       return styles;
     };
     exports2.style = style;
@@ -46029,34 +46029,34 @@ var require_adaptV4Theme = __commonJS({
         styleOverrides = {},
         ...other
       } = inputTheme;
-      const theme = {
+      const theme2 = {
         ...other,
         components: {}
       };
       Object.keys(defaultProps).forEach((component) => {
-        const componentValue = theme.components[component] || {};
+        const componentValue = theme2.components[component] || {};
         componentValue.defaultProps = defaultProps[component];
-        theme.components[component] = componentValue;
+        theme2.components[component] = componentValue;
       });
       Object.keys(props).forEach((component) => {
-        const componentValue = theme.components[component] || {};
+        const componentValue = theme2.components[component] || {};
         componentValue.defaultProps = props[component];
-        theme.components[component] = componentValue;
+        theme2.components[component] = componentValue;
       });
       Object.keys(styleOverrides).forEach((component) => {
-        const componentValue = theme.components[component] || {};
+        const componentValue = theme2.components[component] || {};
         componentValue.styleOverrides = styleOverrides[component];
-        theme.components[component] = componentValue;
+        theme2.components[component] = componentValue;
       });
       Object.keys(overrides).forEach((component) => {
-        const componentValue = theme.components[component] || {};
+        const componentValue = theme2.components[component] || {};
         componentValue.styleOverrides = overrides[component];
-        theme.components[component] = componentValue;
+        theme2.components[component] = componentValue;
       });
-      theme.spacing = (0, _system.createSpacing)(inputTheme.spacing);
+      theme2.spacing = (0, _system.createSpacing)(inputTheme.spacing);
       const breakpoints = (0, _system.createBreakpoints)(inputTheme.breakpoints || {});
-      const spacing = theme.spacing;
-      theme.mixins = {
+      const spacing = theme2.spacing;
+      theme2.mixins = {
         gutters: (styles = {}) => {
           return {
             paddingLeft: spacing(2),
@@ -46077,7 +46077,7 @@ var require_adaptV4Theme = __commonJS({
         ...paletteRest
       } = palette;
       const finalMode = modeInput || typeInput || "light";
-      theme.palette = {
+      theme2.palette = {
         // theme.palette.text.hint
         text: {
           hint: finalMode === "dark" ? "rgba(255, 255, 255, 0.5)" : "rgba(0, 0, 0, 0.38)"
@@ -46086,7 +46086,7 @@ var require_adaptV4Theme = __commonJS({
         type: finalMode,
         ...paletteRest
       };
-      return theme;
+      return theme2;
     }
   }
 });
@@ -47264,9 +47264,9 @@ var require_createGetSelector = __commonJS({
     });
     exports2.default = void 0;
     var _excludeVariablesFromRoot = _interopRequireDefault(require_excludeVariablesFromRoot());
-    var _default = (theme) => (colorScheme, css2) => {
-      const root = theme.rootSelector || ":root";
-      const selector = theme.colorSchemeSelector;
+    var _default = (theme2) => (colorScheme, css2) => {
+      const root = theme2.rootSelector || ":root";
+      const selector = theme2.colorSchemeSelector;
       let rule = selector;
       if (selector === "class") {
         rule = ".%s";
@@ -47277,10 +47277,10 @@ var require_createGetSelector = __commonJS({
       if (selector?.startsWith("data-") && !selector.includes("%s")) {
         rule = `[${selector}="%s"]`;
       }
-      if (theme.defaultColorScheme === colorScheme) {
+      if (theme2.defaultColorScheme === colorScheme) {
         if (colorScheme === "dark") {
           const excludedVariables = {};
-          (0, _excludeVariablesFromRoot.default)(theme.cssVarPrefix).forEach((cssVar) => {
+          (0, _excludeVariablesFromRoot.default)(theme2.cssVarPrefix).forEach((cssVar) => {
             excludedVariables[cssVar] = css2[cssVar];
             delete css2[cssVar];
           });
@@ -47468,7 +47468,7 @@ To suppress this warning, you need to explicitly provide the \`palette.${key}Cha
       if (builtInDark && !colorSchemes.dark) {
         attachColorScheme(colorSchemes, builtInDark, void 0, "dark");
       }
-      let theme = {
+      let theme2 = {
         defaultColorScheme,
         ...muiTheme,
         cssVarPrefix,
@@ -47482,8 +47482,8 @@ To suppress this warning, you need to explicitly provide the \`palette.${key}Cha
         },
         spacing: getSpacingVal(input.spacing)
       };
-      Object.keys(theme.colorSchemes).forEach((key) => {
-        const palette = theme.colorSchemes[key].palette;
+      Object.keys(theme2.colorSchemes).forEach((key) => {
+        const palette = theme2.colorSchemes[key].palette;
         const setCssVarColor = (cssVar) => {
           const tokens = cssVar.split("-");
           const color = tokens[1];
@@ -47658,42 +47658,42 @@ To suppress this warning, you need to explicitly provide the \`palette.${key}Cha
           }
         });
       });
-      theme = args.reduce((acc, argument) => (0, _deepmerge.default)(acc, argument), theme);
+      theme2 = args.reduce((acc, argument) => (0, _deepmerge.default)(acc, argument), theme2);
       const parserConfig = {
         prefix: cssVarPrefix,
         disableCssColorScheme,
         shouldSkipGeneratingVar,
-        getSelector: (0, _createGetSelector.default)(theme)
+        getSelector: (0, _createGetSelector.default)(theme2)
       };
       const {
         vars,
         generateThemeVars,
         generateStyleSheets
-      } = (0, _cssVars.prepareCssVars)(theme, parserConfig);
-      theme.vars = vars;
-      Object.entries(theme.colorSchemes[theme.defaultColorScheme]).forEach(([key, value]) => {
-        theme[key] = value;
+      } = (0, _cssVars.prepareCssVars)(theme2, parserConfig);
+      theme2.vars = vars;
+      Object.entries(theme2.colorSchemes[theme2.defaultColorScheme]).forEach(([key, value]) => {
+        theme2[key] = value;
       });
-      theme.generateThemeVars = generateThemeVars;
-      theme.generateStyleSheets = generateStyleSheets;
-      theme.generateSpacing = function generateSpacing() {
+      theme2.generateThemeVars = generateThemeVars;
+      theme2.generateStyleSheets = generateStyleSheets;
+      theme2.generateSpacing = function generateSpacing() {
         return (0, _system.createSpacing)(input.spacing, (0, _spacing.createUnarySpacing)(this));
       };
-      theme.getColorSchemeSelector = (0, _cssVars.createGetColorSchemeSelector)(selector);
-      theme.spacing = theme.generateSpacing();
-      theme.shouldSkipGeneratingVar = shouldSkipGeneratingVar;
-      theme.unstable_sxConfig = {
+      theme2.getColorSchemeSelector = (0, _cssVars.createGetColorSchemeSelector)(selector);
+      theme2.spacing = theme2.generateSpacing();
+      theme2.shouldSkipGeneratingVar = shouldSkipGeneratingVar;
+      theme2.unstable_sxConfig = {
         ..._styleFunctionSx.unstable_defaultSxConfig,
         ...input?.unstable_sxConfig
       };
-      theme.unstable_sx = function sx(props) {
+      theme2.unstable_sx = function sx(props) {
         return (0, _styleFunctionSx.default)({
           sx: props,
           theme: this
         });
       };
-      theme.toRuntimeSource = _stringifyTheme.stringifyTheme;
-      return theme;
+      theme2.toRuntimeSource = _stringifyTheme.stringifyTheme;
+      return theme2;
     }
   }
 });
@@ -47714,16 +47714,16 @@ var require_createTheme3 = __commonJS({
         return _createThemeNoVars.createMuiTheme;
       }
     });
-    exports2.default = createTheme;
+    exports2.default = createTheme2;
     var _createPalette = _interopRequireDefault(require_createPalette());
     var _createThemeWithVars = _interopRequireDefault(require_createThemeWithVars());
     var _createThemeNoVars = _interopRequireWildcard(require_createThemeNoVars());
-    function attachColorScheme(theme, scheme, colorScheme) {
-      if (!theme.colorSchemes) {
+    function attachColorScheme(theme2, scheme, colorScheme) {
+      if (!theme2.colorSchemes) {
         return void 0;
       }
       if (colorScheme) {
-        theme.colorSchemes[scheme] = {
+        theme2.colorSchemes[scheme] = {
           ...colorScheme !== true && colorScheme,
           palette: (0, _createPalette.default)({
             ...colorScheme === true ? {} : colorScheme.palette,
@@ -47733,7 +47733,7 @@ var require_createTheme3 = __commonJS({
         };
       }
     }
-    function createTheme(options = {}, ...args) {
+    function createTheme2(options = {}, ...args) {
       const {
         palette,
         cssVariables = false,
@@ -47770,27 +47770,27 @@ var require_createTheme3 = __commonJS({
             }
           }
         }
-        const theme = (0, _createThemeNoVars.default)({
+        const theme2 = (0, _createThemeNoVars.default)({
           ...options,
           palette: paletteOptions
         }, ...args);
-        theme.defaultColorScheme = defaultColorSchemeInput;
-        theme.colorSchemes = colorSchemesInput;
-        if (theme.palette.mode === "light") {
-          theme.colorSchemes.light = {
+        theme2.defaultColorScheme = defaultColorSchemeInput;
+        theme2.colorSchemes = colorSchemesInput;
+        if (theme2.palette.mode === "light") {
+          theme2.colorSchemes.light = {
             ...colorSchemesInput.light !== true && colorSchemesInput.light,
-            palette: theme.palette
+            palette: theme2.palette
           };
-          attachColorScheme(theme, "dark", colorSchemesInput.dark);
+          attachColorScheme(theme2, "dark", colorSchemesInput.dark);
         }
-        if (theme.palette.mode === "dark") {
-          theme.colorSchemes.dark = {
+        if (theme2.palette.mode === "dark") {
+          theme2.colorSchemes.dark = {
             ...colorSchemesInput.dark !== true && colorSchemesInput.dark,
-            palette: theme.palette
+            palette: theme2.palette
           };
-          attachColorScheme(theme, "light", colorSchemesInput.light);
+          attachColorScheme(theme2, "light", colorSchemesInput.light);
         }
-        return theme;
+        return theme2;
       }
       if (!palette && !("light" in colorSchemesInput) && defaultColorSchemeInput === "light") {
         colorSchemesInput.light = true;
@@ -47956,15 +47956,15 @@ var require_responsiveFontSizes = __commonJS({
         factor = 2,
         variants = ["h1", "h2", "h3", "h4", "h5", "h6", "subtitle1", "subtitle2", "body1", "body2", "caption", "button", "overline"]
       } = options;
-      const theme = {
+      const theme2 = {
         ...themeInput
       };
-      theme.typography = {
-        ...theme.typography
+      theme2.typography = {
+        ...theme2.typography
       };
-      const typography = theme.typography;
+      const typography = theme2.typography;
       const convert = (0, _cssUtils.convertLength)(typography.htmlFontSize);
-      const breakpointValues = breakpoints.map((x) => theme.breakpoints.values[x]);
+      const breakpointValues = breakpoints.map((x) => theme2.breakpoints.values[x]);
       variants.forEach((variant) => {
         const style = typography[variant];
         if (!style) {
@@ -48008,7 +48008,7 @@ var require_responsiveFontSizes = __commonJS({
           })
         };
       });
-      return theme;
+      return theme2;
     }
   }
 });
@@ -48047,11 +48047,11 @@ var require_useTheme5 = __commonJS({
     var _defaultTheme = _interopRequireDefault(require_defaultTheme());
     var _identifier = _interopRequireDefault(require_identifier());
     function useTheme3() {
-      const theme = (0, _system.useTheme)(_defaultTheme.default);
+      const theme2 = (0, _system.useTheme)(_defaultTheme.default);
       if (define_process_env_default.NODE_ENV !== "production") {
-        React7.useDebugValue(theme);
+        React7.useDebugValue(theme2);
       }
-      return theme[_identifier.default] || theme;
+      return theme2[_identifier.default] || theme2;
     }
   }
 });
@@ -48270,10 +48270,10 @@ var require_ThemeProviderWithVars = __commonJS({
         light: _InitColorSchemeScript.defaultConfig.defaultLightColorScheme,
         dark: _InitColorSchemeScript.defaultConfig.defaultDarkColorScheme
       },
-      resolveTheme: (theme) => {
+      resolveTheme: (theme2) => {
         const newTheme = {
-          ...theme,
-          typography: (0, _createTypography.default)(theme.palette, theme.typography)
+          ...theme2,
+          typography: (0, _createTypography.default)(theme2.palette, theme2.typography)
         };
         newTheme.unstable_sx = function sx(props) {
           return (0, _styleFunctionSx.default)({
@@ -48321,40 +48321,40 @@ var require_ThemeProvider5 = __commonJS({
     Object.defineProperty(exports2, "__esModule", {
       value: true
     });
-    exports2.default = ThemeProvider3;
+    exports2.default = ThemeProvider4;
     var React7 = _interopRequireWildcard(require_react());
     var _ThemeProviderNoVars = _interopRequireDefault(require_ThemeProviderNoVars());
     var _ThemeProviderWithVars = require_ThemeProviderWithVars();
     var _identifier = _interopRequireDefault(require_identifier());
     var _jsxRuntime = require_jsx_runtime();
-    function ThemeProvider3({
-      theme,
+    function ThemeProvider4({
+      theme: theme2,
       ...props
     }) {
-      if (typeof theme === "function") {
+      if (typeof theme2 === "function") {
         return /* @__PURE__ */ (0, _jsxRuntime.jsx)(_ThemeProviderNoVars.default, {
-          theme,
+          theme: theme2,
           ...props
         });
       }
-      const muiTheme = _identifier.default in theme ? theme[_identifier.default] : theme;
+      const muiTheme = _identifier.default in theme2 ? theme2[_identifier.default] : theme2;
       if (!("colorSchemes" in muiTheme)) {
         if (!("vars" in muiTheme)) {
           return /* @__PURE__ */ (0, _jsxRuntime.jsx)(_ThemeProviderNoVars.default, {
             theme: {
-              ...theme,
+              ...theme2,
               vars: null
             },
             ...props
           });
         }
         return /* @__PURE__ */ (0, _jsxRuntime.jsx)(_ThemeProviderNoVars.default, {
-          theme,
+          theme: theme2,
           ...props
         });
       }
       return /* @__PURE__ */ (0, _jsxRuntime.jsx)(_ThemeProviderWithVars.CssVarsProvider, {
-        theme,
+        theme: theme2,
         ...props
       });
     }
@@ -53260,8 +53260,8 @@ var require_zero_styled2 = __commonJS({
         return (
           // Pigment CSS `globalCss` support callback with theme inside an object but `GlobalStyles` support theme as a callback value.
           /* @__PURE__ */ (0, _jsxRuntime.jsx)(_GlobalStyles.default, {
-            styles: typeof styles === "function" ? (theme) => styles({
-              theme,
+            styles: typeof styles === "function" ? (theme2) => styles({
+              theme: theme2,
               ...props
             }) : styles
           })
@@ -53478,15 +53478,15 @@ var require_SvgIcon = __commonJS({
         return [styles.root, ownerState.color !== "inherit" && styles[`color${(0, _capitalize.default)(ownerState.color)}`], styles[`fontSize${(0, _capitalize.default)(ownerState.fontSize)}`]];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
       userSelect: "none",
       width: "1em",
       height: "1em",
       display: "inline-block",
       flexShrink: 0,
-      transition: theme.transitions?.create?.("fill", {
-        duration: (theme.vars ?? theme).transitions?.duration?.shorter
+      transition: theme2.transitions?.create?.("fill", {
+        duration: (theme2.vars ?? theme2).transitions?.duration?.shorter
       }),
       variants: [
         {
@@ -53510,7 +53510,7 @@ var require_SvgIcon = __commonJS({
             fontSize: "small"
           },
           style: {
-            fontSize: theme.typography?.pxToRem?.(20) || "1.25rem"
+            fontSize: theme2.typography?.pxToRem?.(20) || "1.25rem"
           }
         },
         {
@@ -53518,7 +53518,7 @@ var require_SvgIcon = __commonJS({
             fontSize: "medium"
           },
           style: {
-            fontSize: theme.typography?.pxToRem?.(24) || "1.5rem"
+            fontSize: theme2.typography?.pxToRem?.(24) || "1.5rem"
           }
         },
         {
@@ -53526,16 +53526,16 @@ var require_SvgIcon = __commonJS({
             fontSize: "large"
           },
           style: {
-            fontSize: theme.typography?.pxToRem?.(35) || "2.1875rem"
+            fontSize: theme2.typography?.pxToRem?.(35) || "2.1875rem"
           }
         },
         // TODO v5 deprecate color prop, v6 remove for sx
-        ...Object.entries((theme.vars ?? theme).palette).filter(([, value]) => value && value.main).map(([color]) => ({
+        ...Object.entries((theme2.vars ?? theme2).palette).filter(([, value]) => value && value.main).map(([color]) => ({
           props: {
             color
           },
           style: {
-            color: (theme.vars ?? theme).palette?.[color]?.main
+            color: (theme2.vars ?? theme2).palette?.[color]?.main
           }
         })),
         {
@@ -53543,7 +53543,7 @@ var require_SvgIcon = __commonJS({
             color: "action"
           },
           style: {
-            color: (theme.vars ?? theme).palette?.action?.active
+            color: (theme2.vars ?? theme2).palette?.action?.active
           }
         },
         {
@@ -53551,7 +53551,7 @@ var require_SvgIcon = __commonJS({
             color: "disabled"
           },
           style: {
-            color: (theme.vars ?? theme).palette?.action?.disabled
+            color: (theme2.vars ?? theme2).palette?.action?.disabled
           }
         },
         {
@@ -54249,11 +54249,11 @@ var require_Collapse = __commonJS({
         return [styles.root, styles[ownerState.orientation], ownerState.state === "entered" && styles.entered, ownerState.state === "exited" && !ownerState.in && ownerState.collapsedSize === "0px" && styles.hidden];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
       height: 0,
       overflow: "hidden",
-      transition: theme.transitions.create("height"),
+      transition: theme2.transitions.create("height"),
       variants: [{
         props: {
           orientation: "horizontal"
@@ -54261,7 +54261,7 @@ var require_Collapse = __commonJS({
         style: {
           height: "auto",
           width: 0,
-          transition: theme.transitions.create("width")
+          transition: theme2.transitions.create("width")
         }
       }, {
         props: {
@@ -54354,7 +54354,7 @@ var require_Collapse = __commonJS({
         collapsedSize: collapsedSizeProp
       };
       const classes = useUtilityClasses(ownerState);
-      const theme = (0, _zeroStyled.useTheme)();
+      const theme2 = (0, _zeroStyled.useTheme)();
       const timer = (0, _useTimeout.default)();
       const wrapperRef = React7.useRef(null);
       const autoTransitionDuration = React7.useRef();
@@ -54399,7 +54399,7 @@ var require_Collapse = __commonJS({
           mode: "enter"
         });
         if (timeout === "auto") {
-          const duration2 = theme.transitions.getAutoHeightDuration(wrapperSize);
+          const duration2 = theme2.transitions.getAutoHeightDuration(wrapperSize);
           node2.style.transitionDuration = `${duration2}ms`;
           autoTransitionDuration.current = duration2;
         } else {
@@ -54437,7 +54437,7 @@ var require_Collapse = __commonJS({
           mode: "exit"
         });
         if (timeout === "auto") {
-          const duration2 = theme.transitions.getAutoHeightDuration(wrapperSize);
+          const duration2 = theme2.transitions.getAutoHeightDuration(wrapperSize);
           node2.style.transitionDuration = `${duration2}ms`;
           autoTransitionDuration.current = duration2;
         } else {
@@ -55253,8 +55253,8 @@ var require_cssContainerQueries3 = __commonJS({
     exports2.isCqShorthand = isCqShorthand;
     exports2.sortContainerQueries = sortContainerQueries;
     var _formatMuiErrorMessage = _interopRequireDefault(require_formatMuiErrorMessage4());
-    function sortContainerQueries(theme, css2) {
-      if (!theme.containerQueries) {
+    function sortContainerQueries(theme2, css2) {
+      if (!theme2.containerQueries) {
         return css2;
       }
       const sorted = Object.keys(css2).filter((key) => key.startsWith("@container")).sort((a, b) => {
@@ -55276,7 +55276,7 @@ var require_cssContainerQueries3 = __commonJS({
     function isCqShorthand(breakpointKeys, value) {
       return value === "@" || value.startsWith("@") && (breakpointKeys.some((key) => value.startsWith(`@${key}`)) || !!value.match(/^@\d/));
     }
-    function getContainerQuery(theme, shorthand) {
+    function getContainerQuery(theme2, shorthand) {
       const matches = shorthand.match(/^@([^/]+)?\/?(.+)?$/);
       if (!matches) {
         if (define_process_env_default.NODE_ENV !== "production") {
@@ -55287,7 +55287,7 @@ For example, \`@sm\` or \`@600\` or \`@40rem/sidebar\`.` : (0, _formatMuiErrorMe
       }
       const [, containerQuery, containerName] = matches;
       const value = Number.isNaN(+containerQuery) ? containerQuery || 0 : +containerQuery;
-      return theme.containerQueries(containerName).up(value);
+      return theme2.containerQueries(containerName).up(value);
     }
     function cssContainerQueries(themeInput) {
       const toContainerQuery = (mediaQuery, name) => mediaQuery.replace("@media", name ? `@container ${name}` : "@container");
@@ -55500,19 +55500,19 @@ var require_breakpoints3 = __commonJS({
       })
     };
     function handleBreakpoints(props, propValue, styleFromPropValue) {
-      const theme = props.theme || {};
+      const theme2 = props.theme || {};
       if (Array.isArray(propValue)) {
-        const themeBreakpoints = theme.breakpoints || defaultBreakpoints;
+        const themeBreakpoints = theme2.breakpoints || defaultBreakpoints;
         return propValue.reduce((acc, item, index) => {
           acc[themeBreakpoints.up(themeBreakpoints.keys[index])] = styleFromPropValue(propValue[index]);
           return acc;
         }, {});
       }
       if (typeof propValue === "object") {
-        const themeBreakpoints = theme.breakpoints || defaultBreakpoints;
+        const themeBreakpoints = theme2.breakpoints || defaultBreakpoints;
         return Object.keys(propValue).reduce((acc, breakpoint) => {
           if ((0, _cssContainerQueries.isCqShorthand)(themeBreakpoints.keys, breakpoint)) {
-            const containerKey = (0, _cssContainerQueries.getContainerQuery)(theme.containerQueries ? theme : defaultContainerQueries, breakpoint);
+            const containerKey = (0, _cssContainerQueries.getContainerQuery)(theme2.containerQueries ? theme2 : defaultContainerQueries, breakpoint);
             if (containerKey) {
               acc[containerKey] = styleFromPropValue(propValue[breakpoint], breakpoint);
             }
@@ -55531,14 +55531,14 @@ var require_breakpoints3 = __commonJS({
     }
     function breakpoints(styleFunction) {
       const newStyleFunction = (props) => {
-        const theme = props.theme || {};
+        const theme2 = props.theme || {};
         const base = styleFunction(props);
-        const themeBreakpoints = theme.breakpoints || defaultBreakpoints;
+        const themeBreakpoints = theme2.breakpoints || defaultBreakpoints;
         const extended = themeBreakpoints.keys.reduce((acc, key) => {
           if (props[key]) {
             acc = acc || {};
             acc[themeBreakpoints.up(key)] = styleFunction({
-              theme,
+              theme: theme2,
               ...props[key]
             });
           }
@@ -55718,8 +55718,8 @@ var require_style3 = __commonJS({
           return null;
         }
         const propValue = props[prop];
-        const theme = props.theme;
-        const themeMapping = getPath(theme, themeKey) || {};
+        const theme2 = props.theme;
+        const themeMapping = getPath(theme2, themeKey) || {};
         const styleFromPropValue = (propValueFinal) => {
           let value = getStyleValue(themeMapping, transform, propValueFinal);
           if (propValueFinal === value && typeof propValueFinal === "string") {
@@ -55872,8 +55872,8 @@ var require_spacing3 = __commonJS({
     var marginKeys = exports2.marginKeys = ["m", "mt", "mr", "mb", "ml", "mx", "my", "margin", "marginTop", "marginRight", "marginBottom", "marginLeft", "marginX", "marginY", "marginInline", "marginInlineStart", "marginInlineEnd", "marginBlock", "marginBlockStart", "marginBlockEnd"];
     var paddingKeys = exports2.paddingKeys = ["p", "pt", "pr", "pb", "pl", "px", "py", "padding", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft", "paddingX", "paddingY", "paddingInline", "paddingInlineStart", "paddingInlineEnd", "paddingBlock", "paddingBlockStart", "paddingBlockEnd"];
     var spacingKeys = [...marginKeys, ...paddingKeys];
-    function createUnaryUnit(theme, themeKey, defaultValue, propName) {
-      const themeSpacing = (0, _style.getPath)(theme, themeKey, true) ?? defaultValue;
+    function createUnaryUnit(theme2, themeKey, defaultValue, propName) {
+      const themeSpacing = (0, _style.getPath)(theme2, themeKey, true) ?? defaultValue;
       if (typeof themeSpacing === "number" || typeof themeSpacing === "string") {
         return (val) => {
           if (typeof val === "string") {
@@ -55930,8 +55930,8 @@ var require_spacing3 = __commonJS({
       }
       return () => void 0;
     }
-    function createUnarySpacing(theme) {
-      return createUnaryUnit(theme, "spacing", 8, "spacing");
+    function createUnarySpacing(theme2) {
+      return createUnaryUnit(theme2, "spacing", 8, "spacing");
     }
     function getValue(transformer, propValue) {
       if (typeof propValue === "string" || propValue == null) {
@@ -56834,10 +56834,10 @@ var require_styleFunctionSx3 = __commonJS({
       return typeof maybeFn === "function" ? maybeFn(arg) : maybeFn;
     }
     function unstable_createStyleFunctionSx() {
-      function getThemeValue(prop, val, theme, config) {
+      function getThemeValue(prop, val, theme2, config) {
         const props = {
           [prop]: val,
-          theme
+          theme: theme2
         };
         const options = config[prop];
         if (!options) {
@@ -56859,7 +56859,7 @@ var require_styleFunctionSx3 = __commonJS({
             [prop]: val
           };
         }
-        const themeMapping = (0, _style.getPath)(theme, themeKey) || {};
+        const themeMapping = (0, _style.getPath)(theme2, themeKey) || {};
         if (style) {
           return style(props);
         }
@@ -56880,52 +56880,52 @@ var require_styleFunctionSx3 = __commonJS({
       function styleFunctionSx2(props) {
         const {
           sx,
-          theme = {}
+          theme: theme2 = {}
         } = props || {};
         if (!sx) {
           return null;
         }
-        const config = theme.unstable_sxConfig ?? _defaultSxConfig.default;
+        const config = theme2.unstable_sxConfig ?? _defaultSxConfig.default;
         function traverse(sxInput) {
           let sxObject = sxInput;
           if (typeof sxInput === "function") {
-            sxObject = sxInput(theme);
+            sxObject = sxInput(theme2);
           } else if (typeof sxInput !== "object") {
             return sxInput;
           }
           if (!sxObject) {
             return null;
           }
-          const emptyBreakpoints = (0, _breakpoints.createEmptyBreakpointObject)(theme.breakpoints);
+          const emptyBreakpoints = (0, _breakpoints.createEmptyBreakpointObject)(theme2.breakpoints);
           const breakpointsKeys = Object.keys(emptyBreakpoints);
           let css2 = emptyBreakpoints;
           Object.keys(sxObject).forEach((styleKey) => {
-            const value = callIfFn(sxObject[styleKey], theme);
+            const value = callIfFn(sxObject[styleKey], theme2);
             if (value !== null && value !== void 0) {
               if (typeof value === "object") {
                 if (config[styleKey]) {
-                  css2 = (0, _merge.default)(css2, getThemeValue(styleKey, value, theme, config));
+                  css2 = (0, _merge.default)(css2, getThemeValue(styleKey, value, theme2, config));
                 } else {
                   const breakpointsValues = (0, _breakpoints.handleBreakpoints)({
-                    theme
+                    theme: theme2
                   }, value, (x) => ({
                     [styleKey]: x
                   }));
                   if (objectsHaveSameKeys(breakpointsValues, value)) {
                     css2[styleKey] = styleFunctionSx2({
                       sx: value,
-                      theme
+                      theme: theme2
                     });
                   } else {
                     css2 = (0, _merge.default)(css2, breakpointsValues);
                   }
                 }
               } else {
-                css2 = (0, _merge.default)(css2, getThemeValue(styleKey, value, theme, config));
+                css2 = (0, _merge.default)(css2, getThemeValue(styleKey, value, theme2, config));
               }
             }
           });
-          return (0, _cssContainerQueries.sortContainerQueries)(theme, (0, _breakpoints.removeUnusedBreakpoints)(breakpointsKeys, css2));
+          return (0, _cssContainerQueries.sortContainerQueries)(theme2, (0, _breakpoints.removeUnusedBreakpoints)(breakpointsKeys, css2));
         }
         return Array.isArray(sx) ? sx.map(traverse) : traverse(sx);
       }
@@ -56947,12 +56947,12 @@ var require_applyStyles2 = __commonJS({
     });
     exports2.default = applyStyles;
     function applyStyles(key, styles) {
-      const theme = this;
-      if (theme.vars) {
-        if (!theme.colorSchemes?.[key] || typeof theme.getColorSchemeSelector !== "function") {
+      const theme2 = this;
+      if (theme2.vars) {
+        if (!theme2.colorSchemes?.[key] || typeof theme2.getColorSchemeSelector !== "function") {
           return {};
         }
-        let selector = theme.getColorSchemeSelector(key);
+        let selector = theme2.getColorSchemeSelector(key);
         if (selector === "&") {
           return styles;
         }
@@ -56963,7 +56963,7 @@ var require_applyStyles2 = __commonJS({
           [selector]: styles
         };
       }
-      if (theme.palette.mode === key) {
+      if (theme2.palette.mode === key) {
         return styles;
       }
       return {};
@@ -56989,7 +56989,7 @@ var require_createTheme4 = __commonJS({
     var _styleFunctionSx = _interopRequireDefault(require_styleFunctionSx3());
     var _defaultSxConfig = _interopRequireDefault(require_defaultSxConfig2());
     var _applyStyles = _interopRequireDefault(require_applyStyles2());
-    function createTheme(options = {}, ...args) {
+    function createTheme2(options = {}, ...args) {
       const {
         breakpoints: breakpointsInput = {},
         palette: paletteInput = {},
@@ -57029,7 +57029,7 @@ var require_createTheme4 = __commonJS({
       };
       return muiTheme;
     }
-    var _default = exports2.default = createTheme;
+    var _default = exports2.default = createTheme2;
   }
 });
 
@@ -57359,8 +57359,8 @@ var require_createStyled3 = __commonJS({
           expressionsHead.push(styleAttachTheme);
           if (componentName && overridesResolver) {
             expressionsTail.push(function styleThemeOverrides(props) {
-              const theme = props.theme;
-              const styleOverrides = theme.components?.[componentName]?.styleOverrides;
+              const theme2 = props.theme;
+              const styleOverrides = theme2.components?.[componentName]?.styleOverrides;
               if (!styleOverrides) {
                 return null;
               }
@@ -57373,8 +57373,8 @@ var require_createStyled3 = __commonJS({
           }
           if (componentName && !skipVariantsResolver) {
             expressionsTail.push(function styleThemeVariants(props) {
-              const theme = props.theme;
-              const themeVariants = theme?.components?.[componentName]?.variants;
+              const theme2 = props.theme;
+              const themeVariants = theme2?.components?.[componentName]?.variants;
               if (!themeVariants) {
                 return null;
               }
@@ -57826,14 +57826,14 @@ var require_TouchRipple = __commonJS({
     animation-name: ${enterKeyframe};
     animation-duration: ${DURATION}ms;
     animation-timing-function: ${({
-      theme
-    }) => theme.transitions.easing.easeInOut};
+      theme: theme2
+    }) => theme2.transitions.easing.easeInOut};
   }
 
   &.${_touchRippleClasses.default.ripplePulsate} {
     animation-duration: ${({
-      theme
-    }) => theme.transitions.duration.shorter}ms;
+      theme: theme2
+    }) => theme2.transitions.duration.shorter}ms;
   }
 
   & .${_touchRippleClasses.default.child} {
@@ -57850,8 +57850,8 @@ var require_TouchRipple = __commonJS({
     animation-name: ${exitKeyframe};
     animation-duration: ${DURATION}ms;
     animation-timing-function: ${({
-      theme
-    }) => theme.transitions.easing.easeInOut};
+      theme: theme2
+    }) => theme2.transitions.easing.easeInOut};
   }
 
   & .${_touchRippleClasses.default.childPulsate} {
@@ -57862,8 +57862,8 @@ var require_TouchRipple = __commonJS({
     animation-name: ${pulsateKeyframe};
     animation-duration: 2500ms;
     animation-timing-function: ${({
-      theme
-    }) => theme.transitions.easing.easeInOut};
+      theme: theme2
+    }) => theme2.transitions.easing.easeInOut};
     animation-iteration-count: infinite;
     animation-delay: 200ms;
   }
@@ -59198,9 +59198,9 @@ var require_Checkbox = __commonJS({
         return [styles.root, ownerState.indeterminate && styles.indeterminate, styles[`size${(0, _capitalize.default)(ownerState.size)}`], ownerState.color !== "default" && styles[`color${(0, _capitalize.default)(ownerState.color)}`]];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
-      color: (theme.vars || theme).palette.text.secondary,
+      color: (theme2.vars || theme2).palette.text.secondary,
       variants: [{
         props: {
           color: "default",
@@ -59208,29 +59208,29 @@ var require_Checkbox = __commonJS({
         },
         style: {
           "&:hover": {
-            backgroundColor: theme.vars ? `rgba(${theme.vars.palette.action.activeChannel} / ${theme.vars.palette.action.hoverOpacity})` : (0, _colorManipulator.alpha)(theme.palette.action.active, theme.palette.action.hoverOpacity)
+            backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.action.activeChannel} / ${theme2.vars.palette.action.hoverOpacity})` : (0, _colorManipulator.alpha)(theme2.palette.action.active, theme2.palette.action.hoverOpacity)
           }
         }
-      }, ...Object.entries(theme.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
+      }, ...Object.entries(theme2.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
         props: {
           color,
           disableRipple: false
         },
         style: {
           "&:hover": {
-            backgroundColor: theme.vars ? `rgba(${theme.vars.palette[color].mainChannel} / ${theme.vars.palette.action.hoverOpacity})` : (0, _colorManipulator.alpha)(theme.palette[color].main, theme.palette.action.hoverOpacity)
+            backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : (0, _colorManipulator.alpha)(theme2.palette[color].main, theme2.palette.action.hoverOpacity)
           }
         }
-      })), ...Object.entries(theme.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
+      })), ...Object.entries(theme2.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
         props: {
           color
         },
         style: {
           [`&.${_checkboxClasses.default.checked}, &.${_checkboxClasses.default.indeterminate}`]: {
-            color: (theme.vars || theme).palette[color].main
+            color: (theme2.vars || theme2).palette[color].main
           },
           [`&.${_checkboxClasses.default.disabled}`]: {
-            color: (theme.vars || theme).palette.action.disabled
+            color: (theme2.vars || theme2).palette.action.disabled
           }
         }
       })), {
@@ -60188,10 +60188,10 @@ var require_getThemeValue3 = __commonJS({
       });
       return acc;
     }, {});
-    function getThemeValue(prop, value, theme) {
+    function getThemeValue(prop, value, theme2) {
       const inputProps = {
         [prop]: value,
-        theme
+        theme: theme2
       };
       const styleFunction = propToStyleFunction[prop];
       return styleFunction ? styleFunction(inputProps) : {
@@ -60310,7 +60310,7 @@ var require_createBox3 = __commonJS({
         shouldForwardProp: (prop) => prop !== "theme" && prop !== "sx" && prop !== "as"
       })(_styleFunctionSx.default);
       const Box2 = /* @__PURE__ */ React7.forwardRef(function Box3(inProps, ref) {
-        const theme = (0, _useTheme.default)(defaultTheme);
+        const theme2 = (0, _useTheme.default)(defaultTheme);
         const {
           className,
           component = "div",
@@ -60320,7 +60320,7 @@ var require_createBox3 = __commonJS({
           as: component,
           ref,
           className: (0, _clsx.default)(className, generateClassName ? generateClassName(defaultClassName) : defaultClassName),
-          theme: themeId ? theme[themeId] || theme : theme,
+          theme: themeId ? theme2[themeId] || theme2 : theme2,
           ...other
         });
       });
@@ -60671,14 +60671,14 @@ var require_getThemeProps2 = __commonJS({
     var _resolveProps = _interopRequireDefault(require_resolveProps4());
     function getThemeProps(params) {
       const {
-        theme,
+        theme: theme2,
         name,
         props
       } = params;
-      if (!theme || !theme.components || !theme.components[name] || !theme.components[name].defaultProps) {
+      if (!theme2 || !theme2.components || !theme2.components[name] || !theme2.components[name].defaultProps) {
         return props;
       }
-      return (0, _resolveProps.default)(theme.components[name].defaultProps, props);
+      return (0, _resolveProps.default)(theme2.components[name].defaultProps, props);
     }
   }
 });
@@ -60702,12 +60702,12 @@ var require_useThemeProps4 = __commonJS({
       defaultTheme,
       themeId
     }) {
-      let theme = (0, _useTheme.default)(defaultTheme);
+      let theme2 = (0, _useTheme.default)(defaultTheme);
       if (themeId) {
-        theme = theme[themeId] || theme;
+        theme2 = theme2[themeId] || theme2;
       }
       return (0, _getThemeProps.default)({
-        theme,
+        theme: theme2,
         name,
         props
       });
@@ -60859,9 +60859,9 @@ var require_useMediaQuery3 = __commonJS({
         themeId
       } = params;
       return function useMediaQuery2(queryInput, options = {}) {
-        let theme = (0, _useThemeWithoutDefault.default)();
-        if (theme && themeId) {
-          theme = theme[themeId] || theme;
+        let theme2 = (0, _useThemeWithoutDefault.default)();
+        if (theme2 && themeId) {
+          theme2 = theme2[themeId] || theme2;
         }
         const supportMatchMedia = typeof window !== "undefined" && typeof window.matchMedia !== "undefined";
         const {
@@ -60872,14 +60872,14 @@ var require_useMediaQuery3 = __commonJS({
         } = (0, _useThemeProps.getThemeProps)({
           name: "MuiUseMediaQuery",
           props: options,
-          theme
+          theme: theme2
         });
         if (define_process_env_default.NODE_ENV !== "production") {
-          if (typeof queryInput === "function" && theme === null) {
+          if (typeof queryInput === "function" && theme2 === null) {
             console.error(["MUI: The `query` argument provided is invalid.", "You are providing a function without a theme in the context.", "One of the parent elements needs to use a ThemeProvider."].join("\n"));
           }
         }
-        let query = typeof queryInput === "function" ? queryInput(theme) : queryInput;
+        let query = typeof queryInput === "function" ? queryInput(theme2) : queryInput;
         query = query.replace(/^@media( ?)/m, "");
         const useMediaQueryImplementation = maybeReactUseSyncExternalStore !== void 0 ? useMediaQueryNew : useMediaQueryOld;
         const match2 = useMediaQueryImplementation(query, defaultMatches, matchMedia2, ssrMatchMedia, noSsr);
@@ -64287,11 +64287,11 @@ var require_useTheme8 = __commonJS({
     var React7 = _interopRequireWildcard(require_react());
     var _ThemeContext = _interopRequireDefault(require_ThemeContext2());
     function useTheme3() {
-      const theme = React7.useContext(_ThemeContext.default);
+      const theme2 = React7.useContext(_ThemeContext.default);
       if (define_process_env_default.NODE_ENV !== "production") {
-        React7.useDebugValue(theme);
+        React7.useDebugValue(theme2);
       }
-      return theme;
+      return theme2;
     }
   }
 });
@@ -64362,7 +64362,7 @@ var require_ThemeProvider6 = __commonJS({
         ...localTheme
       };
     }
-    function ThemeProvider3(props) {
+    function ThemeProvider4(props) {
       const {
         children,
         theme: localTheme
@@ -64373,7 +64373,7 @@ var require_ThemeProvider6 = __commonJS({
           console.error(["MUI: You are providing a theme function prop to the ThemeProvider component:", "<ThemeProvider theme={outerTheme => outerTheme} />", "", "However, no outer theme is present.", "Make sure a theme is already injected higher in the React tree or provide a theme object."].join("\n"));
         }
       }
-      const theme = React7.useMemo(() => {
+      const theme2 = React7.useMemo(() => {
         const output = outerTheme === null ? {
           ...localTheme
         } : mergeOuterLocalTheme(outerTheme, localTheme);
@@ -64383,11 +64383,11 @@ var require_ThemeProvider6 = __commonJS({
         return output;
       }, [localTheme, outerTheme]);
       return /* @__PURE__ */ (0, _jsxRuntime.jsx)(_ThemeContext.default.Provider, {
-        value: theme,
+        value: theme2,
         children
       });
     }
-    define_process_env_default.NODE_ENV !== "production" ? ThemeProvider3.propTypes = {
+    define_process_env_default.NODE_ENV !== "production" ? ThemeProvider4.propTypes = {
       /**
        * Your component tree.
        */
@@ -64398,9 +64398,9 @@ var require_ThemeProvider6 = __commonJS({
       theme: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func]).isRequired
     } : void 0;
     if (define_process_env_default.NODE_ENV !== "production") {
-      define_process_env_default.NODE_ENV !== "production" ? ThemeProvider3.propTypes = (0, _utils.exactProp)(ThemeProvider3.propTypes) : void 0;
+      define_process_env_default.NODE_ENV !== "production" ? ThemeProvider4.propTypes = (0, _utils.exactProp)(ThemeProvider4.propTypes) : void 0;
     }
-    var _default = exports2.default = ThemeProvider3;
+    var _default = exports2.default = ThemeProvider4;
   }
 });
 
@@ -64562,14 +64562,14 @@ var require_DefaultPropsProvider5 = __commonJS({
     } : void 0;
     function getThemeProps(params) {
       const {
-        theme,
+        theme: theme2,
         name,
         props
       } = params;
-      if (!theme || !theme.components || !theme.components[name]) {
+      if (!theme2 || !theme2.components || !theme2.components[name]) {
         return props;
       }
-      const config = theme.components[name];
+      const config = theme2.components[name];
       if (config.defaultProps) {
         return (0, _resolveProps.default)(config.defaultProps, props);
       }
@@ -64665,7 +64665,7 @@ var require_ThemeProvider8 = __commonJS({
         };
       }, [themeId, upperTheme, localTheme, isPrivate]);
     }
-    function ThemeProvider3(props) {
+    function ThemeProvider4(props) {
       const {
         children,
         theme: localTheme,
@@ -64695,7 +64695,7 @@ var require_ThemeProvider8 = __commonJS({
         })
       });
     }
-    define_process_env_default.NODE_ENV !== "production" ? ThemeProvider3.propTypes = {
+    define_process_env_default.NODE_ENV !== "production" ? ThemeProvider4.propTypes = {
       // ┌────────────────────────────── Warning ──────────────────────────────┐
       // │ These PropTypes are generated from the TypeScript type definitions. │
       // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
@@ -64714,9 +64714,9 @@ var require_ThemeProvider8 = __commonJS({
       themeId: _propTypes.default.string
     } : void 0;
     if (define_process_env_default.NODE_ENV !== "production") {
-      define_process_env_default.NODE_ENV !== "production" ? ThemeProvider3.propTypes = (0, _exactProp.default)(ThemeProvider3.propTypes) : void 0;
+      define_process_env_default.NODE_ENV !== "production" ? ThemeProvider4.propTypes = (0, _exactProp.default)(ThemeProvider4.propTypes) : void 0;
     }
-    var _default = exports2.default = ThemeProvider3;
+    var _default = exports2.default = ThemeProvider4;
   }
 });
 
@@ -65285,32 +65285,32 @@ var require_createCssVarsProvider2 = __commonJS({
         }
         const memoTheme = React7.useMemo(() => {
           const themeVars = restThemeProp.generateThemeVars?.() || restThemeProp.vars;
-          const theme = {
+          const theme2 = {
             ...restThemeProp,
             components,
             colorSchemes,
             cssVarPrefix,
             vars: themeVars
           };
-          if (typeof theme.generateSpacing === "function") {
-            theme.spacing = theme.generateSpacing();
+          if (typeof theme2.generateSpacing === "function") {
+            theme2.spacing = theme2.generateSpacing();
           }
           if (calculatedColorScheme) {
             const scheme = colorSchemes[calculatedColorScheme];
             if (scheme && typeof scheme === "object") {
               Object.keys(scheme).forEach((schemeKey) => {
                 if (scheme[schemeKey] && typeof scheme[schemeKey] === "object") {
-                  theme[schemeKey] = {
-                    ...theme[schemeKey],
+                  theme2[schemeKey] = {
+                    ...theme2[schemeKey],
                     ...scheme[schemeKey]
                   };
                 } else {
-                  theme[schemeKey] = scheme[schemeKey];
+                  theme2[schemeKey] = scheme[schemeKey];
                 }
               });
             }
           }
-          return resolveTheme ? resolveTheme(theme) : theme;
+          return resolveTheme ? resolveTheme(theme2) : theme2;
         }, [restThemeProp, calculatedColorScheme, components, colorSchemes, cssVarPrefix]);
         const colorSchemeSelector = restThemeProp.colorSchemeSelector;
         (0, _useEnhancedEffect.default)(() => {
@@ -65571,7 +65571,7 @@ var require_cssVarsParser2 = __commonJS({
       }
       return value;
     };
-    function cssVarsParser(theme, options) {
+    function cssVarsParser(theme2, options) {
       const {
         prefix: prefix2,
         shouldSkipGeneratingVar
@@ -65580,7 +65580,7 @@ var require_cssVarsParser2 = __commonJS({
       const vars = {};
       const varsWithDefaults = {};
       walkObjectDeep(
-        theme,
+        theme2,
         (keys, value, arrayKeys) => {
           if (typeof value === "string" || typeof value === "number") {
             if (!shouldSkipGeneratingVar || !shouldSkipGeneratingVar(keys, value)) {
@@ -65618,7 +65618,7 @@ var require_prepareCssVars2 = __commonJS({
     exports2.default = void 0;
     var _deepmerge = _interopRequireDefault(require_deepmerge4());
     var _cssVarsParser = _interopRequireDefault(require_cssVarsParser2());
-    function prepareCssVars(theme, parserConfig = {}) {
+    function prepareCssVars(theme2, parserConfig = {}) {
       const {
         getSelector = defaultGetSelector,
         disableCssColorScheme,
@@ -65629,7 +65629,7 @@ var require_prepareCssVars2 = __commonJS({
         components,
         defaultColorScheme = "light",
         ...otherTheme
-      } = theme;
+      } = theme2;
       const {
         vars: rootVars,
         css: rootCss,
@@ -65678,7 +65678,7 @@ var require_prepareCssVars2 = __commonJS({
         }
         if (colorScheme) {
           if (rule === "media") {
-            if (theme.defaultColorScheme === colorScheme) {
+            if (theme2.defaultColorScheme === colorScheme) {
               return ":root";
             }
             const mode = colorSchemes[colorScheme]?.palette?.mode || colorScheme;
@@ -65689,7 +65689,7 @@ var require_prepareCssVars2 = __commonJS({
             };
           }
           if (rule) {
-            if (theme.defaultColorScheme === colorScheme) {
+            if (theme2.defaultColorScheme === colorScheme) {
               return `:root, ${rule.replace("%s", String(colorScheme))}`;
             }
             return rule.replace("%s", String(colorScheme));
@@ -65710,7 +65710,7 @@ var require_prepareCssVars2 = __commonJS({
       };
       const generateStyleSheets = () => {
         const stylesheets = [];
-        const colorScheme = theme.defaultColorScheme || "light";
+        const colorScheme = theme2.defaultColorScheme || "light";
         function insertStyleSheet(key, css2) {
           if (Object.keys(css2).length) {
             stylesheets.push(typeof key === "string" ? {
@@ -65820,12 +65820,12 @@ var require_createCssVarsTheme2 = __commonJS({
     var _InitColorSchemeScript = require_InitColorSchemeScript4();
     function createCssVarsTheme({
       colorSchemeSelector = `[${_InitColorSchemeScript.DEFAULT_ATTRIBUTE}="%s"]`,
-      ...theme
+      ...theme2
     }) {
-      const output = theme;
+      const output = theme2;
       const result = (0, _prepareCssVars.default)(output, {
-        ...theme,
-        prefix: theme.cssVarPrefix,
+        ...theme2,
+        prefix: theme2.cssVarPrefix,
         colorSchemeSelector
       });
       output.vars = result.vars;
@@ -65969,7 +65969,7 @@ var require_createContainer2 = __commonJS({
         componentName = "MuiContainer"
       } = options;
       const ContainerRoot = createStyledComponent(({
-        theme,
+        theme: theme2,
         ownerState
       }) => ({
         width: "100%",
@@ -65977,44 +65977,44 @@ var require_createContainer2 = __commonJS({
         boxSizing: "border-box",
         marginRight: "auto",
         ...!ownerState.disableGutters && {
-          paddingLeft: theme.spacing(2),
-          paddingRight: theme.spacing(2),
+          paddingLeft: theme2.spacing(2),
+          paddingRight: theme2.spacing(2),
           // @ts-ignore module augmentation fails if custom breakpoints are used
-          [theme.breakpoints.up("sm")]: {
-            paddingLeft: theme.spacing(3),
-            paddingRight: theme.spacing(3)
+          [theme2.breakpoints.up("sm")]: {
+            paddingLeft: theme2.spacing(3),
+            paddingRight: theme2.spacing(3)
           }
         }
       }), ({
-        theme,
+        theme: theme2,
         ownerState
-      }) => ownerState.fixed && Object.keys(theme.breakpoints.values).reduce((acc, breakpointValueKey) => {
+      }) => ownerState.fixed && Object.keys(theme2.breakpoints.values).reduce((acc, breakpointValueKey) => {
         const breakpoint = breakpointValueKey;
-        const value = theme.breakpoints.values[breakpoint];
+        const value = theme2.breakpoints.values[breakpoint];
         if (value !== 0) {
-          acc[theme.breakpoints.up(breakpoint)] = {
-            maxWidth: `${value}${theme.breakpoints.unit}`
+          acc[theme2.breakpoints.up(breakpoint)] = {
+            maxWidth: `${value}${theme2.breakpoints.unit}`
           };
         }
         return acc;
       }, {}), ({
-        theme,
+        theme: theme2,
         ownerState
       }) => ({
         // @ts-ignore module augmentation fails if custom breakpoints are used
         ...ownerState.maxWidth === "xs" && {
           // @ts-ignore module augmentation fails if custom breakpoints are used
-          [theme.breakpoints.up("xs")]: {
+          [theme2.breakpoints.up("xs")]: {
             // @ts-ignore module augmentation fails if custom breakpoints are used
-            maxWidth: Math.max(theme.breakpoints.values.xs, 444)
+            maxWidth: Math.max(theme2.breakpoints.values.xs, 444)
           }
         },
         ...ownerState.maxWidth && // @ts-ignore module augmentation fails if custom breakpoints are used
         ownerState.maxWidth !== "xs" && {
           // @ts-ignore module augmentation fails if custom breakpoints are used
-          [theme.breakpoints.up(ownerState.maxWidth)]: {
+          [theme2.breakpoints.up(ownerState.maxWidth)]: {
             // @ts-ignore module augmentation fails if custom breakpoints are used
-            maxWidth: `${theme.breakpoints.values[ownerState.maxWidth]}${theme.breakpoints.unit}`
+            maxWidth: `${theme2.breakpoints.values[ownerState.maxWidth]}${theme2.breakpoints.unit}`
           }
         }
       }));
@@ -66297,11 +66297,11 @@ var require_gridGenerator2 = __commonJS({
     var selfColumnsVar = "--Grid-columns";
     var parentColumnsVar = "--Grid-parent-columns";
     var generateGridSizeStyles = ({
-      theme,
+      theme: theme2,
       ownerState
     }) => {
       const styles = {};
-      (0, _traverseBreakpoints.traverseBreakpoints)(theme.breakpoints, ownerState.size, (appendStyle, value) => {
+      (0, _traverseBreakpoints.traverseBreakpoints)(theme2.breakpoints, ownerState.size, (appendStyle, value) => {
         let style = {};
         if (value === "grow") {
           style = {
@@ -66332,11 +66332,11 @@ var require_gridGenerator2 = __commonJS({
     };
     exports2.generateGridSizeStyles = generateGridSizeStyles;
     var generateGridOffsetStyles = ({
-      theme,
+      theme: theme2,
       ownerState
     }) => {
       const styles = {};
-      (0, _traverseBreakpoints.traverseBreakpoints)(theme.breakpoints, ownerState.offset, (appendStyle, value) => {
+      (0, _traverseBreakpoints.traverseBreakpoints)(theme2.breakpoints, ownerState.offset, (appendStyle, value) => {
         let style = {};
         if (value === "auto") {
           style = {
@@ -66354,7 +66354,7 @@ var require_gridGenerator2 = __commonJS({
     };
     exports2.generateGridOffsetStyles = generateGridOffsetStyles;
     var generateGridColumnsStyles = ({
-      theme,
+      theme: theme2,
       ownerState
     }) => {
       if (!ownerState.container) {
@@ -66363,7 +66363,7 @@ var require_gridGenerator2 = __commonJS({
       const styles = {
         [selfColumnsVar]: 12
       };
-      (0, _traverseBreakpoints.traverseBreakpoints)(theme.breakpoints, ownerState.columns, (appendStyle, value) => {
+      (0, _traverseBreakpoints.traverseBreakpoints)(theme2.breakpoints, ownerState.columns, (appendStyle, value) => {
         const columns = value ?? 12;
         appendStyle(styles, {
           [selfColumnsVar]: columns,
@@ -66376,15 +66376,15 @@ var require_gridGenerator2 = __commonJS({
     };
     exports2.generateGridColumnsStyles = generateGridColumnsStyles;
     var generateGridRowSpacingStyles = ({
-      theme,
+      theme: theme2,
       ownerState
     }) => {
       if (!ownerState.container) {
         return {};
       }
       const styles = {};
-      (0, _traverseBreakpoints.traverseBreakpoints)(theme.breakpoints, ownerState.rowSpacing, (appendStyle, value) => {
-        const spacing = typeof value === "string" ? value : theme.spacing?.(value);
+      (0, _traverseBreakpoints.traverseBreakpoints)(theme2.breakpoints, ownerState.rowSpacing, (appendStyle, value) => {
+        const spacing = typeof value === "string" ? value : theme2.spacing?.(value);
         appendStyle(styles, {
           [getSelfSpacingVar("row")]: spacing,
           "> *": {
@@ -66396,15 +66396,15 @@ var require_gridGenerator2 = __commonJS({
     };
     exports2.generateGridRowSpacingStyles = generateGridRowSpacingStyles;
     var generateGridColumnSpacingStyles = ({
-      theme,
+      theme: theme2,
       ownerState
     }) => {
       if (!ownerState.container) {
         return {};
       }
       const styles = {};
-      (0, _traverseBreakpoints.traverseBreakpoints)(theme.breakpoints, ownerState.columnSpacing, (appendStyle, value) => {
-        const spacing = typeof value === "string" ? value : theme.spacing?.(value);
+      (0, _traverseBreakpoints.traverseBreakpoints)(theme2.breakpoints, ownerState.columnSpacing, (appendStyle, value) => {
+        const spacing = typeof value === "string" ? value : theme2.spacing?.(value);
         appendStyle(styles, {
           [getSelfSpacingVar("column")]: spacing,
           "> *": {
@@ -66416,14 +66416,14 @@ var require_gridGenerator2 = __commonJS({
     };
     exports2.generateGridColumnSpacingStyles = generateGridColumnSpacingStyles;
     var generateGridDirectionStyles = ({
-      theme,
+      theme: theme2,
       ownerState
     }) => {
       if (!ownerState.container) {
         return {};
       }
       const styles = {};
-      (0, _traverseBreakpoints.traverseBreakpoints)(theme.breakpoints, ownerState.direction, (appendStyle, value) => {
+      (0, _traverseBreakpoints.traverseBreakpoints)(theme2.breakpoints, ownerState.direction, (appendStyle, value) => {
         appendStyle(styles, {
           flexDirection: value
         });
@@ -66585,7 +66585,7 @@ var require_createGrid2 = __commonJS({
         useTheme: useTheme3 = _useTheme.default,
         componentName = "MuiGrid"
       } = options;
-      const useUtilityClasses = (ownerState, theme) => {
+      const useUtilityClasses = (ownerState, theme2) => {
         const {
           container,
           direction,
@@ -66594,7 +66594,7 @@ var require_createGrid2 = __commonJS({
           size
         } = ownerState;
         const slots = {
-          root: ["root", container && "container", wrap !== "wrap" && `wrap-xs-${String(wrap)}`, ...(0, _gridGenerator.generateDirectionClasses)(direction), ...(0, _gridGenerator.generateSizeClassNames)(size), ...container ? (0, _gridGenerator.generateSpacingClassNames)(spacing, theme.breakpoints.keys[0]) : []]
+          root: ["root", container && "container", wrap !== "wrap" && `wrap-xs-${String(wrap)}`, ...(0, _gridGenerator.generateDirectionClasses)(direction), ...(0, _gridGenerator.generateSizeClassNames)(size), ...container ? (0, _gridGenerator.generateSpacingClassNames)(spacing, theme2.breakpoints.keys[0]) : []]
         };
         return (0, _composeClasses.default)(slots, (slot) => (0, _generateUtilityClass.default)(componentName, slot), {});
       };
@@ -66623,10 +66623,10 @@ var require_createGrid2 = __commonJS({
       }
       const GridRoot = createStyledComponent(_gridGenerator.generateGridColumnsStyles, _gridGenerator.generateGridColumnSpacingStyles, _gridGenerator.generateGridRowSpacingStyles, _gridGenerator.generateGridSizeStyles, _gridGenerator.generateGridDirectionStyles, _gridGenerator.generateGridStyles, _gridGenerator.generateGridOffsetStyles);
       const Grid = /* @__PURE__ */ React7.forwardRef(function Grid2(inProps, ref) {
-        const theme = useTheme3();
+        const theme2 = useTheme3();
         const themeProps = useThemeProps(inProps);
         const props = (0, _styleFunctionSx.extendSxProp)(themeProps);
-        (0, _deleteLegacyGridProps.default)(props, theme.breakpoints);
+        (0, _deleteLegacyGridProps.default)(props, theme2.breakpoints);
         const {
           className,
           children,
@@ -66643,8 +66643,8 @@ var require_createGrid2 = __commonJS({
           unstable_level: level = 0,
           ...other
         } = props;
-        const size = parseResponsiveProp(sizeProp, theme.breakpoints, (val) => val !== false);
-        const offset = parseResponsiveProp(offsetProp, theme.breakpoints);
+        const size = parseResponsiveProp(sizeProp, theme2.breakpoints, (val) => val !== false);
+        const offset = parseResponsiveProp(offsetProp, theme2.breakpoints);
         const columns = inProps.columns ?? (level ? void 0 : columnsProp);
         const spacing = inProps.spacing ?? (level ? void 0 : spacingProp);
         const rowSpacing = inProps.rowSpacing ?? inProps.spacing ?? (level ? void 0 : rowSpacingProp);
@@ -66662,7 +66662,7 @@ var require_createGrid2 = __commonJS({
           size,
           offset
         };
-        const classes = useUtilityClasses(ownerState, theme);
+        const classes = useUtilityClasses(ownerState, theme2);
         return /* @__PURE__ */ (0, _jsxRuntime.jsx)(GridRoot, {
           ref,
           as: component,
@@ -67011,23 +67011,23 @@ var require_createStack2 = __commonJS({
     };
     var style = ({
       ownerState,
-      theme
+      theme: theme2
     }) => {
       let styles = {
         display: "flex",
         flexDirection: "column",
         ...(0, _breakpoints.handleBreakpoints)({
-          theme
+          theme: theme2
         }, (0, _breakpoints.resolveBreakpointValues)({
           values: ownerState.direction,
-          breakpoints: theme.breakpoints.values
+          breakpoints: theme2.breakpoints.values
         }), (propValue) => ({
           flexDirection: propValue
         }))
       };
       if (ownerState.spacing) {
-        const transformer = (0, _spacing.createUnarySpacing)(theme);
-        const base = Object.keys(theme.breakpoints.values).reduce((acc, breakpoint) => {
+        const transformer = (0, _spacing.createUnarySpacing)(theme2);
+        const base = Object.keys(theme2.breakpoints.values).reduce((acc, breakpoint) => {
           if (typeof ownerState.spacing === "object" && ownerState.spacing[breakpoint] != null || typeof ownerState.direction === "object" && ownerState.direction[breakpoint] != null) {
             acc[breakpoint] = true;
           }
@@ -67068,10 +67068,10 @@ var require_createStack2 = __commonJS({
           };
         };
         styles = (0, _deepmerge.default)(styles, (0, _breakpoints.handleBreakpoints)({
-          theme
+          theme: theme2
         }, spacingValues, styleFromPropValue));
       }
-      styles = (0, _breakpoints.mergeBreakpointsInOrder)(theme.breakpoints, styles);
+      styles = (0, _breakpoints.mergeBreakpointsInOrder)(theme2.breakpoints, styles);
       return styles;
     };
     exports2.style = style;
@@ -67919,7 +67919,7 @@ var require_TreeItem2DragAndDropOverlay = __commonJS({
       overridesResolver: (props, styles) => styles.root,
       shouldForwardProp: (prop) => (0, _system.shouldForwardProp)(prop) && prop !== "action"
     })(({
-      theme
+      theme: theme2
     }) => ({
       position: "absolute",
       left: 0,
@@ -67934,8 +67934,8 @@ var require_TreeItem2DragAndDropOverlay = __commonJS({
         },
         style: {
           marginLeft: "calc(var(--TreeView-indentMultiplier) * var(--TreeView-itemDepth))",
-          borderRadius: theme.shape.borderRadius,
-          backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.darkChannel} / ${theme.vars.palette.action.focusOpacity})` : (0, _styles.alpha)(theme.palette.primary.dark, theme.palette.action.focusOpacity)
+          borderRadius: theme2.shape.borderRadius,
+          backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.darkChannel} / ${theme2.vars.palette.action.focusOpacity})` : (0, _styles.alpha)(theme2.palette.primary.dark, theme2.palette.action.focusOpacity)
         }
       }, {
         props: {
@@ -67943,7 +67943,7 @@ var require_TreeItem2DragAndDropOverlay = __commonJS({
         },
         style: {
           marginLeft: "calc(var(--TreeView-indentMultiplier) * var(--TreeView-itemDepth))",
-          borderTop: `1px solid ${(theme.vars || theme).palette.action.active}`
+          borderTop: `1px solid ${(theme2.vars || theme2).palette.action.active}`
         }
       }, {
         props: {
@@ -67951,7 +67951,7 @@ var require_TreeItem2DragAndDropOverlay = __commonJS({
         },
         style: {
           marginLeft: "calc(var(--TreeView-indentMultiplier) * var(--TreeView-itemDepth))",
-          borderBottom: `1px solid ${(theme.vars || theme).palette.action.active}`
+          borderBottom: `1px solid ${(theme2.vars || theme2).palette.action.active}`
         }
       }, {
         props: {
@@ -67959,7 +67959,7 @@ var require_TreeItem2DragAndDropOverlay = __commonJS({
         },
         style: {
           marginLeft: "calc(var(--TreeView-indentMultiplier) * calc(var(--TreeView-itemDepth) - 1))",
-          borderBottom: `1px solid ${(theme.vars || theme).palette.action.active}`
+          borderBottom: `1px solid ${(theme2.vars || theme2).palette.action.active}`
         }
       }]
     }));
@@ -68015,16 +68015,16 @@ var require_TreeItem2LabelInput = __commonJS({
       slot: "LabelInput",
       overridesResolver: (props, styles) => styles.labelInput
     })(({
-      theme
-    }) => (0, _extends2.default)({}, theme.typography.body1, {
+      theme: theme2
+    }) => (0, _extends2.default)({}, theme2.typography.body1, {
       width: "100%",
-      backgroundColor: theme.palette.background.paper,
-      borderRadius: theme.shape.borderRadius,
+      backgroundColor: theme2.palette.background.paper,
+      borderRadius: theme2.shape.borderRadius,
       border: "none",
       padding: "0 2px",
       boxSizing: "border-box",
       "&:focus": {
-        outline: `1px solid ${theme.palette.primary.main}`
+        outline: `1px solid ${theme2.palette.primary.main}`
       }
     }));
   }
@@ -68413,44 +68413,44 @@ var require_TreeItem = __commonJS({
       },
       shouldForwardProp: (prop) => (0, _createStyled.shouldForwardProp)(prop) && prop !== "indentationAtItemLevel"
     })(({
-      theme
+      theme: theme2
     }) => ({
-      padding: theme.spacing(0.5, 1),
-      borderRadius: theme.shape.borderRadius,
+      padding: theme2.spacing(0.5, 1),
+      borderRadius: theme2.shape.borderRadius,
       width: "100%",
       boxSizing: "border-box",
       // prevent width + padding to overflow
       position: "relative",
       display: "flex",
       alignItems: "center",
-      gap: theme.spacing(1),
+      gap: theme2.spacing(1),
       cursor: "pointer",
       WebkitTapHighlightColor: "transparent",
       "&:hover": {
-        backgroundColor: (theme.vars || theme).palette.action.hover,
+        backgroundColor: (theme2.vars || theme2).palette.action.hover,
         // Reset on touch devices, it doesn't add specificity
         "@media (hover: none)": {
           backgroundColor: "transparent"
         }
       },
       [`&.${_treeItemClasses.treeItemClasses.disabled}`]: {
-        opacity: (theme.vars || theme).palette.action.disabledOpacity,
+        opacity: (theme2.vars || theme2).palette.action.disabledOpacity,
         backgroundColor: "transparent"
       },
       [`&.${_treeItemClasses.treeItemClasses.focused}`]: {
-        backgroundColor: (theme.vars || theme).palette.action.focus
+        backgroundColor: (theme2.vars || theme2).palette.action.focus
       },
       [`&.${_treeItemClasses.treeItemClasses.selected}`]: {
-        backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / ${theme.vars.palette.action.selectedOpacity})` : (0, _styles.alpha)(theme.palette.primary.main, theme.palette.action.selectedOpacity),
+        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / ${theme2.vars.palette.action.selectedOpacity})` : (0, _styles.alpha)(theme2.palette.primary.main, theme2.palette.action.selectedOpacity),
         "&:hover": {
-          backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / calc(${theme.vars.palette.action.selectedOpacity} + ${theme.vars.palette.action.hoverOpacity}))` : (0, _styles.alpha)(theme.palette.primary.main, theme.palette.action.selectedOpacity + theme.palette.action.hoverOpacity),
+          backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.hoverOpacity}))` : (0, _styles.alpha)(theme2.palette.primary.main, theme2.palette.action.selectedOpacity + theme2.palette.action.hoverOpacity),
           // Reset on touch devices, it doesn't add specificity
           "@media (hover: none)": {
-            backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / ${theme.vars.palette.action.selectedOpacity})` : (0, _styles.alpha)(theme.palette.primary.main, theme.palette.action.selectedOpacity)
+            backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / ${theme2.vars.palette.action.selectedOpacity})` : (0, _styles.alpha)(theme2.palette.primary.main, theme2.palette.action.selectedOpacity)
           }
         },
         [`&.${_treeItemClasses.treeItemClasses.focused}`]: {
-          backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / calc(${theme.vars.palette.action.selectedOpacity} + ${theme.vars.palette.action.focusOpacity}))` : (0, _styles.alpha)(theme.palette.primary.main, theme.palette.action.selectedOpacity + theme.palette.action.focusOpacity)
+          backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.focusOpacity}))` : (0, _styles.alpha)(theme2.palette.primary.main, theme2.palette.action.selectedOpacity + theme2.palette.action.focusOpacity)
         }
       },
       [`& .${_treeItemClasses.treeItemClasses.iconContainer}`]: {
@@ -68469,7 +68469,7 @@ var require_TreeItem = __commonJS({
         // fixes overflow - see https://github.com/mui/material-ui/issues/27372
         minWidth: 0,
         position: "relative"
-      }, theme.typography.body1),
+      }, theme2.typography.body1),
       [`& .${_treeItemClasses.treeItemClasses.checkbox}`]: {
         padding: 0
       },
@@ -68478,7 +68478,7 @@ var require_TreeItem = __commonJS({
           indentationAtItemLevel: true
         },
         style: {
-          paddingLeft: `calc(${theme.spacing(1)} + var(--TreeView-itemChildrenIndentation) * var(--TreeView-itemDepth))`
+          paddingLeft: `calc(${theme2.spacing(1)} + var(--TreeView-itemChildrenIndentation) * var(--TreeView-itemDepth))`
         }
       }]
     }));
@@ -69869,21 +69869,21 @@ var require_TreeItem22 = __commonJS({
       overridesResolver: (props, styles) => styles.content,
       shouldForwardProp: (prop) => (0, _createStyled.shouldForwardProp)(prop) && prop !== "status" && prop !== "indentationAtItemLevel"
     })(({
-      theme
+      theme: theme2
     }) => ({
-      padding: theme.spacing(0.5, 1),
-      borderRadius: theme.shape.borderRadius,
+      padding: theme2.spacing(0.5, 1),
+      borderRadius: theme2.shape.borderRadius,
       width: "100%",
       boxSizing: "border-box",
       // prevent width + padding to overflow
       position: "relative",
       display: "flex",
       alignItems: "center",
-      gap: theme.spacing(1),
+      gap: theme2.spacing(1),
       cursor: "pointer",
       WebkitTapHighlightColor: "transparent",
       "&:hover": {
-        backgroundColor: (theme.vars || theme).palette.action.hover,
+        backgroundColor: (theme2.vars || theme2).palette.action.hover,
         // Reset on touch devices, it doesn't add specificity
         "@media (hover: none)": {
           backgroundColor: "transparent"
@@ -69894,14 +69894,14 @@ var require_TreeItem22 = __commonJS({
           indentationAtItemLevel: true
         },
         style: {
-          paddingLeft: `calc(${theme.spacing(1)} + var(--TreeView-itemChildrenIndentation) * var(--TreeView-itemDepth))`
+          paddingLeft: `calc(${theme2.spacing(1)} + var(--TreeView-itemChildrenIndentation) * var(--TreeView-itemDepth))`
         }
       }, {
         props: ({
           status
         }) => status.disabled,
         style: {
-          opacity: (theme.vars || theme).palette.action.disabledOpacity,
+          opacity: (theme2.vars || theme2).palette.action.disabledOpacity,
           backgroundColor: "transparent"
         }
       }, {
@@ -69909,19 +69909,19 @@ var require_TreeItem22 = __commonJS({
           status
         }) => status.focused,
         style: {
-          backgroundColor: (theme.vars || theme).palette.action.focus
+          backgroundColor: (theme2.vars || theme2).palette.action.focus
         }
       }, {
         props: ({
           status
         }) => status.selected,
         style: {
-          backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / ${theme.vars.palette.action.selectedOpacity})` : (0, _styles.alpha)(theme.palette.primary.main, theme.palette.action.selectedOpacity),
+          backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / ${theme2.vars.palette.action.selectedOpacity})` : (0, _styles.alpha)(theme2.palette.primary.main, theme2.palette.action.selectedOpacity),
           "&:hover": {
-            backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / calc(${theme.vars.palette.action.selectedOpacity} + ${theme.vars.palette.action.hoverOpacity}))` : (0, _styles.alpha)(theme.palette.primary.main, theme.palette.action.selectedOpacity + theme.palette.action.hoverOpacity),
+            backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.hoverOpacity}))` : (0, _styles.alpha)(theme2.palette.primary.main, theme2.palette.action.selectedOpacity + theme2.palette.action.hoverOpacity),
             // Reset on touch devices, it doesn't add specificity
             "@media (hover: none)": {
-              backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / ${theme.vars.palette.action.selectedOpacity})` : (0, _styles.alpha)(theme.palette.primary.main, theme.palette.action.selectedOpacity)
+              backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / ${theme2.vars.palette.action.selectedOpacity})` : (0, _styles.alpha)(theme2.palette.primary.main, theme2.palette.action.selectedOpacity)
             }
           }
         }
@@ -69930,7 +69930,7 @@ var require_TreeItem22 = __commonJS({
           status
         }) => status.selected && status.focused,
         style: {
-          backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / calc(${theme.vars.palette.action.selectedOpacity} + ${theme.vars.palette.action.focusOpacity}))` : (0, _styles.alpha)(theme.palette.primary.main, theme.palette.action.selectedOpacity + theme.palette.action.focusOpacity)
+          backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.focusOpacity}))` : (0, _styles.alpha)(theme2.palette.primary.main, theme2.palette.action.selectedOpacity + theme2.palette.action.focusOpacity)
         }
       }]
     }));
@@ -69940,7 +69940,7 @@ var require_TreeItem22 = __commonJS({
       overridesResolver: (props, styles) => styles.label,
       shouldForwardProp: (prop) => (0, _createStyled.shouldForwardProp)(prop) && prop !== "editable"
     })(({
-      theme
+      theme: theme2
     }) => (0, _extends2.default)({
       width: "100%",
       boxSizing: "border-box",
@@ -69949,7 +69949,7 @@ var require_TreeItem22 = __commonJS({
       minWidth: 0,
       position: "relative",
       overflow: "hidden"
-    }, theme.typography.body1, {
+    }, theme2.typography.body1, {
       variants: [{
         props: ({
           editable
@@ -70340,7 +70340,7 @@ var require_Typography = __commonJS({
         return [styles.root, ownerState.variant && styles[ownerState.variant], ownerState.align !== "inherit" && styles[`align${(0, _capitalize.default)(ownerState.align)}`], ownerState.noWrap && styles.noWrap, ownerState.gutterBottom && styles.gutterBottom, ownerState.paragraph && styles.paragraph];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
       margin: 0,
       variants: [{
@@ -70353,24 +70353,24 @@ var require_Typography = __commonJS({
           lineHeight: "inherit",
           letterSpacing: "inherit"
         }
-      }, ...Object.entries(theme.typography).filter(([variant, value]) => variant !== "inherit" && value && typeof value === "object").map(([variant, value]) => ({
+      }, ...Object.entries(theme2.typography).filter(([variant, value]) => variant !== "inherit" && value && typeof value === "object").map(([variant, value]) => ({
         props: {
           variant
         },
         style: value
-      })), ...Object.entries(theme.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
+      })), ...Object.entries(theme2.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
         props: {
           color
         },
         style: {
-          color: (theme.vars || theme).palette[color].main
+          color: (theme2.vars || theme2).palette[color].main
         }
-      })), ...Object.entries(theme.palette?.text || {}).filter(([, value]) => typeof value === "string").map(([color]) => ({
+      })), ...Object.entries(theme2.palette?.text || {}).filter(([, value]) => typeof value === "string").map(([color]) => ({
         props: {
           color: `text${(0, _capitalize.default)(color)}`
         },
         style: {
-          color: (theme.vars || theme).palette.text[color]
+          color: (theme2.vars || theme2).palette.text[color]
         }
       })), {
         props: ({
@@ -73758,21 +73758,21 @@ var require_ListSubheader = __commonJS({
         return [styles.root, ownerState.color !== "default" && styles[`color${(0, _capitalize.default)(ownerState.color)}`], !ownerState.disableGutters && styles.gutters, ownerState.inset && styles.inset, !ownerState.disableSticky && styles.sticky];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
       boxSizing: "border-box",
       lineHeight: "48px",
       listStyle: "none",
-      color: (theme.vars || theme).palette.text.secondary,
-      fontFamily: theme.typography.fontFamily,
-      fontWeight: theme.typography.fontWeightMedium,
-      fontSize: theme.typography.pxToRem(14),
+      color: (theme2.vars || theme2).palette.text.secondary,
+      fontFamily: theme2.typography.fontFamily,
+      fontWeight: theme2.typography.fontWeightMedium,
+      fontSize: theme2.typography.pxToRem(14),
       variants: [{
         props: {
           color: "primary"
         },
         style: {
-          color: (theme.vars || theme).palette.primary.main
+          color: (theme2.vars || theme2).palette.primary.main
         }
       }, {
         props: {
@@ -73804,7 +73804,7 @@ var require_ListSubheader = __commonJS({
           position: "sticky",
           top: 0,
           zIndex: 1,
-          backgroundColor: (theme.vars || theme).palette.background.paper
+          backgroundColor: (theme2.vars || theme2).palette.background.paper
         }
       }]
     })));
@@ -74002,24 +74002,24 @@ var require_Paper = __commonJS({
         return [styles.root, styles[ownerState.variant], !ownerState.square && styles.rounded, ownerState.variant === "elevation" && styles[`elevation${ownerState.elevation}`]];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
-      backgroundColor: (theme.vars || theme).palette.background.paper,
-      color: (theme.vars || theme).palette.text.primary,
-      transition: theme.transitions.create("box-shadow"),
+      backgroundColor: (theme2.vars || theme2).palette.background.paper,
+      color: (theme2.vars || theme2).palette.text.primary,
+      transition: theme2.transitions.create("box-shadow"),
       variants: [{
         props: ({
           ownerState
         }) => !ownerState.square,
         style: {
-          borderRadius: theme.shape.borderRadius
+          borderRadius: theme2.shape.borderRadius
         }
       }, {
         props: {
           variant: "outlined"
         },
         style: {
-          border: `1px solid ${(theme.vars || theme).palette.divider}`
+          border: `1px solid ${(theme2.vars || theme2).palette.divider}`
         }
       }, {
         props: {
@@ -74036,7 +74036,7 @@ var require_Paper = __commonJS({
         props: inProps,
         name: "MuiPaper"
       });
-      const theme = (0, _zeroStyled.useTheme)();
+      const theme2 = (0, _zeroStyled.useTheme)();
       const {
         className,
         component = "div",
@@ -74054,7 +74054,7 @@ var require_Paper = __commonJS({
       };
       const classes = useUtilityClasses(ownerState);
       if (define_process_env_default.NODE_ENV !== "production") {
-        if (theme.shadows[elevation] === void 0) {
+        if (theme2.shadows[elevation] === void 0) {
           console.error([`MUI: The elevation provided <Paper elevation={${elevation}}> is not available in the theme.`, `Please make sure that \`theme.shadows[${elevation}]\` is defined.`].join("\n"));
         }
       }
@@ -74066,11 +74066,11 @@ var require_Paper = __commonJS({
         ...other,
         style: {
           ...variant === "elevation" && {
-            "--Paper-shadow": (theme.vars || theme).shadows[elevation],
-            ...theme.vars && {
-              "--Paper-overlay": theme.vars.overlays?.[elevation]
+            "--Paper-shadow": (theme2.vars || theme2).shadows[elevation],
+            ...theme2.vars && {
+              "--Paper-overlay": theme2.vars.overlays?.[elevation]
             },
-            ...!theme.vars && theme.palette.mode === "dark" && {
+            ...!theme2.vars && theme2.palette.mode === "dark" && {
               "--Paper-overlay": `linear-gradient(${(0, _colorManipulator.alpha)("#fff", (0, _getOverlayAlpha.default)(elevation))}, ${(0, _colorManipulator.alpha)("#fff", (0, _getOverlayAlpha.default)(elevation))})`
             }
           },
@@ -74280,7 +74280,7 @@ var require_CircularProgress = __commonJS({
         return [styles.root, styles[ownerState.variant], styles[`color${(0, _capitalize.default)(ownerState.color)}`]];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
       display: "inline-block",
       variants: [{
@@ -74288,7 +74288,7 @@ var require_CircularProgress = __commonJS({
           variant: "determinate"
         },
         style: {
-          transition: theme.transitions.create("transform")
+          transition: theme2.transitions.create("transform")
         }
       }, {
         props: {
@@ -74297,12 +74297,12 @@ var require_CircularProgress = __commonJS({
         style: rotateAnimation || {
           animation: `${circularRotateKeyframe} 1.4s linear infinite`
         }
-      }, ...Object.entries(theme.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
+      }, ...Object.entries(theme2.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
         props: {
           color
         },
         style: {
-          color: (theme.vars || theme).palette[color].main
+          color: (theme2.vars || theme2).palette[color].main
         }
       }))]
     })));
@@ -74324,7 +74324,7 @@ var require_CircularProgress = __commonJS({
         return [styles.circle, styles[`circle${(0, _capitalize.default)(ownerState.variant)}`], ownerState.disableShrink && styles.circleDisableShrink];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
       stroke: "currentColor",
       variants: [{
@@ -74332,7 +74332,7 @@ var require_CircularProgress = __commonJS({
           variant: "determinate"
         },
         style: {
-          transition: theme.transitions.create("stroke-dashoffset")
+          transition: theme2.transitions.create("stroke-dashoffset")
         }
       }, {
         props: {
@@ -74604,21 +74604,21 @@ var require_IconButton = __commonJS({
         return [styles.root, ownerState.loading && styles.loading, ownerState.color !== "default" && styles[`color${(0, _capitalize.default)(ownerState.color)}`], ownerState.edge && styles[`edge${(0, _capitalize.default)(ownerState.edge)}`], styles[`size${(0, _capitalize.default)(ownerState.size)}`]];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
       textAlign: "center",
       flex: "0 0 auto",
-      fontSize: theme.typography.pxToRem(24),
+      fontSize: theme2.typography.pxToRem(24),
       padding: 8,
       borderRadius: "50%",
-      color: (theme.vars || theme).palette.action.active,
-      transition: theme.transitions.create("background-color", {
-        duration: theme.transitions.duration.shortest
+      color: (theme2.vars || theme2).palette.action.active,
+      transition: theme2.transitions.create("background-color", {
+        duration: theme2.transitions.duration.shortest
       }),
       variants: [{
         props: (props) => !props.disableRipple,
         style: {
-          "--IconButton-hoverBg": theme.vars ? `rgba(${theme.vars.palette.action.activeChannel} / ${theme.vars.palette.action.hoverOpacity})` : (0, _colorManipulator.alpha)(theme.palette.action.active, theme.palette.action.hoverOpacity),
+          "--IconButton-hoverBg": theme2.vars ? `rgba(${theme2.vars.palette.action.activeChannel} / ${theme2.vars.palette.action.hoverOpacity})` : (0, _colorManipulator.alpha)(theme2.palette.action.active, theme2.palette.action.hoverOpacity),
           "&:hover": {
             backgroundColor: "var(--IconButton-hoverBg)",
             // Reset on touch devices, it doesn't add specificity
@@ -74659,7 +74659,7 @@ var require_IconButton = __commonJS({
         }
       }]
     })), (0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
       variants: [{
         props: {
@@ -74668,19 +74668,19 @@ var require_IconButton = __commonJS({
         style: {
           color: "inherit"
         }
-      }, ...Object.entries(theme.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
+      }, ...Object.entries(theme2.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
         props: {
           color
         },
         style: {
-          color: (theme.vars || theme).palette[color].main
+          color: (theme2.vars || theme2).palette[color].main
         }
-      })), ...Object.entries(theme.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
+      })), ...Object.entries(theme2.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
         props: {
           color
         },
         style: {
-          "--IconButton-hoverBg": theme.vars ? `rgba(${(theme.vars || theme).palette[color].mainChannel} / ${theme.vars.palette.action.hoverOpacity})` : (0, _colorManipulator.alpha)((theme.vars || theme).palette[color].main, theme.palette.action.hoverOpacity)
+          "--IconButton-hoverBg": theme2.vars ? `rgba(${(theme2.vars || theme2).palette[color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : (0, _colorManipulator.alpha)((theme2.vars || theme2).palette[color].main, theme2.palette.action.hoverOpacity)
         }
       })), {
         props: {
@@ -74688,7 +74688,7 @@ var require_IconButton = __commonJS({
         },
         style: {
           padding: 5,
-          fontSize: theme.typography.pxToRem(18)
+          fontSize: theme2.typography.pxToRem(18)
         }
       }, {
         props: {
@@ -74696,12 +74696,12 @@ var require_IconButton = __commonJS({
         },
         style: {
           padding: 12,
-          fontSize: theme.typography.pxToRem(28)
+          fontSize: theme2.typography.pxToRem(28)
         }
       }],
       [`&.${_iconButtonClasses.default.disabled}`]: {
         backgroundColor: "transparent",
-        color: (theme.vars || theme).palette.action.disabled
+        color: (theme2.vars || theme2).palette.action.disabled
       },
       [`&.${_iconButtonClasses.default.loading}`]: {
         color: "transparent"
@@ -74712,7 +74712,7 @@ var require_IconButton = __commonJS({
       slot: "LoadingIndicator",
       overridesResolver: (props, styles) => styles.loadingIndicator
     })(({
-      theme
+      theme: theme2
     }) => ({
       display: "none",
       position: "absolute",
@@ -74720,7 +74720,7 @@ var require_IconButton = __commonJS({
       top: "50%",
       left: "50%",
       transform: "translate(-50%, -50%)",
-      color: (theme.vars || theme).palette.action.disabled,
+      color: (theme2.vars || theme2).palette.action.disabled,
       variants: [{
         props: {
           loading: true
@@ -75045,22 +75045,22 @@ var require_Chip = __commonJS({
         }, styles.root, styles[`size${(0, _capitalize.default)(size)}`], styles[`color${(0, _capitalize.default)(color)}`], clickable && styles.clickable, clickable && color !== "default" && styles[`clickableColor${(0, _capitalize.default)(color)})`], onDelete && styles.deletable, onDelete && color !== "default" && styles[`deletableColor${(0, _capitalize.default)(color)}`], styles[variant], styles[`${variant}${(0, _capitalize.default)(color)}`]];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => {
-      const textColor = theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[300];
+      const textColor = theme2.palette.mode === "light" ? theme2.palette.grey[700] : theme2.palette.grey[300];
       return {
         maxWidth: "100%",
-        fontFamily: theme.typography.fontFamily,
-        fontSize: theme.typography.pxToRem(13),
+        fontFamily: theme2.typography.fontFamily,
+        fontSize: theme2.typography.pxToRem(13),
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
         height: 32,
-        color: (theme.vars || theme).palette.text.primary,
-        backgroundColor: (theme.vars || theme).palette.action.selected,
+        color: (theme2.vars || theme2).palette.text.primary,
+        backgroundColor: (theme2.vars || theme2).palette.action.selected,
         borderRadius: 32 / 2,
         whiteSpace: "nowrap",
-        transition: theme.transitions.create(["background-color", "box-shadow"]),
+        transition: theme2.transitions.create(["background-color", "box-shadow"]),
         // reset cursor explicitly in case ButtonBase is used
         cursor: "unset",
         // We disable the focus ring for mouse, touch and keyboard users.
@@ -75073,7 +75073,7 @@ var require_Chip = __commonJS({
         verticalAlign: "middle",
         boxSizing: "border-box",
         [`&.${_chipClasses.default.disabled}`]: {
-          opacity: (theme.vars || theme).palette.action.disabledOpacity,
+          opacity: (theme2.vars || theme2).palette.action.disabledOpacity,
           pointerEvents: "none"
         },
         [`& .${_chipClasses.default.avatar}`]: {
@@ -75081,23 +75081,23 @@ var require_Chip = __commonJS({
           marginRight: -6,
           width: 24,
           height: 24,
-          color: theme.vars ? theme.vars.palette.Chip.defaultAvatarColor : textColor,
-          fontSize: theme.typography.pxToRem(12)
+          color: theme2.vars ? theme2.vars.palette.Chip.defaultAvatarColor : textColor,
+          fontSize: theme2.typography.pxToRem(12)
         },
         [`& .${_chipClasses.default.avatarColorPrimary}`]: {
-          color: (theme.vars || theme).palette.primary.contrastText,
-          backgroundColor: (theme.vars || theme).palette.primary.dark
+          color: (theme2.vars || theme2).palette.primary.contrastText,
+          backgroundColor: (theme2.vars || theme2).palette.primary.dark
         },
         [`& .${_chipClasses.default.avatarColorSecondary}`]: {
-          color: (theme.vars || theme).palette.secondary.contrastText,
-          backgroundColor: (theme.vars || theme).palette.secondary.dark
+          color: (theme2.vars || theme2).palette.secondary.contrastText,
+          backgroundColor: (theme2.vars || theme2).palette.secondary.dark
         },
         [`& .${_chipClasses.default.avatarSmall}`]: {
           marginLeft: 4,
           marginRight: -4,
           width: 18,
           height: 18,
-          fontSize: theme.typography.pxToRem(10)
+          fontSize: theme2.typography.pxToRem(10)
         },
         [`& .${_chipClasses.default.icon}`]: {
           marginLeft: 5,
@@ -75105,12 +75105,12 @@ var require_Chip = __commonJS({
         },
         [`& .${_chipClasses.default.deleteIcon}`]: {
           WebkitTapHighlightColor: "transparent",
-          color: theme.vars ? `rgba(${theme.vars.palette.text.primaryChannel} / 0.26)` : (0, _colorManipulator.alpha)(theme.palette.text.primary, 0.26),
+          color: theme2.vars ? `rgba(${theme2.vars.palette.text.primaryChannel} / 0.26)` : (0, _colorManipulator.alpha)(theme2.palette.text.primary, 0.26),
           fontSize: 22,
           cursor: "pointer",
           margin: "0 5px 0 -6px",
           "&:hover": {
-            color: theme.vars ? `rgba(${theme.vars.palette.text.primaryChannel} / 0.4)` : (0, _colorManipulator.alpha)(theme.palette.text.primary, 0.4)
+            color: theme2.vars ? `rgba(${theme2.vars.palette.text.primaryChannel} / 0.4)` : (0, _colorManipulator.alpha)(theme2.palette.text.primary, 0.4)
           }
         },
         variants: [{
@@ -75130,18 +75130,18 @@ var require_Chip = __commonJS({
               marginLeft: -4
             }
           }
-        }, ...Object.entries(theme.palette).filter((0, _createSimplePaletteValueFilter.default)(["contrastText"])).map(([color]) => {
+        }, ...Object.entries(theme2.palette).filter((0, _createSimplePaletteValueFilter.default)(["contrastText"])).map(([color]) => {
           return {
             props: {
               color
             },
             style: {
-              backgroundColor: (theme.vars || theme).palette[color].main,
-              color: (theme.vars || theme).palette[color].contrastText,
+              backgroundColor: (theme2.vars || theme2).palette[color].main,
+              color: (theme2.vars || theme2).palette[color].contrastText,
               [`& .${_chipClasses.default.deleteIcon}`]: {
-                color: theme.vars ? `rgba(${theme.vars.palette[color].contrastTextChannel} / 0.7)` : (0, _colorManipulator.alpha)(theme.palette[color].contrastText, 0.7),
+                color: theme2.vars ? `rgba(${theme2.vars.palette[color].contrastTextChannel} / 0.7)` : (0, _colorManipulator.alpha)(theme2.palette[color].contrastText, 0.7),
                 "&:hover, &:active": {
-                  color: (theme.vars || theme).palette[color].contrastText
+                  color: (theme2.vars || theme2).palette[color].contrastText
                 }
               }
             }
@@ -75150,7 +75150,7 @@ var require_Chip = __commonJS({
           props: (props) => props.iconColor === props.color,
           style: {
             [`& .${_chipClasses.default.icon}`]: {
-              color: theme.vars ? theme.vars.palette.Chip.defaultIconColor : textColor
+              color: theme2.vars ? theme2.vars.palette.Chip.defaultIconColor : textColor
             }
           }
         }, {
@@ -75166,10 +75166,10 @@ var require_Chip = __commonJS({
           },
           style: {
             [`&.${_chipClasses.default.focusVisible}`]: {
-              backgroundColor: theme.vars ? `rgba(${theme.vars.palette.action.selectedChannel} / calc(${theme.vars.palette.action.selectedOpacity} + ${theme.vars.palette.action.focusOpacity}))` : (0, _colorManipulator.alpha)(theme.palette.action.selected, theme.palette.action.selectedOpacity + theme.palette.action.focusOpacity)
+              backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.action.selectedChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.focusOpacity}))` : (0, _colorManipulator.alpha)(theme2.palette.action.selected, theme2.palette.action.selectedOpacity + theme2.palette.action.focusOpacity)
             }
           }
-        }, ...Object.entries(theme.palette).filter((0, _createSimplePaletteValueFilter.default)(["dark"])).map(([color]) => {
+        }, ...Object.entries(theme2.palette).filter((0, _createSimplePaletteValueFilter.default)(["dark"])).map(([color]) => {
           return {
             props: {
               color,
@@ -75177,7 +75177,7 @@ var require_Chip = __commonJS({
             },
             style: {
               [`&.${_chipClasses.default.focusVisible}`]: {
-                background: (theme.vars || theme).palette[color].dark
+                background: (theme2.vars || theme2).palette[color].dark
               }
             }
           };
@@ -75190,23 +75190,23 @@ var require_Chip = __commonJS({
             WebkitTapHighlightColor: "transparent",
             cursor: "pointer",
             "&:hover": {
-              backgroundColor: theme.vars ? `rgba(${theme.vars.palette.action.selectedChannel} / calc(${theme.vars.palette.action.selectedOpacity} + ${theme.vars.palette.action.hoverOpacity}))` : (0, _colorManipulator.alpha)(theme.palette.action.selected, theme.palette.action.selectedOpacity + theme.palette.action.hoverOpacity)
+              backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.action.selectedChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.hoverOpacity}))` : (0, _colorManipulator.alpha)(theme2.palette.action.selected, theme2.palette.action.selectedOpacity + theme2.palette.action.hoverOpacity)
             },
             [`&.${_chipClasses.default.focusVisible}`]: {
-              backgroundColor: theme.vars ? `rgba(${theme.vars.palette.action.selectedChannel} / calc(${theme.vars.palette.action.selectedOpacity} + ${theme.vars.palette.action.focusOpacity}))` : (0, _colorManipulator.alpha)(theme.palette.action.selected, theme.palette.action.selectedOpacity + theme.palette.action.focusOpacity)
+              backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.action.selectedChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.focusOpacity}))` : (0, _colorManipulator.alpha)(theme2.palette.action.selected, theme2.palette.action.selectedOpacity + theme2.palette.action.focusOpacity)
             },
             "&:active": {
-              boxShadow: (theme.vars || theme).shadows[1]
+              boxShadow: (theme2.vars || theme2).shadows[1]
             }
           }
-        }, ...Object.entries(theme.palette).filter((0, _createSimplePaletteValueFilter.default)(["dark"])).map(([color]) => ({
+        }, ...Object.entries(theme2.palette).filter((0, _createSimplePaletteValueFilter.default)(["dark"])).map(([color]) => ({
           props: {
             color,
             clickable: true
           },
           style: {
             [`&:hover, &.${_chipClasses.default.focusVisible}`]: {
-              backgroundColor: (theme.vars || theme).palette[color].dark
+              backgroundColor: (theme2.vars || theme2).palette[color].dark
             }
           }
         })), {
@@ -75215,12 +75215,12 @@ var require_Chip = __commonJS({
           },
           style: {
             backgroundColor: "transparent",
-            border: theme.vars ? `1px solid ${theme.vars.palette.Chip.defaultBorder}` : `1px solid ${theme.palette.mode === "light" ? theme.palette.grey[400] : theme.palette.grey[700]}`,
+            border: theme2.vars ? `1px solid ${theme2.vars.palette.Chip.defaultBorder}` : `1px solid ${theme2.palette.mode === "light" ? theme2.palette.grey[400] : theme2.palette.grey[700]}`,
             [`&.${_chipClasses.default.clickable}:hover`]: {
-              backgroundColor: (theme.vars || theme).palette.action.hover
+              backgroundColor: (theme2.vars || theme2).palette.action.hover
             },
             [`&.${_chipClasses.default.focusVisible}`]: {
-              backgroundColor: (theme.vars || theme).palette.action.focus
+              backgroundColor: (theme2.vars || theme2).palette.action.focus
             },
             [`& .${_chipClasses.default.avatar}`]: {
               marginLeft: 4
@@ -75241,24 +75241,24 @@ var require_Chip = __commonJS({
               marginRight: 3
             }
           }
-        }, ...Object.entries(theme.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
+        }, ...Object.entries(theme2.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
           props: {
             variant: "outlined",
             color
           },
           style: {
-            color: (theme.vars || theme).palette[color].main,
-            border: `1px solid ${theme.vars ? `rgba(${theme.vars.palette[color].mainChannel} / 0.7)` : (0, _colorManipulator.alpha)(theme.palette[color].main, 0.7)}`,
+            color: (theme2.vars || theme2).palette[color].main,
+            border: `1px solid ${theme2.vars ? `rgba(${theme2.vars.palette[color].mainChannel} / 0.7)` : (0, _colorManipulator.alpha)(theme2.palette[color].main, 0.7)}`,
             [`&.${_chipClasses.default.clickable}:hover`]: {
-              backgroundColor: theme.vars ? `rgba(${theme.vars.palette[color].mainChannel} / ${theme.vars.palette.action.hoverOpacity})` : (0, _colorManipulator.alpha)(theme.palette[color].main, theme.palette.action.hoverOpacity)
+              backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : (0, _colorManipulator.alpha)(theme2.palette[color].main, theme2.palette.action.hoverOpacity)
             },
             [`&.${_chipClasses.default.focusVisible}`]: {
-              backgroundColor: theme.vars ? `rgba(${theme.vars.palette[color].mainChannel} / ${theme.vars.palette.action.focusOpacity})` : (0, _colorManipulator.alpha)(theme.palette[color].main, theme.palette.action.focusOpacity)
+              backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[color].mainChannel} / ${theme2.vars.palette.action.focusOpacity})` : (0, _colorManipulator.alpha)(theme2.palette[color].main, theme2.palette.action.focusOpacity)
             },
             [`& .${_chipClasses.default.deleteIcon}`]: {
-              color: theme.vars ? `rgba(${theme.vars.palette[color].mainChannel} / 0.7)` : (0, _colorManipulator.alpha)(theme.palette[color].main, 0.7),
+              color: theme2.vars ? `rgba(${theme2.vars.palette[color].mainChannel} / 0.7)` : (0, _colorManipulator.alpha)(theme2.palette[color].main, 0.7),
               "&:hover, &:active": {
-                color: (theme.vars || theme).palette[color].main
+                color: (theme2.vars || theme2).palette[color].main
               }
             }
           }
@@ -75987,10 +75987,10 @@ var require_InputBase = __commonJS({
       slot: "Root",
       overridesResolver: rootOverridesResolver
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
-      ...theme.typography.body1,
-      color: (theme.vars || theme).palette.text.primary,
+      ...theme2.typography.body1,
+      color: (theme2.vars || theme2).palette.text.primary,
       lineHeight: "1.4375em",
       // 23px
       boxSizing: "border-box",
@@ -76000,7 +76000,7 @@ var require_InputBase = __commonJS({
       display: "inline-flex",
       alignItems: "center",
       [`&.${_inputBaseClasses.default.disabled}`]: {
-        color: (theme.vars || theme).palette.text.disabled,
+        color: (theme2.vars || theme2).palette.text.disabled,
         cursor: "default"
       },
       variants: [{
@@ -76032,25 +76032,25 @@ var require_InputBase = __commonJS({
       slot: "Input",
       overridesResolver: inputOverridesResolver
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => {
-      const light = theme.palette.mode === "light";
+      const light = theme2.palette.mode === "light";
       const placeholder = {
         color: "currentColor",
-        ...theme.vars ? {
-          opacity: theme.vars.opacity.inputPlaceholder
+        ...theme2.vars ? {
+          opacity: theme2.vars.opacity.inputPlaceholder
         } : {
           opacity: light ? 0.42 : 0.5
         },
-        transition: theme.transitions.create("opacity", {
-          duration: theme.transitions.duration.shorter
+        transition: theme2.transitions.create("opacity", {
+          duration: theme2.transitions.duration.shorter
         })
       };
       const placeholderHidden = {
         opacity: "0 !important"
       };
-      const placeholderVisible = theme.vars ? {
-        opacity: theme.vars.opacity.inputPlaceholder
+      const placeholderVisible = theme2.vars ? {
+        opacity: theme2.vars.opacity.inputPlaceholder
       } : {
         opacity: light ? 0.42 : 0.5
       };
@@ -76103,7 +76103,7 @@ var require_InputBase = __commonJS({
         [`&.${_inputBaseClasses.default.disabled}`]: {
           opacity: 1,
           // Reset iOS opacity
-          WebkitTextFillColor: (theme.vars || theme).palette.text.disabled
+          WebkitTextFillColor: (theme2.vars || theme2).palette.text.disabled
           // Fix opacity Safari bug
         },
         variants: [{
@@ -77138,9 +77138,9 @@ var require_Autocomplete = __commonJS({
         }, styles.popper, ownerState.disablePortal && styles.popperDisablePortal];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
-      zIndex: (theme.vars || theme).zIndex.modal,
+      zIndex: (theme2.vars || theme2).zIndex.modal,
       variants: [{
         props: {
           disablePortal: true
@@ -77155,9 +77155,9 @@ var require_Autocomplete = __commonJS({
       slot: "Paper",
       overridesResolver: (props, styles) => styles.paper
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
-      ...theme.typography.body1,
+      ...theme2.typography.body1,
       overflow: "auto"
     })));
     var AutocompleteLoading = (0, _zeroStyled.styled)("div", {
@@ -77165,9 +77165,9 @@ var require_Autocomplete = __commonJS({
       slot: "Loading",
       overridesResolver: (props, styles) => styles.loading
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
-      color: (theme.vars || theme).palette.text.secondary,
+      color: (theme2.vars || theme2).palette.text.secondary,
       padding: "14px 16px"
     })));
     var AutocompleteNoOptions = (0, _zeroStyled.styled)("div", {
@@ -77175,9 +77175,9 @@ var require_Autocomplete = __commonJS({
       slot: "NoOptions",
       overridesResolver: (props, styles) => styles.noOptions
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
-      color: (theme.vars || theme).palette.text.secondary,
+      color: (theme2.vars || theme2).palette.text.secondary,
       padding: "14px 16px"
     })));
     var AutocompleteListbox = (0, _zeroStyled.styled)("ul", {
@@ -77185,7 +77185,7 @@ var require_Autocomplete = __commonJS({
       slot: "Listbox",
       overridesResolver: (props, styles) => styles.listbox
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
       listStyle: "none",
       margin: 0,
@@ -77207,34 +77207,34 @@ var require_Autocomplete = __commonJS({
         paddingBottom: 6,
         paddingLeft: 16,
         paddingRight: 16,
-        [theme.breakpoints.up("sm")]: {
+        [theme2.breakpoints.up("sm")]: {
           minHeight: "auto"
         },
         [`&.${_autocompleteClasses.default.focused}`]: {
-          backgroundColor: (theme.vars || theme).palette.action.hover,
+          backgroundColor: (theme2.vars || theme2).palette.action.hover,
           // Reset on touch devices, it doesn't add specificity
           "@media (hover: none)": {
             backgroundColor: "transparent"
           }
         },
         '&[aria-disabled="true"]': {
-          opacity: (theme.vars || theme).palette.action.disabledOpacity,
+          opacity: (theme2.vars || theme2).palette.action.disabledOpacity,
           pointerEvents: "none"
         },
         [`&.${_autocompleteClasses.default.focusVisible}`]: {
-          backgroundColor: (theme.vars || theme).palette.action.focus
+          backgroundColor: (theme2.vars || theme2).palette.action.focus
         },
         '&[aria-selected="true"]': {
-          backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / ${theme.vars.palette.action.selectedOpacity})` : (0, _colorManipulator.alpha)(theme.palette.primary.main, theme.palette.action.selectedOpacity),
+          backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / ${theme2.vars.palette.action.selectedOpacity})` : (0, _colorManipulator.alpha)(theme2.palette.primary.main, theme2.palette.action.selectedOpacity),
           [`&.${_autocompleteClasses.default.focused}`]: {
-            backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / calc(${theme.vars.palette.action.selectedOpacity} + ${theme.vars.palette.action.hoverOpacity}))` : (0, _colorManipulator.alpha)(theme.palette.primary.main, theme.palette.action.selectedOpacity + theme.palette.action.hoverOpacity),
+            backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.hoverOpacity}))` : (0, _colorManipulator.alpha)(theme2.palette.primary.main, theme2.palette.action.selectedOpacity + theme2.palette.action.hoverOpacity),
             // Reset on touch devices, it doesn't add specificity
             "@media (hover: none)": {
-              backgroundColor: (theme.vars || theme).palette.action.selected
+              backgroundColor: (theme2.vars || theme2).palette.action.selected
             }
           },
           [`&.${_autocompleteClasses.default.focusVisible}`]: {
-            backgroundColor: theme.vars ? `rgba(${theme.vars.palette.primary.mainChannel} / calc(${theme.vars.palette.action.selectedOpacity} + ${theme.vars.palette.action.focusOpacity}))` : (0, _colorManipulator.alpha)(theme.palette.primary.main, theme.palette.action.selectedOpacity + theme.palette.action.focusOpacity)
+            backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.primary.mainChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.focusOpacity}))` : (0, _colorManipulator.alpha)(theme2.palette.primary.main, theme2.palette.action.selectedOpacity + theme2.palette.action.focusOpacity)
           }
         }
       }
@@ -77244,9 +77244,9 @@ var require_Autocomplete = __commonJS({
       slot: "GroupLabel",
       overridesResolver: (props, styles) => styles.groupLabel
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
-      backgroundColor: (theme.vars || theme).palette.background.paper,
+      backgroundColor: (theme2.vars || theme2).palette.background.paper,
       top: -8
     })));
     var AutocompleteGroupUl = (0, _zeroStyled.styled)("ul", {
@@ -78135,12 +78135,12 @@ var require_Input = __commonJS({
         return [...(0, _InputBase2.rootOverridesResolver)(props, styles), !ownerState.disableUnderline && styles.underline];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => {
-      const light = theme.palette.mode === "light";
+      const light = theme2.palette.mode === "light";
       let bottomLineColor = light ? "rgba(0, 0, 0, 0.42)" : "rgba(255, 255, 255, 0.7)";
-      if (theme.vars) {
-        bottomLineColor = `rgba(${theme.vars.palette.common.onBackgroundChannel} / ${theme.vars.opacity.inputUnderline})`;
+      if (theme2.vars) {
+        bottomLineColor = `rgba(${theme2.vars.palette.common.onBackgroundChannel} / ${theme2.vars.opacity.inputUnderline})`;
       }
       return {
         position: "relative",
@@ -78165,9 +78165,9 @@ var require_Input = __commonJS({
               position: "absolute",
               right: 0,
               transform: "scaleX(0)",
-              transition: theme.transitions.create("transform", {
-                duration: theme.transitions.duration.shorter,
-                easing: theme.transitions.easing.easeOut
+              transition: theme2.transitions.create("transform", {
+                duration: theme2.transitions.duration.shorter,
+                easing: theme2.transitions.easing.easeOut
               }),
               pointerEvents: "none"
               // Transparent to the hover style.
@@ -78179,7 +78179,7 @@ var require_Input = __commonJS({
             },
             [`&.${_inputClasses.default.error}`]: {
               "&::before, &::after": {
-                borderBottomColor: (theme.vars || theme).palette.error.main
+                borderBottomColor: (theme2.vars || theme2).palette.error.main
               }
             },
             "&::before": {
@@ -78189,14 +78189,14 @@ var require_Input = __commonJS({
               content: '"\\00a0"',
               position: "absolute",
               right: 0,
-              transition: theme.transitions.create("border-bottom-color", {
-                duration: theme.transitions.duration.shorter
+              transition: theme2.transitions.create("border-bottom-color", {
+                duration: theme2.transitions.duration.shorter
               }),
               pointerEvents: "none"
               // Transparent to the hover style.
             },
             [`&:hover:not(.${_inputClasses.default.disabled}, .${_inputClasses.default.error}):before`]: {
-              borderBottom: `2px solid ${(theme.vars || theme).palette.text.primary}`,
+              borderBottom: `2px solid ${(theme2.vars || theme2).palette.text.primary}`,
               // Reset on touch devices, it doesn't add specificity
               "@media (hover: none)": {
                 borderBottom: `1px solid ${bottomLineColor}`
@@ -78206,14 +78206,14 @@ var require_Input = __commonJS({
               borderBottomStyle: "dotted"
             }
           }
-        }, ...Object.entries(theme.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
+        }, ...Object.entries(theme2.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
           props: {
             color,
             disableUnderline: false
           },
           style: {
             "&::after": {
-              borderBottom: `2px solid ${(theme.vars || theme).palette[color].main}`
+              borderBottom: `2px solid ${(theme2.vars || theme2).palette[color].main}`
             }
           }
         }))]
@@ -78558,34 +78558,34 @@ var require_FilledInput = __commonJS({
         return [...(0, _InputBase2.rootOverridesResolver)(props, styles), !ownerState.disableUnderline && styles.underline];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => {
-      const light = theme.palette.mode === "light";
+      const light = theme2.palette.mode === "light";
       const bottomLineColor = light ? "rgba(0, 0, 0, 0.42)" : "rgba(255, 255, 255, 0.7)";
       const backgroundColor = light ? "rgba(0, 0, 0, 0.06)" : "rgba(255, 255, 255, 0.09)";
       const hoverBackground = light ? "rgba(0, 0, 0, 0.09)" : "rgba(255, 255, 255, 0.13)";
       const disabledBackground = light ? "rgba(0, 0, 0, 0.12)" : "rgba(255, 255, 255, 0.12)";
       return {
         position: "relative",
-        backgroundColor: theme.vars ? theme.vars.palette.FilledInput.bg : backgroundColor,
-        borderTopLeftRadius: (theme.vars || theme).shape.borderRadius,
-        borderTopRightRadius: (theme.vars || theme).shape.borderRadius,
-        transition: theme.transitions.create("background-color", {
-          duration: theme.transitions.duration.shorter,
-          easing: theme.transitions.easing.easeOut
+        backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.bg : backgroundColor,
+        borderTopLeftRadius: (theme2.vars || theme2).shape.borderRadius,
+        borderTopRightRadius: (theme2.vars || theme2).shape.borderRadius,
+        transition: theme2.transitions.create("background-color", {
+          duration: theme2.transitions.duration.shorter,
+          easing: theme2.transitions.easing.easeOut
         }),
         "&:hover": {
-          backgroundColor: theme.vars ? theme.vars.palette.FilledInput.hoverBg : hoverBackground,
+          backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.hoverBg : hoverBackground,
           // Reset on touch devices, it doesn't add specificity
           "@media (hover: none)": {
-            backgroundColor: theme.vars ? theme.vars.palette.FilledInput.bg : backgroundColor
+            backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.bg : backgroundColor
           }
         },
         [`&.${_filledInputClasses.default.focused}`]: {
-          backgroundColor: theme.vars ? theme.vars.palette.FilledInput.bg : backgroundColor
+          backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.bg : backgroundColor
         },
         [`&.${_filledInputClasses.default.disabled}`]: {
-          backgroundColor: theme.vars ? theme.vars.palette.FilledInput.disabledBg : disabledBackground
+          backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.disabledBg : disabledBackground
         },
         variants: [{
           props: ({
@@ -78599,9 +78599,9 @@ var require_FilledInput = __commonJS({
               position: "absolute",
               right: 0,
               transform: "scaleX(0)",
-              transition: theme.transitions.create("transform", {
-                duration: theme.transitions.duration.shorter,
-                easing: theme.transitions.easing.easeOut
+              transition: theme2.transitions.create("transform", {
+                duration: theme2.transitions.duration.shorter,
+                easing: theme2.transitions.easing.easeOut
               }),
               pointerEvents: "none"
               // Transparent to the hover style.
@@ -78613,37 +78613,37 @@ var require_FilledInput = __commonJS({
             },
             [`&.${_filledInputClasses.default.error}`]: {
               "&::before, &::after": {
-                borderBottomColor: (theme.vars || theme).palette.error.main
+                borderBottomColor: (theme2.vars || theme2).palette.error.main
               }
             },
             "&::before": {
-              borderBottom: `1px solid ${theme.vars ? `rgba(${theme.vars.palette.common.onBackgroundChannel} / ${theme.vars.opacity.inputUnderline})` : bottomLineColor}`,
+              borderBottom: `1px solid ${theme2.vars ? `rgba(${theme2.vars.palette.common.onBackgroundChannel} / ${theme2.vars.opacity.inputUnderline})` : bottomLineColor}`,
               left: 0,
               bottom: 0,
               content: '"\\00a0"',
               position: "absolute",
               right: 0,
-              transition: theme.transitions.create("border-bottom-color", {
-                duration: theme.transitions.duration.shorter
+              transition: theme2.transitions.create("border-bottom-color", {
+                duration: theme2.transitions.duration.shorter
               }),
               pointerEvents: "none"
               // Transparent to the hover style.
             },
             [`&:hover:not(.${_filledInputClasses.default.disabled}, .${_filledInputClasses.default.error}):before`]: {
-              borderBottom: `1px solid ${(theme.vars || theme).palette.text.primary}`
+              borderBottom: `1px solid ${(theme2.vars || theme2).palette.text.primary}`
             },
             [`&.${_filledInputClasses.default.disabled}:before`]: {
               borderBottomStyle: "dotted"
             }
           }
-        }, ...Object.entries(theme.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
+        }, ...Object.entries(theme2.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
           props: {
             disableUnderline: false,
             color
           },
           style: {
             "&::after": {
-              borderBottom: `2px solid ${(theme.vars || theme).palette[color]?.main}`
+              borderBottom: `2px solid ${(theme2.vars || theme2).palette[color]?.main}`
             }
           }
         })), {
@@ -78700,27 +78700,27 @@ var require_FilledInput = __commonJS({
       slot: "Input",
       overridesResolver: _InputBase2.inputOverridesResolver
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
       paddingTop: 25,
       paddingRight: 12,
       paddingBottom: 8,
       paddingLeft: 12,
-      ...!theme.vars && {
+      ...!theme2.vars && {
         "&:-webkit-autofill": {
-          WebkitBoxShadow: theme.palette.mode === "light" ? null : "0 0 0 100px #266798 inset",
-          WebkitTextFillColor: theme.palette.mode === "light" ? null : "#fff",
-          caretColor: theme.palette.mode === "light" ? null : "#fff",
+          WebkitBoxShadow: theme2.palette.mode === "light" ? null : "0 0 0 100px #266798 inset",
+          WebkitTextFillColor: theme2.palette.mode === "light" ? null : "#fff",
+          caretColor: theme2.palette.mode === "light" ? null : "#fff",
           borderTopLeftRadius: "inherit",
           borderTopRightRadius: "inherit"
         }
       },
-      ...theme.vars && {
+      ...theme2.vars && {
         "&:-webkit-autofill": {
           borderTopLeftRadius: "inherit",
           borderTopRightRadius: "inherit"
         },
-        [theme.getColorSchemeSelector("dark")]: {
+        [theme2.getColorSchemeSelector("dark")]: {
           "&:-webkit-autofill": {
             WebkitBoxShadow: "0 0 0 100px #266798 inset",
             WebkitTextFillColor: "#fff",
@@ -79110,7 +79110,7 @@ var require_NotchedOutline = __commonJS({
     var NotchedOutlineLegend = (0, _zeroStyled.styled)("legend", {
       shouldForwardProp: _rootShouldForwardProp.default
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
       float: "unset",
       // Fix conflict with bootstrap
@@ -79126,9 +79126,9 @@ var require_NotchedOutline = __commonJS({
           padding: 0,
           lineHeight: "11px",
           // sync with `height` in `legend` styles
-          transition: theme.transitions.create("width", {
+          transition: theme2.transitions.create("width", {
             duration: 150,
-            easing: theme.transitions.easing.easeOut
+            easing: theme2.transitions.easing.easeOut
           })
         }
       }, {
@@ -79144,9 +79144,9 @@ var require_NotchedOutline = __commonJS({
           fontSize: "0.75em",
           visibility: "hidden",
           maxWidth: 0.01,
-          transition: theme.transitions.create("max-width", {
+          transition: theme2.transitions.create("max-width", {
             duration: 50,
-            easing: theme.transitions.easing.easeOut
+            easing: theme2.transitions.easing.easeOut
           }),
           whiteSpace: "nowrap",
           "& > span": {
@@ -79163,9 +79163,9 @@ var require_NotchedOutline = __commonJS({
         }) => ownerState.withLabel && ownerState.notched,
         style: {
           maxWidth: "100%",
-          transition: theme.transitions.create("max-width", {
+          transition: theme2.transitions.create("max-width", {
             duration: 100,
-            easing: theme.transitions.easing.easeOut,
+            easing: theme2.transitions.easing.easeOut,
             delay: 50
           })
         }
@@ -79284,31 +79284,31 @@ var require_OutlinedInput = __commonJS({
       slot: "Root",
       overridesResolver: _InputBase.rootOverridesResolver
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => {
-      const borderColor = theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.23)" : "rgba(255, 255, 255, 0.23)";
+      const borderColor = theme2.palette.mode === "light" ? "rgba(0, 0, 0, 0.23)" : "rgba(255, 255, 255, 0.23)";
       return {
         position: "relative",
-        borderRadius: (theme.vars || theme).shape.borderRadius,
+        borderRadius: (theme2.vars || theme2).shape.borderRadius,
         [`&:hover .${_outlinedInputClasses.default.notchedOutline}`]: {
-          borderColor: (theme.vars || theme).palette.text.primary
+          borderColor: (theme2.vars || theme2).palette.text.primary
         },
         // Reset on touch devices, it doesn't add specificity
         "@media (hover: none)": {
           [`&:hover .${_outlinedInputClasses.default.notchedOutline}`]: {
-            borderColor: theme.vars ? `rgba(${theme.vars.palette.common.onBackgroundChannel} / 0.23)` : borderColor
+            borderColor: theme2.vars ? `rgba(${theme2.vars.palette.common.onBackgroundChannel} / 0.23)` : borderColor
           }
         },
         [`&.${_outlinedInputClasses.default.focused} .${_outlinedInputClasses.default.notchedOutline}`]: {
           borderWidth: 2
         },
-        variants: [...Object.entries(theme.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
+        variants: [...Object.entries(theme2.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
           props: {
             color
           },
           style: {
             [`&.${_outlinedInputClasses.default.focused} .${_outlinedInputClasses.default.notchedOutline}`]: {
-              borderColor: (theme.vars || theme).palette[color].main
+              borderColor: (theme2.vars || theme2).palette[color].main
             }
           }
         })), {
@@ -79316,10 +79316,10 @@ var require_OutlinedInput = __commonJS({
           // to overide the above style
           style: {
             [`&.${_outlinedInputClasses.default.error} .${_outlinedInputClasses.default.notchedOutline}`]: {
-              borderColor: (theme.vars || theme).palette.error.main
+              borderColor: (theme2.vars || theme2).palette.error.main
             },
             [`&.${_outlinedInputClasses.default.disabled} .${_outlinedInputClasses.default.notchedOutline}`]: {
-              borderColor: (theme.vars || theme).palette.action.disabled
+              borderColor: (theme2.vars || theme2).palette.action.disabled
             }
           }
         }, {
@@ -79359,11 +79359,11 @@ var require_OutlinedInput = __commonJS({
       slot: "NotchedOutline",
       overridesResolver: (props, styles) => styles.notchedOutline
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => {
-      const borderColor = theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.23)" : "rgba(255, 255, 255, 0.23)";
+      const borderColor = theme2.palette.mode === "light" ? "rgba(0, 0, 0, 0.23)" : "rgba(255, 255, 255, 0.23)";
       return {
-        borderColor: theme.vars ? `rgba(${theme.vars.palette.common.onBackgroundChannel} / 0.23)` : borderColor
+        borderColor: theme2.vars ? `rgba(${theme2.vars.palette.common.onBackgroundChannel} / 0.23)` : borderColor
       };
     }));
     var OutlinedInputInput = (0, _zeroStyled.styled)(_InputBase.InputBaseInput, {
@@ -79371,22 +79371,22 @@ var require_OutlinedInput = __commonJS({
       slot: "Input",
       overridesResolver: _InputBase.inputOverridesResolver
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
       padding: "16.5px 14px",
-      ...!theme.vars && {
+      ...!theme2.vars && {
         "&:-webkit-autofill": {
-          WebkitBoxShadow: theme.palette.mode === "light" ? null : "0 0 0 100px #266798 inset",
-          WebkitTextFillColor: theme.palette.mode === "light" ? null : "#fff",
-          caretColor: theme.palette.mode === "light" ? null : "#fff",
+          WebkitBoxShadow: theme2.palette.mode === "light" ? null : "0 0 0 100px #266798 inset",
+          WebkitTextFillColor: theme2.palette.mode === "light" ? null : "#fff",
+          caretColor: theme2.palette.mode === "light" ? null : "#fff",
           borderRadius: "inherit"
         }
       },
-      ...theme.vars && {
+      ...theme2.vars && {
         "&:-webkit-autofill": {
           borderRadius: "inherit"
         },
-        [theme.getColorSchemeSelector("dark")]: {
+        [theme2.getColorSchemeSelector("dark")]: {
           "&:-webkit-autofill": {
             WebkitBoxShadow: "0 0 0 100px #266798 inset",
             WebkitTextFillColor: "#fff",
@@ -79771,30 +79771,30 @@ var require_FormLabel = __commonJS({
         return [styles.root, ownerState.color === "secondary" && styles.colorSecondary, ownerState.filled && styles.filled];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
-      color: (theme.vars || theme).palette.text.secondary,
-      ...theme.typography.body1,
+      color: (theme2.vars || theme2).palette.text.secondary,
+      ...theme2.typography.body1,
       lineHeight: "1.4375em",
       padding: 0,
       position: "relative",
-      variants: [...Object.entries(theme.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
+      variants: [...Object.entries(theme2.palette).filter((0, _createSimplePaletteValueFilter.default)()).map(([color]) => ({
         props: {
           color
         },
         style: {
           [`&.${_formLabelClasses.default.focused}`]: {
-            color: (theme.vars || theme).palette[color].main
+            color: (theme2.vars || theme2).palette[color].main
           }
         }
       })), {
         props: {},
         style: {
           [`&.${_formLabelClasses.default.disabled}`]: {
-            color: (theme.vars || theme).palette.text.disabled
+            color: (theme2.vars || theme2).palette.text.disabled
           },
           [`&.${_formLabelClasses.default.error}`]: {
-            color: (theme.vars || theme).palette.error.main
+            color: (theme2.vars || theme2).palette.error.main
           }
         }
       }]
@@ -79804,10 +79804,10 @@ var require_FormLabel = __commonJS({
       slot: "Asterisk",
       overridesResolver: (props, styles) => styles.asterisk
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
       [`&.${_formLabelClasses.default.error}`]: {
-        color: (theme.vars || theme).palette.error.main
+        color: (theme2.vars || theme2).palette.error.main
       }
     })));
     var FormLabel = /* @__PURE__ */ React7.forwardRef(function FormLabel2(inProps, ref) {
@@ -80047,7 +80047,7 @@ var require_InputLabel = __commonJS({
         }, styles.root, ownerState.formControl && styles.formControl, ownerState.size === "small" && styles.sizeSmall, ownerState.shrink && styles.shrink, !ownerState.disableAnimation && styles.animated, ownerState.focused && styles.focused, styles[ownerState.variant]];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
       display: "block",
       transformOrigin: "top left",
@@ -80088,9 +80088,9 @@ var require_InputLabel = __commonJS({
           ownerState
         }) => !ownerState.disableAnimation,
         style: {
-          transition: theme.transitions.create(["color", "transform", "max-width"], {
-            duration: theme.transitions.duration.shorter,
-            easing: theme.transitions.easing.easeOut
+          transition: theme2.transitions.create(["color", "transform", "max-width"], {
+            duration: theme2.transitions.duration.shorter,
+            easing: theme2.transitions.easing.easeOut
           })
         }
       }, {
@@ -80755,20 +80755,20 @@ var require_FormHelperText = __commonJS({
         return [styles.root, ownerState.size && styles[`size${(0, _capitalize.default)(ownerState.size)}`], ownerState.contained && styles.contained, ownerState.filled && styles.filled];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
-      color: (theme.vars || theme).palette.text.secondary,
-      ...theme.typography.caption,
+      color: (theme2.vars || theme2).palette.text.secondary,
+      ...theme2.typography.caption,
       textAlign: "left",
       marginTop: 3,
       marginRight: 0,
       marginBottom: 0,
       marginLeft: 0,
       [`&.${_formHelperTextClasses.default.disabled}`]: {
-        color: (theme.vars || theme).palette.text.disabled
+        color: (theme2.vars || theme2).palette.text.disabled
       },
       [`&.${_formHelperTextClasses.default.error}`]: {
-        color: (theme.vars || theme).palette.error.main
+        color: (theme2.vars || theme2).palette.error.main
       },
       variants: [{
         props: {
@@ -81533,7 +81533,7 @@ var require_Grow = __commonJS({
       } = props;
       const timer = (0, _useTimeout.default)();
       const autoTimeout = React7.useRef();
-      const theme = (0, _zeroStyled.useTheme)();
+      const theme2 = (0, _zeroStyled.useTheme)();
       const nodeRef = React7.useRef(null);
       const handleRef = (0, _useForkRef.default)(nodeRef, (0, _getReactElementRef.default)(children), ref);
       const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
@@ -81562,15 +81562,15 @@ var require_Grow = __commonJS({
         });
         let duration;
         if (timeout === "auto") {
-          duration = theme.transitions.getAutoHeightDuration(node2.clientHeight);
+          duration = theme2.transitions.getAutoHeightDuration(node2.clientHeight);
           autoTimeout.current = duration;
         } else {
           duration = transitionDuration;
         }
-        node2.style.transition = [theme.transitions.create("opacity", {
+        node2.style.transition = [theme2.transitions.create("opacity", {
           duration,
           delay
-        }), theme.transitions.create("transform", {
+        }), theme2.transitions.create("transform", {
           duration: isWebKit154 ? duration : duration * 0.666,
           delay,
           easing: transitionTimingFunction
@@ -81595,15 +81595,15 @@ var require_Grow = __commonJS({
         });
         let duration;
         if (timeout === "auto") {
-          duration = theme.transitions.getAutoHeightDuration(node2.clientHeight);
+          duration = theme2.transitions.getAutoHeightDuration(node2.clientHeight);
           autoTimeout.current = duration;
         } else {
           duration = transitionDuration;
         }
-        node2.style.transition = [theme.transitions.create("opacity", {
+        node2.style.transition = [theme2.transitions.create("opacity", {
           duration,
           delay
-        }), theme.transitions.create("transform", {
+        }), theme2.transitions.create("transform", {
           duration: isWebKit154 ? duration : duration * 0.666,
           delay: isWebKit154 ? delay : delay || duration * 0.333,
           easing: transitionTimingFunction
@@ -82287,10 +82287,10 @@ var require_Fade = __commonJS({
       }
     };
     var Fade = /* @__PURE__ */ React7.forwardRef(function Fade2(props, ref) {
-      const theme = (0, _zeroStyled.useTheme)();
+      const theme2 = (0, _zeroStyled.useTheme)();
       const defaultTimeout = {
-        enter: theme.transitions.duration.enteringScreen,
-        exit: theme.transitions.duration.leavingScreen
+        enter: theme2.transitions.duration.enteringScreen,
+        exit: theme2.transitions.duration.leavingScreen
       };
       const {
         addEndListener,
@@ -82333,8 +82333,8 @@ var require_Fade = __commonJS({
         }, {
           mode: "enter"
         });
-        node2.style.webkitTransition = theme.transitions.create("opacity", transitionProps);
-        node2.style.transition = theme.transitions.create("opacity", transitionProps);
+        node2.style.webkitTransition = theme2.transitions.create("opacity", transitionProps);
+        node2.style.transition = theme2.transitions.create("opacity", transitionProps);
         if (onEnter) {
           onEnter(node2, isAppearing);
         }
@@ -82349,8 +82349,8 @@ var require_Fade = __commonJS({
         }, {
           mode: "exit"
         });
-        node2.style.webkitTransition = theme.transitions.create("opacity", transitionProps);
-        node2.style.transition = theme.transitions.create("opacity", transitionProps);
+        node2.style.webkitTransition = theme2.transitions.create("opacity", transitionProps);
+        node2.style.transition = theme2.transitions.create("opacity", transitionProps);
         if (onExit) {
           onExit(node2);
         }
@@ -83025,10 +83025,10 @@ var require_Modal = __commonJS({
         return [styles.root, !ownerState.open && ownerState.exited && styles.hidden];
       }
     })((0, _memoTheme.default)(({
-      theme
+      theme: theme2
     }) => ({
       position: "fixed",
-      zIndex: (theme.vars || theme).zIndex.modal,
+      zIndex: (theme2.vars || theme2).zIndex.modal,
       right: 0,
       bottom: 0,
       top: 0,
@@ -83083,7 +83083,7 @@ var require_Modal = __commonJS({
         slotProps = {},
         slots = {},
         // eslint-disable-next-line react/prop-types
-        theme,
+        theme: theme2,
         ...other
       } = props;
       const propsWithDefaults = {
@@ -84496,7 +84496,7 @@ var require_NativeSelectInput = __commonJS({
       return (0, _composeClasses.default)(slots, _nativeSelectClasses.getNativeSelectUtilityClasses, classes);
     };
     var StyledSelectSelect = exports2.StyledSelectSelect = (0, _zeroStyled.styled)("select")(({
-      theme
+      theme: theme2
     }) => ({
       // Reset
       MozAppearance: "none",
@@ -84519,7 +84519,7 @@ var require_NativeSelectInput = __commonJS({
         height: "auto"
       },
       "&:not([multiple]) option, &:not([multiple]) optgroup": {
-        backgroundColor: (theme.vars || theme).palette.background.paper
+        backgroundColor: (theme2.vars || theme2).palette.background.paper
       },
       variants: [{
         props: ({
@@ -84547,9 +84547,9 @@ var require_NativeSelectInput = __commonJS({
           variant: "outlined"
         },
         style: {
-          borderRadius: (theme.vars || theme).shape.borderRadius,
+          borderRadius: (theme2.vars || theme2).shape.borderRadius,
           "&:focus": {
-            borderRadius: (theme.vars || theme).shape.borderRadius
+            borderRadius: (theme2.vars || theme2).shape.borderRadius
             // Reset the reset for Chrome style
           },
           "&&&": {
@@ -84572,7 +84572,7 @@ var require_NativeSelectInput = __commonJS({
       }
     })({});
     var StyledSelectIcon = exports2.StyledSelectIcon = (0, _zeroStyled.styled)("svg")(({
-      theme
+      theme: theme2
     }) => ({
       // We use a position absolute over a flexbox in order to forward the pointer events
       // to the input and to support wrapping tags..
@@ -84582,9 +84582,9 @@ var require_NativeSelectInput = __commonJS({
       top: "calc(50% - .5em)",
       // Don't block pointer events on the select under the icon.
       pointerEvents: "none",
-      color: (theme.vars || theme).palette.action.active,
+      color: (theme2.vars || theme2).palette.action.active,
       [`&.${_nativeSelectClasses.default.disabled}`]: {
-        color: (theme.vars || theme).palette.action.disabled
+        color: (theme2.vars || theme2).palette.action.disabled
       },
       variants: [{
         props: ({
@@ -86399,26 +86399,51 @@ function BasicRichTreeView({
   const [expandedIds, setExpandedIds] = React5.useState(
     () => collectExpandableIds(items)
   );
+  const [selectedId, setSelectedId] = React5.useState("");
   React5.useEffect(() => {
     setExpandedIds(collectExpandableIds(items));
   }, [items]);
   const handleNodeSelect = (event, nodeId) => {
+    if (nodeId.includes("-narrative-")) {
+      return;
+    }
     let cellIndex;
-    const narrativeMatch = nodeId.match(/-narrative-(\d+)-/);
-    if (narrativeMatch) {
-      cellIndex = parseInt(narrativeMatch[1], 10);
-    } else {
-      const subMatch = nodeId.match(/^group-(\d+)-subgroup-(\d+)/);
-      if (subMatch) {
-        const [, g, s] = subMatch.map(Number);
-        const cells = data.groups[g].subgroups[s].cells;
-        if (cells.length > 0) cellIndex = cells[0];
-      }
+    const subMatch = nodeId.match(/^group-(\d+)-subgroup-(\d+)/);
+    if (subMatch) {
+      const [, g, s] = subMatch.map(Number);
+      const cells = data.groups[g].subgroups[s].cells;
+      if (cells.length > 0) cellIndex = cells[0];
     }
     if (cellIndex !== void 0) {
       vscodeApi_default?.postMessage({ type: "selectCell", index: cellIndex });
     }
   };
+  React5.useEffect(() => {
+    const handler = (event) => {
+      const msg = event.data;
+      if (msg.type === "expandNode") {
+        const idx = msg.index;
+        let groupId;
+        let subgroupId;
+        for (let g = 0; g < data.groups.length; g++) {
+          for (let s = 0; s < data.groups[g].subgroups.length; s++) {
+            if (data.groups[g].subgroups[s].cells.includes(idx)) {
+              groupId = `group-${g}`;
+              subgroupId = `group-${g}-subgroup-${s}`;
+              break;
+            }
+          }
+          if (subgroupId) break;
+        }
+        if (groupId && subgroupId) {
+          setExpandedIds([groupId, subgroupId]);
+          setSelectedId(subgroupId);
+        }
+      }
+    };
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
+  }, [data.groups]);
   console.log("expanded", expandedIds);
   const headingText = variableSummary || data.narrative;
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_Box.default, { sx: { minWidth: 250 }, children: [
@@ -86444,9 +86469,18 @@ function BasicRichTreeView({
         onExpandedItemsChange: (event, newIds) => {
           setExpandedIds(newIds);
         },
+        selectedItems: selectedId ?? "",
+        onSelectedItemsChange: (e, newSel) => setSelectedId(newSel ?? ""),
         onItemClick: handleNodeSelect,
         slots: { item: CustomTreeItem },
         sx: {
+          "& .MuiTreeItem-content.Mui-selected": {
+            backgroundColor: "rgba(135, 135, 135, 0.3)"
+            // color: 'rgba(0,0,0,0.87)',
+          },
+          "& .MuiTreeItem-content.Mui-selected:hover": {
+            backgroundColor: "rgba(135, 135, 135, 0.25)"
+          },
           "& .MuiTreeItem-label": {
             fontSize: "12px !important",
             textAlign: "left"
@@ -86498,6 +86532,10 @@ function initTag(variable) {
   label.onclick = () => toggleTag(tag, variable);
   btn.onclick = (e) => {
     e.stopPropagation();
+    const selected = tag.classList.contains("selected");
+    if (selected) {
+      vscodeApi_default?.postMessage({ type: "clearTree" });
+    }
     tag.remove();
     if (tag.classList.contains("selected")) {
       tag.classList.remove("selected");
@@ -86603,7 +86641,25 @@ function List({
 }
 
 // src/App.tsx
+var import_styles = __toESM(require_styles());
 var import_jsx_runtime3 = __toESM(require_jsx_runtime());
+var theme = (0, import_styles.createTheme)({
+  typography: {
+    fontFamily: `'sofia-pro-soft', 'Quicksand', 'Helvetica Neue', sans-serif`,
+    fontWeightLight: 300,
+    fontWeightRegular: 300,
+    fontWeightMedium: 300
+  },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          fontWeight: 300
+        }
+      }
+    }
+  }
+});
 function extractCellReferences(text) {
   const sentenceEndRegex = /[.!?](?=\s|$)/g;
   let sentences = [];
@@ -86623,7 +86679,7 @@ function extractCellReferences(text) {
   }
   console.log("sentences after splitting:", sentences);
   const extracted = {};
-  const cellRegex = /\{"([^"}]+)"}\[cell\s*(\d+(?:\s*,\s*\d+)*)\]/g;
+  const cellRegex = /\{"([^"}]+)"}\[cell\s*(\d+(?:[-,]\d+)*)\]/g;
   for (const sentence of sentences) {
     let match3;
     while ((match3 = cellRegex.exec(sentence)) !== null) {
@@ -86675,7 +86731,7 @@ function App() {
       window.removeEventListener("message", handleMessage);
     };
   }, []);
-  return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "notebook-container", children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_styles.ThemeProvider, { theme, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "notebook-container", children: [
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "top-section", children: variables ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(List, { data: variables }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { className: "loading-text", children: "Loading notebook data\u2026" }) }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "bottom-section", children: tree ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
       BasicRichTreeView,
@@ -86685,7 +86741,7 @@ function App() {
         variableSummary
       }
     ) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { className: "loading-text", children: "Loading notebook data\u2026" }) })
-  ] });
+  ] }) });
 }
 (function() {
   const rootElement = document.getElementById("app");
